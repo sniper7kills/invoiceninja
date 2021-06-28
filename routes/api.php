@@ -13,17 +13,17 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['api_secret_check']], function () {
+Route::middleware('api_secret_check')->group(function () {
     Route::post('api/v1/signup', 'AccountController@store')->name('signup.submit');
     Route::post('api/v1/oauth_login', 'Auth\LoginController@oauthApiLogin');
 });
 
-Route::group(['middleware' => ['api_secret_check','email_db']], function () {
+Route::middleware('api_secret_check', 'email_db')->group(['middleware' => ['api_secret_check','email_db']], function () {
     Route::post('api/v1/login', 'Auth\LoginController@apiLogin')->name('login.submit');
     Route::post('api/v1/reset_password', 'Auth\ForgotPasswordController@sendResetLinkEmail');
 });
 
-Route::group(['middleware' => ['api_db', 'token_auth', 'locale'], 'prefix' => 'api/v1', 'as' => 'api.'], function () {
+Route::middleware('api_db', 'token_auth', 'locale')->prefix('api/v1')->name('api.')->group(function () {
     Route::post('check_subdomain', 'SubdomainController@index')->name('check_subdomain');
     Route::get('ping', 'PingController@index')->name('ping');
     Route::get('health_check', 'PingController@health')->name('health_check');

@@ -26,7 +26,7 @@ Route::get('client/magic_link/{magic_link}', 'ClientPortal\ContactHashLoginContr
 Route::get('documents/{document_hash}', 'ClientPortal\DocumentController@publicDownload')->name('documents.public_download');
 Route::get('error', 'ClientPortal\ContactHashLoginController@errorPage')->name('client.error');
 
-Route::group(['middleware' => ['auth:contact', 'locale', 'check_client_existence','domain_db'], 'prefix' => 'client', 'as' => 'client.'], function () {
+Route::middleware('auth:contact', 'locale', 'check_client_existence', 'domain_db')->prefix('client')->name('client.')->group(['middleware' => ['auth:contact', 'locale', 'check_client_existence','domain_db'],], function () {
     Route::get('dashboard', 'ClientPortal\DashboardController@index')->name('dashboard'); // name = (dashboard. index / create / show / update / destroy / edit
 
     Route::get('invoices', 'ClientPortal\InvoiceController@index')->name('invoices.index')->middleware('portal_enabled');
@@ -84,7 +84,7 @@ Route::group(['middleware' => ['auth:contact', 'locale', 'check_client_existence
 
 Route::get('client/subscriptions/{subscription}/purchase', 'ClientPortal\SubscriptionPurchaseController@index')->name('client.subscription.purchase')->middleware('domain_db');
 
-Route::group(['middleware' => ['invite_db'], 'prefix' => 'client', 'as' => 'client.'], function () {
+Route::middleware('invite_db')->prefix('client')->name('client.')->group(function () {
     /*Invitation catches*/
     Route::get('recurring_invoice/{invitation_key}', 'ClientPortal\InvitationController@recurringRouter');
     Route::get('{entity}/{invitation_key}', 'ClientPortal\InvitationController@router');
