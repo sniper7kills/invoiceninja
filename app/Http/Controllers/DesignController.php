@@ -413,7 +413,7 @@ class DesignController extends BaseController
     {
         //may not need these destroy routes as we are using actions to 'archive/delete'
         $design->is_deleted = true;
-        $design->name = $design->name . "_deleted_" . Str::random(5);
+        $design->name = $design->name . '_deleted_' . Str::random(5);
         $design->delete();
         $design->save();
 

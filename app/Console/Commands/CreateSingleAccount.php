@@ -244,7 +244,7 @@ class CreateSingleAccount extends Command
     private function createSubsData($company, $user)
     {
         $gs = GroupSettingFactory::create($company->id, $user->id);
-        $gs->name = "plans";
+        $gs->name = 'plans';
         $gs->save();
 
         $p1 = Product::factory()->create([
@@ -284,7 +284,7 @@ class CreateSingleAccount extends Command
         ];
 
         $sub = SubscriptionFactory::create($company->id, $user->id);
-        $sub->name = "Pro Plan";
+        $sub->name = 'Pro Plan';
         $sub->group_id = $gs->id;
         $sub->recurring_product_ids = "{$p1->hashed_id}";
         $sub->webhook_configuration = $webhook_config;
@@ -293,7 +293,7 @@ class CreateSingleAccount extends Command
         $sub->save();
 
         $sub = SubscriptionFactory::create($company->id, $user->id);
-        $sub->name = "Enterprise Plan";
+        $sub->name = 'Enterprise Plan';
         $sub->group_id = $gs->id;
         $sub->recurring_product_ids = "{$p2->hashed_id}";
         $sub->webhook_configuration = $webhook_config;
@@ -302,7 +302,7 @@ class CreateSingleAccount extends Command
         $sub->save();
 
         $sub = SubscriptionFactory::create($company->id, $user->id);
-        $sub->name = "Free Plan";
+        $sub->name = 'Free Plan';
         $sub->group_id = $gs->id;
         $sub->recurring_product_ids = "{$p3->hashed_id}";
         $sub->webhook_configuration = $webhook_config;
@@ -339,7 +339,7 @@ class CreateSingleAccount extends Command
         $client->number = $this->getNextClientNumber($client);
 
         $settings = $client->settings;
-        $settings->currency_id = "1";
+        $settings->currency_id = '1';
 //        $settings->use_credits_payment = "always";
 
         $client->settings = $settings;

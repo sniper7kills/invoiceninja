@@ -53,7 +53,7 @@ class UserEmailChanged implements ShouldQueue
 
     public function handle()
     {
-        nlog("notifying user of email change");
+        nlog('notifying user of email change');
         
         //Set DB
         MultiDB::setDb($this->company->db);

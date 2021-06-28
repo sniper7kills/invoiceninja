@@ -313,7 +313,7 @@ class MultiDB
         do {
             $length = 8;
             $string = '';
-            $vowels = ["a","e","i","o","u"];
+            $vowels = ['a','e','i','o','u'];
             $consonants = [
                     'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm',
                     'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'

@@ -59,7 +59,7 @@ class SendEmailRequest extends Request
         }
 
         $input['entity_id'] = $this->decodePrimaryKey($input['entity_id']);
-        $input['entity'] = "App\Models\\".ucfirst($input['entity']);
+        $input['entity'] = 'App\\Models\\'.ucfirst($input['entity']);
 
         $this->replace($input);
     }

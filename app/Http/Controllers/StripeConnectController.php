@@ -96,13 +96,13 @@ class StripeConnectController extends BaseController
 
         $payload = [
             'account_id' => $response->stripe_user_id,
-            "token_type" => 'bearer',
-            "stripe_publishable_key" => $response->stripe_publishable_key,
-            "scope" => $response->scope,
-            "livemode" => $response->livemode,
-            "stripe_user_id" => $response->stripe_user_id,
-            "refresh_token" => $response->refresh_token,
-            "access_token" => $response->access_token
+            'token_type' => 'bearer',
+            'stripe_publishable_key' => $response->stripe_publishable_key,
+            'scope' => $response->scope,
+            'livemode' => $response->livemode,
+            'stripe_user_id' => $response->stripe_user_id,
+            'refresh_token' => $response->refresh_token,
+            'access_token' => $response->access_token
         ];
 
         /* Link account if existing account exists */

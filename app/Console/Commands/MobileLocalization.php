@@ -101,9 +101,9 @@ class MobileLocalization extends Command
         $end = strpos($data, '},', $start);
         $data = substr($data, $start, $end - $start - 5);
 
-        $data = str_replace("\n", "", $data);
-        $data = str_replace("\"", "\'", $data);
-        $data = str_replace("'", "\"", $data);
+        $data = str_replace("\n", '', $data);
+        $data = str_replace('"', "\\'", $data);
+        $data = str_replace("'", '"', $data);
 
         return json_decode('{' . rtrim($data, ',') . '}');
     }

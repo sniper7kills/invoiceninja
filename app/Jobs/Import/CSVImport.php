@@ -102,13 +102,13 @@ class CSVImport implements ShouldQueue
 
         $this->buildMaps();
 
-        nlog("import " . $this->import_type);
+        nlog('import ' . $this->import_type);
         foreach ([ 'client', 'product', 'invoice', 'payment', 'vendor', 'expense' ] as $entityType) {
             $csvData = $this->getCsvData($entityType);
 
             if (! empty($csvData)) {
-                $importFunction       = "import" . Str::plural(Str::title($entityType));
-                $preTransformFunction = "preTransform" . Str::title($this->import_type);
+                $importFunction       = 'import' . Str::plural(Str::title($entityType));
+                $preTransformFunction = 'preTransform' . Str::title($this->import_type);
 
                 if (method_exists($this, $preTransformFunction)) {
                     $csvData = $this->$preTransformFunction($csvData, $entityType);

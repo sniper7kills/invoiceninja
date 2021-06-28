@@ -53,7 +53,7 @@ class SubscriptionService
     public function completePurchase(PaymentHash $payment_hash)
     {
         if (!property_exists($payment_hash->data, 'billing_context')) {
-            throw new \Exception("Illegal entrypoint into method, payload must contain billing context");
+            throw new \Exception('Illegal entrypoint into method, payload must contain billing context');
         }
 
         if ($payment_hash->data->billing_context->context == 'change_plan') {
@@ -134,7 +134,7 @@ class SubscriptionService
         $client_contact = ClientContact::find($data['contact_id']);
 
         if (!$this->subscription->trial_enabled) {
-            return new \Exception("Trials are disabled for this product");
+            return new \Exception('Trials are disabled for this product');
         }
 
         //create recurring invoice with start date = trial_duration + 1 day
@@ -269,7 +269,7 @@ class SubscriptionService
             if ($item->product_key != ctrans('texts.refund')) {
                 $item->cost = ($item->cost*$ratio*$multiplier);
                 $item->product_key = ctrans('texts.refund');
-                $item->notes = ctrans('texts.refund') . ": ". $item->notes;
+                $item->notes = ctrans('texts.refund') . ': '. $item->notes;
 
 
                 $line_items[] = $item;
@@ -563,7 +563,7 @@ class SubscriptionService
     public function triggerWebhook($context)
     {
         if (empty($this->subscription->webhook_configuration['post_purchase_url']) || is_null($this->subscription->webhook_configuration['post_purchase_url']) || strlen($this->subscription->webhook_configuration['post_purchase_url']) < 1) {
-            return ["message" => "Success", "status_code" => 200];
+            return ['message' => 'Success', 'status_code' => 200];
         }
 
         $response = false;
@@ -615,7 +615,7 @@ class SubscriptionService
      */
     public function products()
     {
-        return Product::whereIn('id', $this->transformKeys(explode(",", $this->subscription->product_ids)))->get();
+        return Product::whereIn('id', $this->transformKeys(explode(',', $this->subscription->product_ids)))->get();
     }
 
     /**
@@ -626,7 +626,7 @@ class SubscriptionService
      */
     public function recurring_products()
     {
-        return Product::whereIn('id', $this->transformKeys(explode(",", $this->subscription->recurring_product_ids)))->get();
+        return Product::whereIn('id', $this->transformKeys(explode(',', $this->subscription->recurring_product_ids)))->get();
     }
 
     /**

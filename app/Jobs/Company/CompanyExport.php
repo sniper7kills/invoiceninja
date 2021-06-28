@@ -411,7 +411,7 @@ class CompanyExport implements ShouldQueue
             nlog("cannot open {$zip_path}");
         }
 
-        $zip->addFromString("backup.json", json_encode($this->export_data));
+        $zip->addFromString('backup.json', json_encode($this->export_data));
         $zip->close();
 
         if (Ninja::isHosted()) {

@@ -71,7 +71,7 @@ class AutoBillInvoice extends AbstractService
             return $this->invoice;
         }
 
-        info("balance remains to be paid!!");
+        info('balance remains to be paid!!');
 
         /* Retrieve the Client Gateway Token */
         $gateway_token = $this->getGateway($amount);

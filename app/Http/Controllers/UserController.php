@@ -392,7 +392,7 @@ class UserController extends BaseController
             strcasecmp($old_company_user->permissions, $user->company_user->permissions) != 0 ||
             $old_company_user->is_admin != $user->company_user->is_admin
           ) {
-            $user->company_user()->update(["permissions_updated_at" => now()]);
+            $user->company_user()->update(['permissions_updated_at' => now()]);
         }
 
         event(new UserWasUpdated($user, auth()->user(), auth()->user()->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));

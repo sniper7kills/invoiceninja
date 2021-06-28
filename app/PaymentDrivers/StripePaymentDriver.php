@@ -81,7 +81,7 @@ class StripePaymentDriver extends BaseDriver
         if ($this->stripe_connect) {
             Stripe::setApiKey(config('ninja.ninja_stripe_key'));
 
-            $this->stripe_connect_auth = ["stripe_account" => $this->company_gateway->getConfigField('account_id')];
+            $this->stripe_connect_auth = ['stripe_account' => $this->company_gateway->getConfigField('account_id')];
         } else {
             $this->stripe = new StripeClient(
                 $this->company_gateway->getConfigField('apiKey')

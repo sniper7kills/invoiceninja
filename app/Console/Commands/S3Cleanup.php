@@ -46,7 +46,7 @@ class S3Cleanup extends Command
 
         $directories = Storage::disk(config('filesystems.default'))->directories();
 
-        $this->LogMessage("Disk Cleanup");
+        $this->LogMessage('Disk Cleanup');
 
         foreach ($directories as $dir) {
             if (!in_array($dir, $merged)) {
@@ -55,7 +55,7 @@ class S3Cleanup extends Command
             }
         }
 
-        $this->logMessage("exiting");
+        $this->logMessage('exiting');
     }
 
     private function logMessage($str)

@@ -85,7 +85,7 @@ class CheckData extends Command
     public function handle()
     {
         $database_connection = $this->option('database') ? $this->option('database') : 'Connected to Default DB';
-        $fix_status = $this->option('fix') ? "Fixing Issues" : "Just checking issues ";
+        $fix_status = $this->option('fix') ? 'Fixing Issues' : 'Just checking issues ';
 
         $this->logMessage(date('Y-m-d h:i:s').' Running CheckData... on ' . $database_connection . " Fix Status = {$fix_status}");
 

@@ -45,7 +45,7 @@ class ContactKeyLogin
             
             if ($client_contact = ClientContact::where('email', $contact_email)->where('company_id', $payload['company_id'])->first()) {
                 if (empty($client_contact->email)) {
-                    $client_contact->email = Str::random(15) . "@example.com";
+                    $client_contact->email = Str::random(15) . '@example.com';
                 }
                 $client_contact->save();
     
@@ -61,7 +61,7 @@ class ContactKeyLogin
             if (MultiDB::findAndSetDbByContactKey($request->segment(3))) {
                 if ($client_contact = ClientContact::where('contact_key', $request->segment(3))->first()) {
                     if (empty($client_contact->email)) {
-                        $client_contact->email = Str::random(6) . "@example.com";
+                        $client_contact->email = Str::random(6) . '@example.com';
                     }
                     $client_contact->save();
 
@@ -72,7 +72,7 @@ class ContactKeyLogin
         } elseif ($request->segment(2) && $request->segment(2) == 'key_login' && $request->segment(3)) {
             if ($client_contact = ClientContact::where('contact_key', $request->segment(3))->first()) {
                 if (empty($client_contact->email)) {
-                    $client_contact->email = Str::random(6) . "@example.com";
+                    $client_contact->email = Str::random(6) . '@example.com';
                 }
                 $client_contact->save();
     
@@ -85,7 +85,7 @@ class ContactKeyLogin
                     $primary_contact = $client->primary_contact()->first();
 
                     if (empty($primary_contact->email)) {
-                        $primary_contact->email = Str::random(6) . "@example.com";
+                        $primary_contact->email = Str::random(6) . '@example.com';
                     }
                     $primary_contact->save();
 
@@ -98,7 +98,7 @@ class ContactKeyLogin
                 $primary_contact = $client->primary_contact()->first();
                 
                 if (empty($primary_contact->email)) {
-                    $primary_contact->email = Str::random(6) . "@example.com";
+                    $primary_contact->email = Str::random(6) . '@example.com';
                 }
                 $primary_contact->save();
 

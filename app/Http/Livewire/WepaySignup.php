@@ -162,7 +162,7 @@ class WepaySignup extends Component
                 request()->session()->flash('message', $ex->getMessage());
             }
 
-            nlog("failed in try catch ");
+            nlog('failed in try catch ');
             nlog($ex->getMessage());
         }
 

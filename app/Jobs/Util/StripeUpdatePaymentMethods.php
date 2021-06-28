@@ -57,7 +57,7 @@ class StripeUpdatePaymentMethods implements ShouldQueue
 
     public function failed($exception)
     {
-        nlog("Stripe update payment methods exception");
+        nlog('Stripe update payment methods exception');
         nlog($exception->getMessage());
     }
 }

@@ -74,7 +74,7 @@ class ACH
             return redirect()->route('client.payment_methods.index');
         }
     
-        throw new PaymentFailed("There was a problem adding this payment method.", 400);
+        throw new PaymentFailed('There was a problem adding this payment method.', 400);
         
         /*
             {
@@ -149,7 +149,7 @@ class ACH
         nlog($response);
 
         //$meta = $token->meta;
-        if ($response->state == "authorized") {
+        if ($response->state == 'authorized') {
             $meta = $token->meta;
             $meta->state = $response->state;
             $token->meta = $meta;
@@ -181,7 +181,7 @@ class ACH
         $token = ClientGatewayToken::find($this->decodePrimaryKey($request->input('source')));
         $token_meta = $token->meta;
 
-        if ($token_meta->state != "authorized") {
+        if ($token_meta->state != 'authorized') {
             return redirect()->route('client.payment_methods.verification', ['payment_method' => $token->hashed_id, 'method' => GatewayType::BANK_TRANSFER]);
         }
 
@@ -219,7 +219,7 @@ class ACH
 
         if (in_array($response->state, ['authorized', 'captured'])) {
             //success
-            nlog("success");
+            nlog('success');
             $payment_status = $response->state == 'authorized' ? Payment::STATUS_COMPLETED : Payment::STATUS_PENDING;
 
             return $this->processSuccessfulPayment($response, $payment_status, GatewayType::BANK_TRANSFER);
@@ -227,7 +227,7 @@ class ACH
 
         if (in_array($response->state, ['released', 'cancelled', 'failed', 'expired'])) {
             //some type of failure
-            nlog("failure");
+            nlog('failure');
 
             $payment_status = $response->state == 'cancelled' ? Payment::STATUS_CANCELLED : Payment::STATUS_FAILED;
 

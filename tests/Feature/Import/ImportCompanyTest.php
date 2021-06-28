@@ -90,7 +90,7 @@ class ImportCompanyTest extends TestCase
             $zip->close();
         }
 
-        $backup_json_file = sys_get_temp_dir() . "/backup/backup.json";
+        $backup_json_file = sys_get_temp_dir() . '/backup/backup.json';
 
         $this->backup_json_object = json_decode(file_get_contents($backup_json_file));
 
@@ -115,7 +115,7 @@ class ImportCompanyTest extends TestCase
             $zip->close();
         }
 
-        $backup_json_file = sys_get_temp_dir() . "/backup/backup.json";
+        $backup_json_file = sys_get_temp_dir() . '/backup/backup.json';
 
         $this->assertTrue(is_array(json_decode(file_get_contents($backup_json_file), 1)));
 
@@ -124,7 +124,7 @@ class ImportCompanyTest extends TestCase
 
     public function testAppVersion()
     {
-        $this->assertEquals("5.1.65", $this->backup_json_object->app_version);
+        $this->assertEquals('5.1.65', $this->backup_json_object->app_version);
     }
 
     public function testImportUsers()
@@ -1123,7 +1123,7 @@ class ImportCompanyTest extends TestCase
 
     private function recordProductIds($ids)
     {
-        $id_array = explode(",", $ids);
+        $id_array = explode(',', $ids);
 
         $tmp_arr = [];
 
@@ -1131,7 +1131,7 @@ class ImportCompanyTest extends TestCase
             $tmp_arr[] = $this->encodePrimaryKey($this->transformId('products', $id));
         }
 
-        return implode(",", $tmp_arr);
+        return implode(',', $tmp_arr);
     }
 
     private function transformId(string $resource, ?string $old): ?int
@@ -1153,7 +1153,7 @@ class ImportCompanyTest extends TestCase
 
     public function tearDown() :void
     {
-        $backup_json_file = sys_get_temp_dir() . "/backup/backup.json";
+        $backup_json_file = sys_get_temp_dir() . '/backup/backup.json';
 
         //   unlink($backup_json_file);
     }

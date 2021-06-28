@@ -188,9 +188,9 @@ class BaseModel extends Model
     {
         $number = strlen($this->number) > 1 ? $this->number : class_basename($this);
 
-        $formatted_number =  mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $number);
+        $formatted_number =  mb_ereg_replace('([^\\w\\s\\d\\-_~,;\\[\\]\\(\\).])', '', $number);
         // Remove any runs of periods (thanks falstro!)
-        $formatted_number = mb_ereg_replace("([\.]{2,})", '', $formatted_number);
+        $formatted_number = mb_ereg_replace('([\\.]{2,})', '', $formatted_number);
 
         return $formatted_number;
     }

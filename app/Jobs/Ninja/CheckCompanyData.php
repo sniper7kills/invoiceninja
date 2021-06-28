@@ -205,7 +205,7 @@ class CheckCompanyData implements ShouldQueue
             if ($ledger && (string) $invoice_balance != (string) $client->balance) {
                 $wrong_paid_to_dates++;
                 
-                $this->company_data[] = $client->present()->name.' - '.$client->id." - calculated client balances do not match {$invoice_balance} - ".rtrim($client->balance, '0')."";
+                $this->company_data[] = $client->present()->name.' - '.$client->id." - calculated client balances do not match {$invoice_balance} - ".rtrim($client->balance, '0').'';
 
                 $this->is_valid = false;
             }

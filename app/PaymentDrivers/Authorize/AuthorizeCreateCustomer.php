@@ -90,15 +90,15 @@ class AuthorizeCreateCustomer
         $controller = new GetCustomerProfileController($request);
         $response = $controller->executeWithApiResponse($this->authorize->merchant_authentication);
 
-        if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
-            echo "GetCustomerProfile SUCCESS : " .  "\n";
+        if (($response != null) && ($response->getMessages()->getResultCode() == 'Ok')) {
+            echo 'GetCustomerProfile SUCCESS : ' .  "\n";
             $profileSelected = $response->getProfile();
             $paymentProfilesSelected = $profileSelected->getPaymentProfiles();
-            echo "Profile Has " . count($paymentProfilesSelected). " Payment Profiles" . "\n";
+            echo 'Profile Has ' . count($paymentProfilesSelected). ' Payment Profiles' . "\n";
 
             if ($response->getSubscriptionIds() != null) {
                 if ($response->getSubscriptionIds() != null) {
-                    echo "List of subscriptions:";
+                    echo 'List of subscriptions:';
                     foreach ($response->getSubscriptionIds() as $subscriptionid) {
                         echo $subscriptionid . "\n";
                     }
@@ -107,7 +107,7 @@ class AuthorizeCreateCustomer
         } else {
             echo "ERROR :  GetCustomerProfile: Invalid response\n";
             $errorMessages = $response->getMessages()->getMessage();
-            echo "Response : " . $errorMessages[0]->getCode() . "  " .$errorMessages[0]->getText() . "\n";
+            echo 'Response : ' . $errorMessages[0]->getCode() . '  ' .$errorMessages[0]->getText() . "\n";
         }
 
         return $response;

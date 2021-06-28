@@ -134,7 +134,7 @@ class Phantom
             throw new PhantomPDFFailure('There was an error generating the PDF with Phantom JS');
         } else {
             SystemLogger::dispatch(
-                "Entity PDF generated sucessfully => " . $invitation->{$entity}->number,
+                'Entity PDF generated sucessfully => ' . $invitation->{$entity}->number,
                 SystemLog::CATEGORY_PDF,
                 SystemLog::EVENT_PDF_RESPONSE,
                 SystemLog::TYPE_PDF_SUCCESS,

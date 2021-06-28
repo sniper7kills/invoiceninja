@@ -454,7 +454,7 @@ trait MakesInvoiceValues
 
                 $raw = strtr($matches->keys()->first(), $replacements['raw']); // :MONTH => 1
 
-                $number = $res = preg_replace("/[^0-9]/", '', $_value[1]); // :MONTH+1. || :MONTH+2! => 1 || 2
+                $number = $res = preg_replace('/[^0-9]/', '', $_value[1]); // :MONTH+1. || :MONTH+2! => 1 || 2
 
                 $target = "/{$matches->keys()->first()}\\{$_operation}{$number}/"; // /:$KEYWORD\\$OPERATION$VALUE => /:MONTH\\+1
 

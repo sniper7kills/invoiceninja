@@ -70,7 +70,7 @@ class CreditCard
             return redirect()->route('client.payment_methods.index');
         }
     
-        throw new PaymentFailed("There was a problem adding this payment method.", 400);
+        throw new PaymentFailed('There was a problem adding this payment method.', 400);
         
         /*
             [credit_card_id] => 348084962473
@@ -102,11 +102,11 @@ class CreditCard
 
     public function paymentResponse(PaymentResponseRequest $request)
     {
-        nlog("payment response");
+        nlog('payment response');
 
         //it could be an existing token or a new credit_card_id that needs to be converted into a wepay token
         if ($request->has('credit_card_id') && $request->input('credit_card_id')) {
-            nlog("authorize the card first!");
+            nlog('authorize the card first!');
 
             $response = $this->wepay_payment_driver->wepay->request('credit_card/authorize', [
                 // 'callback_uri'        => route('payment_webhook', ['company_key' => $this->wepay_payment_driver->company_gateway->company->company_key, 'company_gateway_id' => $this->wepay_payment_driver->company_gateway->hashed_id]),
@@ -161,7 +161,7 @@ class CreditCard
 
         if (in_array($response->state, ['authorized', 'captured'])) {
             //success
-            nlog("success");
+            nlog('success');
             $payment_status = $response->state == 'authorized' ? Payment::STATUS_COMPLETED : Payment::STATUS_PENDING;
 
             return $this->processSuccessfulPayment($response, $payment_status, GatewayType::CREDIT_CARD);
@@ -169,7 +169,7 @@ class CreditCard
 
         if (in_array($response->state, ['released', 'cancelled', 'failed', 'expired'])) {
             //some type of failure
-            nlog("failure");
+            nlog('failure');
 
             $payment_status = $response->state == 'cancelled' ? Payment::STATUS_CANCELLED : Payment::STATUS_FAILED;
 
@@ -247,7 +247,7 @@ class CreditCard
 
     private function storePaymentMethod($response, $payment_method_id)
     {
-        nlog("storing card");
+        nlog('storing card');
         $payment_meta = new \stdClass;
         $payment_meta->exp_month = (string) $response->expiration_month;
         $payment_meta->exp_year = (string) $response->expiration_year;

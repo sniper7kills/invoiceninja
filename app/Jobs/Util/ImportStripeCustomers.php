@@ -57,7 +57,7 @@ class ImportStripeCustomers implements ShouldQueue
 
     public function failed($exception)
     {
-        nlog("Stripe import customer methods exception");
+        nlog('Stripe import customer methods exception');
         nlog($exception->getMessage());
     }
 }

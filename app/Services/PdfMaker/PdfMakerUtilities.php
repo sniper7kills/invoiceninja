@@ -108,7 +108,7 @@ trait PdfMakerUtilities
                     continue;
                 }
 
-                $contains_html = preg_match("/\/[a-z]*>/i", $child['content'], $m) != 0;
+                $contains_html = preg_match('/\\/[a-z]*>/i', $child['content'], $m) != 0;
             }
 
             if ($contains_html) {

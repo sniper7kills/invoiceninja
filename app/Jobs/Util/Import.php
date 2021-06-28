@@ -218,7 +218,7 @@ class Import implements ShouldQueue
         
         try {
             Mail::to($this->user->email, $this->user->name())
-                ->send(new MigrationCompleted($this->company, implode("<br>", $check_data)));
+                ->send(new MigrationCompleted($this->company, implode('<br>', $check_data)));
         } catch (\Exception $e) {
             nlog($e->getMessage());
         }
@@ -312,7 +312,7 @@ class Import implements ShouldQueue
 
         if (
             $data['settings']['invoice_design_id'] > 9 ||
-            $data['settings']['invoice_design_id'] > "9"
+            $data['settings']['invoice_design_id'] > '9'
         ) {
             $data['settings']['invoice_design_id'] = 1;
         }
@@ -1217,7 +1217,7 @@ class Import implements ShouldQueue
                 }
                 
                 if (!$entity) {
-                    throw new Exception("Resource invoice/quote document not available.");
+                    throw new Exception('Resource invoice/quote document not available.');
                 }
             }
 
@@ -1687,7 +1687,7 @@ class Import implements ShouldQueue
 
     private function processNinjaTokens(array $data)
     {
-        nlog("attempting to process Ninja Tokens");
+        nlog('attempting to process Ninja Tokens');
 
         if (Ninja::isHosted()) {
             \Modules\Admin\Jobs\Account\NinjaUser::dispatchNow($data, $this->company);

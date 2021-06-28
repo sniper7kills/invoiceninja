@@ -87,7 +87,7 @@ class PaymentMigrationRepository extends BaseRepository
         //$payment->status_id = Payment::STATUS_COMPLETED;
         
         if (!array_key_exists('status_id', $data)) {
-            info("payment with no status id?");
+            info('payment with no status id?');
             info(print_r($data, 1));
         }
 

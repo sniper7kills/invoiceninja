@@ -57,7 +57,7 @@ class HandleRestore extends AbstractService
                                      ->where('paymentable_type', '=', 'invoices')
                                      ->sum(\DB::raw('amount'));
 
-            info($payment->amount . " == " . $payment_amount);
+            info($payment->amount . ' == ' . $payment_amount);
 
             if ($payment->amount == $payment_amount) {
                 $payment->is_deleted = false;
@@ -114,10 +114,10 @@ class HandleRestore extends AbstractService
             
             $this->invoice->save();
         } catch (\Exception $e) {
-            nlog("I could not wind back the invoice number");
+            nlog('I could not wind back the invoice number');
 
             if (Ninja::isHosted()) {
-                \Sentry\captureMessage("I could not wind back the invoice number");
+                \Sentry\captureMessage('I could not wind back the invoice number');
                 app('sentry')->captureException($e);
             }
         }

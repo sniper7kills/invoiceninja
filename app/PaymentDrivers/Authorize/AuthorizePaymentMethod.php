@@ -270,12 +270,12 @@ class AuthorizePaymentMethod
         $controller = new DeleteCustomerPaymentProfileController($request);
 
         $response = $controller->executeWithApiResponse($this->authorize->mode());
-        if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
-            nlog("SUCCESS: Delete Customer Payment Profile  SUCCESS  :");
+        if (($response != null) && ($response->getMessages()->getResultCode() == 'Ok')) {
+            nlog('SUCCESS: Delete Customer Payment Profile  SUCCESS  :');
         } else {
             nlog("ERROR :  Delete Customer Payment Profile: Invalid response\n");
             $errorMessages = $response->getMessages()->getMessage();
-            nlog("Response : " . $errorMessages[0]->getCode() . "  " .$errorMessages[0]->getText() . "\n");
+            nlog('Response : ' . $errorMessages[0]->getCode() . '  ' .$errorMessages[0]->getText() . "\n");
         }
 
         return $response;

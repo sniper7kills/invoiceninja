@@ -76,7 +76,7 @@ trait MakesDates
      */
     public function formatDatetime($date, string $format) :string
     {
-        return Carbon::createFromTimestamp($date)->format($format . " g:i a");
+        return Carbon::createFromTimestamp($date)->format($format . ' g:i a');
     }
 
     /**

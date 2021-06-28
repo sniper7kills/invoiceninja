@@ -225,7 +225,7 @@ class MigrationController extends BaseController
      */
     public function startMigration(Request $request)
     {
-        nlog("Starting Migration");
+        nlog('Starting Migration');
 
         $companies = json_decode($request->companies);
 
@@ -300,7 +300,7 @@ class MigrationController extends BaseController
 
                 // If there's existing company and force ** is provided ** - purge the company and migrate again.
                 if ($checks['existing_company'] == true && $checks['force'] == true) {
-                    nlog("purging the existing company here");
+                    nlog('purging the existing company here');
                     $this->purgeCompanyWithForceFlag($existing_company);
 
                     $account = auth()->user()->account;
@@ -333,7 +333,7 @@ class MigrationController extends BaseController
 
                 // If there's no existing company migrate just normally.
                 if ($checks['existing_company'] == false) {
-                    nlog("creating fresh company");
+                    nlog('creating fresh company');
                 
                     $account = auth()->user()->account;
                     $fresh_company = (new ImportMigrations())->getCompany($account);
@@ -370,11 +370,11 @@ class MigrationController extends BaseController
                 );
 
                 if (app()->environment() == 'testing') {
-                    nlog("environment is testing = bailing out now");
+                    nlog('environment is testing = bailing out now');
                     return;
                 }
 
-                nlog("starting migration job");
+                nlog('starting migration job');
                 nlog($migration_file);
 
                 if (Ninja::isHosted()) {

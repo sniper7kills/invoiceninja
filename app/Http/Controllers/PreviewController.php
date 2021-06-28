@@ -86,9 +86,9 @@ class PreviewController extends BaseController
 
             $entity = ucfirst(request()->input('entity'));
 
-            $class = "App\Models\\$entity";
+            $class = "App\\Models\\$entity";
 
-            $pdf_class = "App\Jobs\\$entity\\Create{$entity}Pdf";
+            $pdf_class = "App\\Jobs\\$entity\\Create{$entity}Pdf";
 
             $entity_obj = $class::whereId($this->decodePrimaryKey(request()->input('entity_id')))->company()->first();
 

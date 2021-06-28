@@ -41,7 +41,7 @@ class AutoBillCron
         set_time_limit(0);
 
         /* Get all invoices where the send date is less than NOW + 30 minutes() */
-        nlog("Performing Autobilling ".Carbon::now()->format('Y-m-d h:i:s'));
+        nlog('Performing Autobilling '.Carbon::now()->format('Y-m-d h:i:s'));
 
         if (! config('ninja.db.multi_db_enabled')) {
             $auto_bill_partial_invoices = Invoice::whereDate('partial_due_date', '<=', now())

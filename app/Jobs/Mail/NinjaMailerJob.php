@@ -95,7 +95,7 @@ class NinjaMailerJob implements ShouldQueue
         //send email
         try {
             nlog("trying to send to {$this->nmo->to_user->email} ". now()->toDateTimeString());
-            nlog("Using mailer => ". $this->mailer);
+            nlog('Using mailer => '. $this->mailer);
 
             Mail::mailer($this->mailer)
                 ->to($this->nmo->to_user->email)

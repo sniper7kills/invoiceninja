@@ -308,9 +308,9 @@ class BaseRepository
 
         /* Perform model specific tasks */
         if ($model instanceof Invoice) {
-            nlog("Finished amount = " . $state['finished_amount']);
-            nlog("Starting amount = " . $state['starting_amount']);
-            nlog("Diff = " . ($state['finished_amount'] - $state['starting_amount']));
+            nlog('Finished amount = ' . $state['finished_amount']);
+            nlog('Starting amount = ' . $state['starting_amount']);
+            nlog('Diff = ' . ($state['finished_amount'] - $state['starting_amount']));
 
             if (($state['finished_amount'] != $state['starting_amount']) && ($model->status_id != Invoice::STATUS_DRAFT)) {
                 $model->service()->updateStatus()->save();

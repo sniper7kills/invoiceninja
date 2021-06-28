@@ -304,7 +304,7 @@ class LoginController extends BaseController
         });
 
         if ($request->has('current_company') && $request->input('current_company') == 'true') {
-            $cu->where("company_id", $company_token->company_id);
+            $cu->where('company_id', $company_token->company_id);
         }
 
         if (Ninja::isHosted() && !$cu->first()->is_owner && !$cu->first()->user->account->isEnterpriseClient()) {
@@ -503,7 +503,7 @@ class LoginController extends BaseController
 
         if ($provider == 'google') {
             $scopes = ['https://www.googleapis.com/auth/gmail.send','email','profile','openid'];
-            $parameters = ['access_type' => 'offline', "prompt" => "consent select_account", 'redirect_uri' => config('ninja.app_url')."/auth/google"];
+            $parameters = ['access_type' => 'offline', 'prompt' => 'consent select_account', 'redirect_uri' => config('ninja.app_url').'/auth/google'];
         }
 
         if (request()->has('code')) {
@@ -543,7 +543,7 @@ class LoginController extends BaseController
 
             $user->update($update_user);
         } else {
-            nlog("user not found for oauth");
+            nlog('user not found for oauth');
         }
 
         return redirect('/#/');

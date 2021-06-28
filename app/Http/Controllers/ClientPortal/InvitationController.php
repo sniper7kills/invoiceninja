@@ -57,7 +57,7 @@ class InvitationController extends Controller
         $client_contact = $invitation->contact;
 
         if (empty($client_contact->email)) {
-            $client_contact->email = Str::random(15) . "@example.com";
+            $client_contact->email = Str::random(15) . '@example.com';
         }
         $client_contact->save();
 
@@ -67,7 +67,7 @@ class InvitationController extends Controller
             $this->middleware('auth:contact');
             return redirect()->route('client.login');
         } else {
-            nlog("else - default - login contact");
+            nlog('else - default - login contact');
             auth()->guard('contact')->login($client_contact, true);
         }
 
