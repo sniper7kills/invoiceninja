@@ -11,11 +11,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Utils\TemplateEngine;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\MakesInvoiceHtml;
 use App\Utils\Traits\MakesTemplateData;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class TemplateController extends BaseController

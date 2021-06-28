@@ -11,7 +11,6 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Support\Facades\App;
 use App\Factory\ClientContactFactory;
 use App\Models\Account;
 use App\Models\Client;
@@ -23,11 +22,12 @@ use App\Models\Invoice;
 use App\Models\InvoiceInvitation;
 use App\Models\Payment;
 use App\Utils\Ninja;
-use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputOption;
 
 /*

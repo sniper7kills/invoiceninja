@@ -11,7 +11,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\Export\StoreExportRequest;
 use App\Jobs\Company\CompanyExport;
 use App\Utils\Traits\MakesHash;

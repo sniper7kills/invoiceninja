@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Support\Messages;
 
-use App\Http\Requests\Support\Messages\SendingRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Support\Messages\SendingRequest;
 use App\Mail\SupportMessageSent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -66,7 +66,6 @@ class SendingController extends Controller
      */
     public function __invoke(SendingRequest $request)
     {
-
         $send_logs = false;
 
         if ($request->has('send_logs')) {

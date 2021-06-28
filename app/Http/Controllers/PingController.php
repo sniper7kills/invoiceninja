@@ -11,9 +11,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Utils\Ninja;
 use App\Utils\SystemHealth;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class PingController extends BaseController

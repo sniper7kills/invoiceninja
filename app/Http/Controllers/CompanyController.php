@@ -37,7 +37,6 @@ use App\Utils\Traits\Uploadable;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Turbo124\Beacon\Facades\LightLogs;
 
 /**

@@ -11,7 +11,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Exceptions\ModelNotFoundException;
 use App\Http\Requests\CompanyUser\UpdateCompanyUserRequest;
 use App\Models\CompanyUser;

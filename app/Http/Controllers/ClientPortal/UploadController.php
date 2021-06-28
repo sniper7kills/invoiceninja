@@ -12,7 +12,6 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\Uploads\StoreUploadRequest;
 use App\Utils\Traits\SavesDocuments;

@@ -12,7 +12,6 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
-use Illuminate\Http\Request;
 use App\Events\Quote\QuoteWasApproved;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\Quotes\ProcessQuotesInBulkRequest;
@@ -24,6 +23,7 @@ use App\Utils\Ninja;
 use App\Utils\TempFile;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use ZipStream\Option\Archive;
 use ZipStream\ZipStream;

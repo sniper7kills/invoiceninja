@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;

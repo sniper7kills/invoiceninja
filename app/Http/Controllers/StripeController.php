@@ -12,9 +12,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Jobs\Util\ImportStripeCustomers;
 use App\Jobs\Util\StripeUpdatePaymentMethods;
+use Illuminate\Http\Request;
 
 class StripeController extends BaseController
 {

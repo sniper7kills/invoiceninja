@@ -11,7 +11,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Jobs\Util\PreviewPdf;
 use App\Models\Client;
 use App\Models\ClientContact;
@@ -25,6 +24,7 @@ use App\Utils\Ninja;
 use App\Utils\PhantomJS\Phantom;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\MakesInvoiceHtml;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;

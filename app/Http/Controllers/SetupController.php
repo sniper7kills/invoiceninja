@@ -12,7 +12,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use \Illuminate\Support\Facades\DB;
 use App\Http\Requests\Setup\CheckDatabaseRequest;
 use App\Http\Requests\Setup\CheckMailRequest;
@@ -29,6 +28,7 @@ use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;

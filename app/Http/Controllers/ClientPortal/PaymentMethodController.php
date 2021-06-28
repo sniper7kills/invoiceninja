@@ -12,7 +12,6 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
-use Illuminate\Http\Request;
 use App\Events\Payment\Methods\MethodDeleted;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\CreatePaymentMethodRequest;
@@ -24,6 +23,7 @@ use App\Utils\Traits\MakesDates;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PaymentMethodController extends Controller

@@ -11,8 +11,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Libraries\MultiDB;
+use Illuminate\Http\Request;
 
 class SubdomainController extends BaseController
 {

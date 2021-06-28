@@ -11,7 +11,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Events\Credit\CreditWasCreated;
 use App\Events\Credit\CreditWasUpdated;
 use App\Factory\CloneCreditFactory;
@@ -36,6 +35,7 @@ use App\Transformers\CreditTransformer;
 use App\Utils\Ninja;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\SavesDocuments;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 /**

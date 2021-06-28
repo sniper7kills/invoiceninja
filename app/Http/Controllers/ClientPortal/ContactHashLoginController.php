@@ -11,8 +11,8 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ContactHashLoginController extends Controller

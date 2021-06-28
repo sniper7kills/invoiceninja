@@ -11,7 +11,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Events\Credit\CreditWasEmailed;
 use App\Events\Quote\QuoteWasEmailed;
 use App\Http\Requests\Email\SendEmailRequest;

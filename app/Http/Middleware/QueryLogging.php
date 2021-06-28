@@ -14,8 +14,8 @@ namespace App\Http\Middleware;
 use App\DataMapper\Analytics\DbQuery;
 use App\Utils\Ninja;
 use Closure;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Turbo124\Beacon\Facades\LightLogs;
 
 /**

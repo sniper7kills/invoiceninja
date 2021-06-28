@@ -12,7 +12,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Events\Subscription\SubscriptionWasCreated;
 use App\Events\Subscription\SubscriptionWasUpdated;
 use App\Factory\SubscriptionFactory;
@@ -27,6 +26,7 @@ use App\Repositories\SubscriptionRepository;
 use App\Transformers\SubscriptionTransformer;
 use App\Utils\Ninja;
 use App\Utils\Traits\MakesHash;
+use Illuminate\Http\Request;
 
 class SubscriptionController extends BaseController
 {

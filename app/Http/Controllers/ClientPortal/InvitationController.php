@@ -19,7 +19,6 @@ use App\Http\Controllers\Controller;
 use App\Utils\Ninja;
 use App\Utils\Traits\MakesDates;
 use App\Utils\Traits\MakesHash;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 

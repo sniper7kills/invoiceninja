@@ -20,8 +20,8 @@ use App\Services\PdfMaker\Designs\Utilities\DesignHelpers;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\MakesInvoiceHtml;
 use App\Utils\Traits\MakesTemplateData;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 use League\CommonMark\CommonMarkConverter;
 
 class TemplateEngine

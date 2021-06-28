@@ -11,7 +11,6 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\UpdateClientRequest;
 use App\Http\Requests\ClientPortal\UpdateContactRequest;

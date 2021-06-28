@@ -3,7 +3,6 @@
 use App\Http\Controllers\Contact;
 use Illuminate\Support\Facades\Route;
 
-
 /*
 |--------------------------------------------------------------------------
 | API Routes

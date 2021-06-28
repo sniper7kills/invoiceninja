@@ -11,13 +11,13 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Illuminate\Http\Request;
 use App\Factory\ClientContactFactory;
 use App\Factory\ClientFactory;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\RegisterRequest;
 use App\Models\Client;
 use App\Models\Company;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 

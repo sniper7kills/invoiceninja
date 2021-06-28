@@ -12,12 +12,12 @@
 
 namespace App\Http\Controllers\Traits;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\Traits\ConfirmWithPasswordVerifiesUserEmailRequest;
 use App\Models\User;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\UserSessionAttributes;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 /**

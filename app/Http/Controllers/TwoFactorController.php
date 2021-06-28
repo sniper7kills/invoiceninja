@@ -11,9 +11,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
 use App\Transformers\UserTransformer;
+use Illuminate\Http\Request;
 use PragmaRX\Google2FA\Google2FA;
 
 class TwoFactorController extends BaseController
