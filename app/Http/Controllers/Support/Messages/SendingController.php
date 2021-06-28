@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Support\Messages;
 
+use App\Http\Requests\Support\Messages\SendingRequest;
 use App\Http\Controllers\Controller;
 use App\Mail\SupportMessageSent;
 use Illuminate\Http\Request;
@@ -63,11 +64,8 @@ class SendingController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function __invoke(Request $request)
+    public function __invoke(SendingRequest $request)
     {
-        $request->validate([
-            'message' => ['required'],
-        ]);
 
         $send_logs = false;
 

@@ -12,6 +12,7 @@
 
 namespace App\Http\Controllers\Traits;
 
+use App\Http\Requests\Traits\ConfirmWithPasswordVerifiesUserEmailRequest;
 use App\Models\User;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\UserSessionAttributes;
@@ -60,13 +61,10 @@ trait VerifiesUserEmail
         ]);
     }
 
-    public function confirmWithPassword()
+    public function confirmWithPassword(ConfirmWithPasswordVerifiesUserEmailRequest $request)
     {
         $user = User::where('id', $this->decodePrimaryKey(request()->user_id))->firstOrFail();
 
-        request()->validate([
-            'password' => ['required', 'min:6'],
-        ]);
 
 
         $user->password = Hash::make(request()->password);
