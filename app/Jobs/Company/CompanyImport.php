@@ -1021,7 +1021,7 @@ class CompanyImport implements ShouldQueue
 
             $activity_invitation_key = false;
 
-            if ($class == 'App\Models\Activity') {
+            if ($class == \App\Models\Activity::class) {
                 if (isset($obj->invitation_id)) {
                     if (isset($obj->invoice_id)) {
                         $activity_invitation_key = 'invoice_invitations';
@@ -1036,7 +1036,7 @@ class CompanyImport implements ShouldQueue
             /* Transform old keys to new keys */
             foreach ($transforms as $transform) {
                 foreach ($transform as $key => $value) {
-                    if ($class == 'App\Models\Activity' && $activity_invitation_key && $key == 'invitations') {
+                    if ($class == \App\Models\Activity::class && $activity_invitation_key && $key == 'invitations') {
                         $key = $activity_invitation_key;
                     }
                     
@@ -1044,7 +1044,7 @@ class CompanyImport implements ShouldQueue
                 }
             }
 
-            if ($class == 'App\Models\CompanyGateway') {
+            if ($class == \App\Models\CompanyGateway::class) {
                 $obj_array['config'] = encrypt($obj_array['config']);
             }
 
@@ -1079,7 +1079,7 @@ class CompanyImport implements ShouldQueue
             }
             
             /* New to convert product ids from old hashes to new hashes*/
-            if ($class == 'App\Models\Subscription') {
+            if ($class == \App\Models\Subscription::class) {
                 $obj_array['product_ids'] = $this->recordProductIds($obj_array['product_ids']);
                 $obj_array['recurring_product_ids'] = $this->recordProductIds($obj_array['recurring_product_ids']);
             }
@@ -1120,7 +1120,7 @@ class CompanyImport implements ShouldQueue
             }
             
             /* New to convert product ids from old hashes to new hashes*/
-            if ($class == 'App\Models\Subscription') {
+            if ($class == \App\Models\Subscription::class) {
                 $obj_array['product_ids'] = $this->recordProductIds($obj_array['product_ids']);
                 $obj_array['recurring_product_ids'] = $this->recordProductIds($obj_array['recurring_product_ids']);
             }

@@ -31,7 +31,7 @@ trait Utilities
 
     public function getParent()
     {
-        return static::class == 'App\PaymentDrivers\CheckoutComPaymentDriver' ? $this : $this->checkout;
+        return static::class == \App\PaymentDrivers\CheckoutComPaymentDriver::class ? $this : $this->checkout;
     }
 
     public function convertToCheckoutAmount($amount, $currency)
