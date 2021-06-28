@@ -13,7 +13,7 @@ namespace App\Models\Presenters;
 
 use App\Utils\Traits\MakesHash;
 use Laracasts\Presenter\Presenter;
-use URL;
+use Illuminate\Support\Facades\URL;
 
 /**
  * Class EntityPresenter.

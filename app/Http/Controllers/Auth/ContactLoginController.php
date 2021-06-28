@@ -17,10 +17,10 @@ use App\Models\Account;
 use App\Models\ClientContact;
 use App\Models\Company;
 use App\Utils\Ninja;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Route;
+use Illuminate\Support\Facades\Route;
 
 class ContactLoginController extends Controller
 {

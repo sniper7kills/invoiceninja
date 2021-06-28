@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Libraries\MultiDB;
 use Closure;
-use Cookie;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Http\Request;
 
 class SetWebDb

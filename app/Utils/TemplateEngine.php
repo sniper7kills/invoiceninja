@@ -20,7 +20,7 @@ use App\Services\PdfMaker\Designs\Utilities\DesignHelpers;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\MakesInvoiceHtml;
 use App\Utils\Traits\MakesTemplateData;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use League\CommonMark\CommonMarkConverter;
 
