@@ -231,7 +231,7 @@ class PreviewController extends BaseController
 
         DB::connection(config('database.default'))->rollBack();
 
-        $response = Response::make($file_path, 200);
+        $response = response($file_path, 200);
         $response->header('Content-Type', 'application/pdf');
 
         return $response;
