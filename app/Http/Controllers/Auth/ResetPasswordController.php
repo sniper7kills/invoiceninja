@@ -96,6 +96,6 @@ class ResetPasswordController extends Controller
     {
         auth()->logout();
 
-        return redirect('/');
+        return redirect()->to('/');
     }
 }

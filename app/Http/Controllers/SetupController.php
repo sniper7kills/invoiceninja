@@ -47,7 +47,7 @@ class SetupController extends Controller
         $check = SystemHealth::check(false);
 
         if ($check['system_health'] == true && $check['simple_db_check'] && Schema::hasTable('accounts') && $account = Account::all()->first()) {
-            return redirect('/');
+            return redirect()->to('/');
         }
 
         // not sure if we really need this.
@@ -80,10 +80,7 @@ class SetupController extends Controller
                 throw new Exception($db['message']);
             }
         } catch (Exception $e) {
-            return response([
-                'message' => 'Oops, connection to database was not successful.',
-                'error' => $e->getMessage(),
-            ]);
+            return response(['message' => 'Oops, connection to database was not successful.', 'error' => $e->getMessage()]);
         }
 
         try {
@@ -95,10 +92,7 @@ class SetupController extends Controller
                 }
             }
         } catch (Exception $e) {
-            return response([
-                'message' => 'Oops, connection to mail server was not successful.',
-                'error' => $e->getMessage(),
-            ]);
+            return response(['message' => 'Oops, connection to mail server was not successful.', 'error' => $e->getMessage()]);
         }
 
         $mail_driver = $request->input('mail_driver');
@@ -169,7 +163,7 @@ class SetupController extends Controller
 
             $this->buildCache(true);
 
-            return redirect('/');
+            return redirect()->to('/');
         } catch (Exception $e) {
             nlog($e->getMessage());
             info($e->getMessage());
@@ -192,7 +186,7 @@ class SetupController extends Controller
             $status = SystemHealth::dbCheck($request);
 
             if (is_array($status) && $status['success'] === true) {
-                return response([], 200);
+                return response([]);
             }
 
             return response($status, 400);
@@ -215,7 +209,7 @@ class SetupController extends Controller
             $response = SystemHealth::testMailServer($request);
 
             if ($response['success']) {
-                return response([], 200);
+                return response([]);
             } else {
                 return response()->json(['message' => $response['message']], 400);
             }
@@ -246,7 +240,7 @@ class SetupController extends Controller
             Storage::disk(config('filesystems.default'))->put('test.pdf', $pdf);
             Storage::disk('local')->put('test.pdf', $pdf);
 
-            return response(['url' => Storage::disk('local')->url('test.pdf')], 200);
+            return response(['url' => Storage::disk('local')->url('test.pdf')]);
         } catch (Exception $e) {
             nlog($e->getMessage());
 
@@ -266,7 +260,7 @@ class SetupController extends Controller
             Storage::disk(config('filesystems.default'))->put('test.pdf', $pdf);
             Storage::disk('local')->put('test.pdf', $pdf);
 
-            return response(['url' => Storage::disk('local')->url('test.pdf')], 200);
+            return response(['url' => Storage::disk('local')->url('test.pdf')]);
         } catch (Exception $e) {
             return response([], 500);
         }
@@ -279,7 +273,7 @@ class SetupController extends Controller
     
         // if( Ninja::isNinja() || !request()->has('secret') || (request()->input('secret') != config('ninja.update_secret')) )
         if (!request()->has('secret') || (request()->input('secret') != config('ninja.update_secret'))) {
-            return redirect('/');
+            return redirect()->to('/');
         }
 
         $cacheCompiled = base_path('bootstrap/cache/compiled.php');
@@ -307,6 +301,6 @@ class SetupController extends Controller
 
         $this->buildCache(true);
 
-        return redirect('/');
+        return redirect()->to('/');
     }
 }

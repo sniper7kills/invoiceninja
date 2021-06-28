@@ -53,7 +53,7 @@ class ProfileController extends Controller
 
         // $request->user()->fresh();
 
-        return back()->withSuccess(
+        return redirect()->back()->withSuccess(
             ctrans('texts.profile_updated_successfully')
         );
     }
@@ -74,7 +74,7 @@ class ProfileController extends Controller
         $client->fill($request->all());
         $client->save();
 
-        return back()->withSuccess(
+        return redirect()->back()->withSuccess(
             ctrans('texts.profile_updated_successfully')
         );
     }

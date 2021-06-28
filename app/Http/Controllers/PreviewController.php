@@ -232,7 +232,7 @@ class PreviewController extends BaseController
 
         DB::connection(config('database.default'))->rollBack();
 
-        $response = response($file_path, 200);
+        $response = response($file_path);
         $response->header('Content-Type', 'application/pdf');
 
         return $response;

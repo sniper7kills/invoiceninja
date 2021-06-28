@@ -74,7 +74,7 @@ class QuoteController extends Controller
             return $this->approve((array) $transformed_ids, $request->has('process'));
         }
 
-        return back();
+        return redirect()->back();
     }
 
     protected function downloadQuotePdf(array $ids)

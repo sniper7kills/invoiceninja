@@ -131,7 +131,7 @@ class PaymentMethodController extends Controller
         } catch (Exception $e) {
             nlog($e->getMessage());
 
-            return back();
+            return redirect()->back();
         }
 
         return redirect()

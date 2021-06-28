@@ -391,7 +391,7 @@ class StripePaymentDriver extends BaseDriver
 
         // charge.failed, charge.refunded
 
-        return response([], 200);
+        return response([]);
     }
 
     public function tokenBilling(ClientGatewayToken $cgt, PaymentHash $payment_hash)

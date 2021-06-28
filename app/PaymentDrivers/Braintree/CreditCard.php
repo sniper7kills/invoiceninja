@@ -45,7 +45,7 @@ class CreditCard
 
     public function authorizeResponse($data): \Illuminate\Http\RedirectResponse
     {
-        return back();
+        return redirect()->back();
     }
 
     /**

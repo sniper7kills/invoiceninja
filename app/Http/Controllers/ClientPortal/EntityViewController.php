@@ -48,7 +48,7 @@ class EntityViewController extends Controller
         $entity = $invitation->{$entity_type};
 
         if (is_null($contact->password) || empty($contact->password)) {
-            return redirect("/client/password/reset?email={$contact->email}");
+            return redirect()->to("/client/password/reset?email={$contact->email}");
         }
 
         if ((bool) $invitation->contact->client->getSetting('enable_client_portal_password') !== false) {
@@ -117,6 +117,6 @@ class EntityViewController extends Controller
 
         $request->session()->flash('PASSWORD_FAILED', true);
 
-        return back();
+        return redirect()->back();
     }
 }

@@ -114,7 +114,7 @@ trait Utilities
     private function processPendingPayment(Payment $_payment)
     {
         try {
-            return redirect($_payment->_links['redirect']['href']);
+            return redirect()->to($_payment->_links['redirect']['href']);
         } catch (Exception $e) {
             return $this->processInternallyFailedPayment($this->getParent(), $e);
         }

@@ -33,6 +33,6 @@ class UploadController extends Controller
     {
         $this->saveDocuments($request->getFile(), $request->user()->client, true);
 
-        return response([], 200);
+        return response([]);
     }
 }

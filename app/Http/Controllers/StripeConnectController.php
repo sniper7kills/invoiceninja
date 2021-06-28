@@ -65,7 +65,7 @@ class StripeConnectController extends BaseController
         // $company_name = str_replace(" ", "_", $company->present()->name());
         // $endpoint .= "&stripe_user[business_name]={$company_name}";
 
-        return redirect($endpoint);
+        return redirect()->to($endpoint);
     }
 
     public function completed(InitializeStripeConnectRequest $request)

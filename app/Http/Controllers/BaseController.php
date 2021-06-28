@@ -729,7 +729,7 @@ class BaseController extends Controller
             return view('index.index', $data);
         }
 
-        return redirect('/setup');
+        return redirect()->to('/setup');
     }
 
     public function checkFeature(Request $request, $feature)

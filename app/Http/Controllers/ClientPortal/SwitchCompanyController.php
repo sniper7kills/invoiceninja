@@ -30,6 +30,6 @@ class SwitchCompanyController extends Controller
 
         Auth::guard('contact')->login($client_contact, true);
 
-        return redirect('/client/dashboard');
+        return redirect()->to('/client/dashboard');
     }
 }

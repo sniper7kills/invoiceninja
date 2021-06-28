@@ -546,6 +546,6 @@ class LoginController extends BaseController
             nlog('user not found for oauth');
         }
 
-        return redirect('/#/');
+        return redirect()->to('/#/');
     }
 }

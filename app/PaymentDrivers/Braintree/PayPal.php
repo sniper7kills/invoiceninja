@@ -36,7 +36,7 @@ class PayPal
 
     public function authorizeResponse($data): \Illuminate\Http\RedirectResponse
     {
-        return back();
+        return redirect()->back();
     }
 
     /**

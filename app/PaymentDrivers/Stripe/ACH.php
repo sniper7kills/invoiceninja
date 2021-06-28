@@ -117,7 +117,7 @@ class ACH
                 ->route('client.payment_methods.show', $token->hashed_id)
                 ->with('message', __('texts.payment_method_verified'));
         } catch (CardException $e) {
-            return back()->with('error', $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 

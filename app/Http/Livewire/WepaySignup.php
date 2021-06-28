@@ -188,7 +188,7 @@ class WepaySignup extends Component
                     'redirect_uri' => config('ninja.app_url'),
                 ]);
 
-            return redirect($update_uri->uri);
+            return redirect()->to($update_uri->uri);
         }
 
 
