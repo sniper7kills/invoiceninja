@@ -33,7 +33,9 @@ class ShowTemplateRequest extends Request
     public function rules()
     {
         return [
-            'template' => 'sometimes',
+            'template' => [
+                'sometimes',
+            ],
         ];
     }
 

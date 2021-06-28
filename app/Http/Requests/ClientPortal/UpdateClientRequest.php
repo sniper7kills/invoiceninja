@@ -31,8 +31,16 @@ class UpdateClientRequest extends Request
     public function rules()
     {
         return [
-            'name' => 'sometimes|required',
-            'file' => 'sometimes|nullable|max:100000|mimes:png,svg,jpeg,gif,jpg,bmp',
+            'name' => [
+                'sometimes',
+                'required',
+            ],
+            'file' => [
+                'sometimes',
+                'nullable',
+                'max:100000',
+                'mimes:png,svg,jpeg,gif,jpg,bmp',
+            ],
         ];
     }
 }

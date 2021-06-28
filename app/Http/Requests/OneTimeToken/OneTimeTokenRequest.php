@@ -33,7 +33,9 @@ class OneTimeTokenRequest extends Request
     public function rules()
     {
         return [
-            'context' => 'required',
+            'context' => [
+                'required',
+            ],
         ];
     }
 

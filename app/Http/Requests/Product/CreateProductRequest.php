@@ -29,7 +29,9 @@ class CreateProductRequest extends Request
     public function rules() : array
     {
         return [
-            'product_key' => 'required',
+            'product_key' => [
+                'required',
+            ],
         ];
     }
 }

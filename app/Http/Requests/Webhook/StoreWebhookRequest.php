@@ -28,8 +28,13 @@ class StoreWebhookRequest extends Request
     public function rules()
     {
         return [
-            'target_url' => 'required|url',
-            'event_id' => 'required',
+            'target_url' => [
+                'required',
+                'url',
+            ],
+            'event_id' => [
+                'required',
+            ],
         ];
     }
 

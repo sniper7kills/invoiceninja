@@ -25,8 +25,12 @@ class PaymentResponseRequest extends FormRequest
     public function rules()
     {
         return [
-            'company_gateway_id' => 'required',
-            'payment_hash' => 'required',
+            'company_gateway_id' => [
+                'required',
+            ],
+            'payment_hash' => [
+                'required',
+            ],
         ];
     }
 

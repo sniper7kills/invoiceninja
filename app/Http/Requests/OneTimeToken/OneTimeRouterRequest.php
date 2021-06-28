@@ -33,7 +33,9 @@ class OneTimeRouterRequest extends Request
     public function rules()
     {
         return [
-            'hash' => 'required',
+            'hash' => [
+                'required',
+            ],
         ];
     }
 

@@ -36,11 +36,21 @@ class SendEmailRequest extends Request
     public function rules()
     {
         return [
-            'template' => 'required',
-            'entity' => 'required',
-            'entity_id' => 'required',
-            'subject' => 'required',
-            'body' => 'required',
+            'template' => [
+                'required',
+            ],
+            'entity' => [
+                'required',
+            ],
+            'entity_id' => [
+                'required',
+            ],
+            'subject' => [
+                'required',
+            ],
+            'body' => [
+                'required',
+            ],
         ];
     }
 
