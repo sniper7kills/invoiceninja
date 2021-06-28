@@ -11,7 +11,6 @@
 
 namespace App\Utils\Traits;
 
-use App\Designs\Designer;
 use Exception;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Blade;
@@ -25,7 +24,6 @@ use Throwable;
  */
 trait MakesInvoiceHtml
 {
-
     private function parseLabelsAndValues($labels, $values, $section) :string
     {
         $section = strtr($section, $labels);

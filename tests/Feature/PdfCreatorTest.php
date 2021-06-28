@@ -48,7 +48,7 @@ class PdfCreatorTest extends TestCase
         $invoice_path = CreateEntityPdf::dispatchNow($this->invoice->invitations->first());
 
         $this->assertTrue(Storage::disk('public')->exists($invoice_path));
-        }
+    }
 
     public function testQuotePdfCreated()
     {

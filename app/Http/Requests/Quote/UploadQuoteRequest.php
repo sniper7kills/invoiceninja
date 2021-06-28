@@ -27,13 +27,12 @@ class UploadQuoteRequest extends Request
 
     public function rules()
     {
+        $rules = [];
 
-    	$rules = [];
-
-		if($this->input('documents'))
+        if ($this->input('documents')) {
             $rules['documents'] = 'file|mimes:html,csv,png,ai,svg,jpeg,tiff,pdf,gif,psd,txt,doc,xls,ppt,xlsx,docx,pptx|max:2000000';
+        }
 
-    	return $rules;
-
+        return $rules;
     }
 }

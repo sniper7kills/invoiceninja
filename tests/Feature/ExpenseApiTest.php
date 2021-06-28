@@ -69,14 +69,14 @@ class ExpenseApiTest extends TestCase
                 'X-API-TOKEN' => $this->token,
             ])->post('/api/v1/expenses', $data);
 
-        $response->assertStatus(200);   
+        $response->assertStatus(200);
 
         $response = $this->withHeaders([
                 'X-API-SECRET' => config('ninja.api_secret'),
                 'X-API-TOKEN' => $this->token,
             ])->post('/api/v1/expenses', $data);
 
-        $response->assertStatus(302);       
+        $response->assertStatus(302);
     }
 
 
@@ -107,8 +107,6 @@ class ExpenseApiTest extends TestCase
         ])->post('/api/v1/expenses/', $data);
 
         $response->assertStatus(302);
-
-
     }
 
     public function testExpenseGet()

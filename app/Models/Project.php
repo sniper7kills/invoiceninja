@@ -77,5 +77,4 @@ class Project extends BaseModel
     {
         return $this->hasMany(Task::class);
     }
-    
 }

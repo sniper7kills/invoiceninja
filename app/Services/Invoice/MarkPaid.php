@@ -15,7 +15,6 @@ use App\Events\Invoice\InvoiceWasPaid;
 use App\Events\Payment\PaymentWasCreated;
 use App\Factory\PaymentFactory;
 use App\Jobs\Invoice\InvoiceWorkflowSettings;
-use App\Jobs\Payment\EmailPayment;
 use App\Libraries\Currency\Conversion\CurrencyApi;
 use App\Models\Invoice;
 use App\Models\Payment;
@@ -82,8 +81,9 @@ class MarkPaid extends AbstractService
                 ->deletePdf()
                 ->save();
 
-        if ($this->invoice->client->getSetting('client_manual_payment_notification')) 
+        if ($this->invoice->client->getSetting('client_manual_payment_notification')) {
             $payment->service()->sendEmail();
+        }
         
         /* Update Invoice balance */
         event(new PaymentWasCreated($payment, $payment->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
@@ -104,12 +104,10 @@ class MarkPaid extends AbstractService
 
     private function setExchangeRate(Payment $payment)
     {
-
         $client_currency = $payment->client->getSetting('currency_id');
         $company_currency = $payment->client->company->settings->currency_id;
 
         if ($company_currency != $client_currency) {
-
             $exchange_rate = new CurrencyApi();
 
             $payment->exchange_rate = $exchange_rate->exchangeRate($client_currency, $company_currency, Carbon::parse($payment->date));
@@ -117,8 +115,6 @@ class MarkPaid extends AbstractService
             $payment->exchange_currency_id = $company_currency;
         
             $payment->save();
-
         }
-
     }
 }

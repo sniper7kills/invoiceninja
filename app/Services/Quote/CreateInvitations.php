@@ -11,7 +11,6 @@
 
 namespace App\Services\Quote;
 
-use App\Factory\ClientContactFactory;
 use App\Factory\QuoteInvitationFactory;
 use App\Models\Quote;
 use App\Models\QuoteInvitation;
@@ -28,17 +27,16 @@ class CreateInvitations
 
     public function run()
     {
+        $contacts = $this->quote->client->contacts;
 
-       $contacts = $this->quote->client->contacts;
-
-        if($contacts->count() == 0){
+        if ($contacts->count() == 0) {
             $this->createBlankContact();
 
             $this->quote->refresh();
             $contacts = $this->quote->client->contacts;
         }
 
-        $contacts->each(function ($contact){
+        $contacts->each(function ($contact) {
             $invitation = QuoteInvitation::whereCompanyId($this->quote->company_id)
                 ->whereClientContactId($contact->id)
                 ->whereQuoteId($this->quote->id)
@@ -66,5 +64,4 @@ class CreateInvitations
         $new_contact->is_primary = true;
         $new_contact->save();
     }
-
 }

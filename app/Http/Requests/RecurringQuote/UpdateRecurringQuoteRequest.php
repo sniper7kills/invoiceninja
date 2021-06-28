@@ -48,8 +48,9 @@ class UpdateRecurringQuoteRequest extends Request
 
         $input['line_items'] = isset($input['line_items']) ? $this->cleanItems($input['line_items']) : [];
 
-        if($this->number)
+        if ($this->number) {
             $rules['number'] = Rule::unique('recurring_quotes')->where('company_id', auth()->user()->company()->id)->ignore($this->recurring_quote->id);
+        }
 
         $this->replace($input);
     }

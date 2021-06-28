@@ -47,7 +47,6 @@ class ContactLoginController extends Controller
         $account = Account::find($account_id);
 
         return $this->render('auth.login', ['account' => $account, 'company' => $company]);
-
     }
 
     public function login(Request $request)

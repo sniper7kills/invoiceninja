@@ -33,7 +33,6 @@ use App\Models\Invoice;
 use App\Repositories\CreditRepository;
 use App\Transformers\CreditTransformer;
 use App\Utils\Ninja;
-use App\Utils\TempFile;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\SavesDocuments;
 use Illuminate\Http\Response;
@@ -535,7 +534,7 @@ class CreditController extends BaseController
                     return $this->itemResponse($credit);
                 }
                 break;
-            case 'download':    
+            case 'download':
                 $file = $credit->pdf_file_path();
                 return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
               break;
@@ -643,15 +642,14 @@ class CreditController extends BaseController
      */
     public function upload(UploadCreditRequest $request, Credit $credit)
     {
-
-        if(!$this->checkFeature(Account::FEATURE_DOCUMENTS))
+        if (!$this->checkFeature(Account::FEATURE_DOCUMENTS)) {
             return $this->featureFailure();
+        }
         
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->file('documents'), $credit);
+        }
 
         return $this->itemResponse($credit->fresh());
-
     }
-
 }

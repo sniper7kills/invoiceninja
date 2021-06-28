@@ -11,12 +11,8 @@
 
 namespace App\Http\Requests\ClientGatewayToken;
 
-use App\DataMapper\CompanySettings;
 use App\Http\Requests\Request;
-use App\Http\ValidationRules\ValidClientGroupSettingsRule;
-use App\Utils\Traits\ChecksEntityStatus;
 use App\Utils\Traits\MakesHash;
-use Illuminate\Validation\Rule;
 
 class UpdateClientGatewayTokenRequest extends Request
 {
@@ -52,5 +48,4 @@ class UpdateClientGatewayTokenRequest extends Request
 
         $this->replace($input);
     }
-
 }

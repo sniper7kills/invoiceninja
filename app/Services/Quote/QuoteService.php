@@ -114,7 +114,6 @@ class QuoteService
                  ->createInvitations()
                  ->deletePdf()
                  ->save();
-
         }
 
 
@@ -157,31 +156,34 @@ class QuoteService
     {
         $settings = $this->quote->client->getMergedSettings();
 
-        if (! $this->quote->design_id) 
+        if (! $this->quote->design_id) {
             $this->quote->design_id = $this->decodePrimaryKey($settings->quote_design_id);
+        }
             
-        if (!isset($this->quote->footer)) 
+        if (!isset($this->quote->footer)) {
             $this->quote->footer = $settings->quote_footer;
+        }
         
-        if (!isset($this->quote->terms)) 
+        if (!isset($this->quote->terms)) {
             $this->quote->terms = $settings->quote_terms;
+        }
         
         /* If client currency differs from the company default currency, then insert the client exchange rate on the model.*/
-        if(!isset($this->quote->exchange_rate) && $this->quote->client->currency()->id != (int) $this->quote->company->settings->currency_id)
+        if (!isset($this->quote->exchange_rate) && $this->quote->client->currency()->id != (int) $this->quote->company->settings->currency_id) {
             $this->quote->exchange_rate = $this->quote->client->currency()->exchange_rate;
+        }
 
-        if (!isset($this->quote->public_notes)) 
+        if (!isset($this->quote->public_notes)) {
             $this->quote->public_notes = $this->quote->client->public_notes;
+        }
         
         return $this;
     }
 
     public function deletePdf()
     {
-        $this->quote->invitations->each(function ($invitation){
-
+        $this->quote->invitations->each(function ($invitation) {
             UnlinkFile::dispatchNow(config('filesystems.default'), $this->quote->client->quote_filepath($invitation) . $this->quote->numberFormatter().'.pdf');
-
         });
 
         return $this;

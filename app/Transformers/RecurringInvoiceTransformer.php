@@ -17,8 +17,6 @@ use App\Models\Document;
 use App\Models\Invoice;
 use App\Models\RecurringInvoice;
 use App\Models\RecurringInvoiceInvitation;
-use App\Transformers\ActivityTransformer;
-use App\Transformers\InvoiceHistoryTransformer;
 use App\Utils\Traits\MakesHash;
 
 class RecurringInvoiceTransformer extends EntityTransformer
@@ -80,7 +78,7 @@ class RecurringInvoiceTransformer extends EntityTransformer
         $transformer = new ActivityTransformer($this->serializer);
 
         return $this->includeCollection($invoice->activities, $transformer, Activity::class);
-    }   
+    }
 
     public function includeInvitations(RecurringInvoice $invoice)
     {

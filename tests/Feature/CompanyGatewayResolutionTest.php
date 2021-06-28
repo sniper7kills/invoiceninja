@@ -184,6 +184,5 @@ class CompanyGatewayResolutionTest extends TestCase
         // nlog($this->client->service()->getPaymentMethods($amount));
 
         $this->assertEquals(2, count($this->client->service()->getPaymentMethods($amount)));
-
     }
 }

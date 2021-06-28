@@ -62,7 +62,8 @@ class DbQuery extends GenericMixedMetric
 
     public $double_metric2 = 1;
 
-    public function __construct($string_metric5, $string_metric6, $int_metric1, $double_metric2, $string_metric7) {
+    public function __construct($string_metric5, $string_metric6, $int_metric1, $double_metric2, $string_metric7)
+    {
         $this->int_metric1 = $int_metric1;
         $this->string_metric5 = $string_metric5;
         $this->string_metric6 = $string_metric6;

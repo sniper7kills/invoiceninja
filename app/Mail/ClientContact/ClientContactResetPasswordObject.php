@@ -13,7 +13,6 @@ namespace App\Mail\ClientContact;
 
 class ClientContactResetPasswordObject
 {
-
     public $client_contact;
 
     public $token;
@@ -31,7 +30,6 @@ class ClientContactResetPasswordObject
 
     public function build()
     {
-
         $data = [
             'title' => ctrans('texts.your_password_reset_link'),
             'content' => ctrans('texts.reset_password'),

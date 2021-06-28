@@ -249,7 +249,8 @@ class CheckoutComPaymentDriver extends BaseDriver
                 $this->unWindGatewayFees($payment_hash);
 
                 PaymentFailureMailer::dispatch(
-                    $this->client, $response->response_summary,
+                    $this->client,
+                    $response->response_summary,
                     $this->client->company,
                     $amount
                 );

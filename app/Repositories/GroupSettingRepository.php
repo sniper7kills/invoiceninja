@@ -18,7 +18,6 @@ class GroupSettingRepository extends BaseRepository
 {
     public function save($data, GroupSetting $group_setting) :?GroupSetting
     {
-
         $group_setting->fill($data);
         $group_setting->save();
 
@@ -31,7 +30,7 @@ class GroupSettingRepository extends BaseRepository
 
         nlog($data['settings']);
 
-        if(count((array)$data['settings']) == 0){
+        if (count((array)$data['settings']) == 0) {
             $settings = new \stdClass;
             $settings->entity = Client::class;
             $group_setting->settings = $settings;

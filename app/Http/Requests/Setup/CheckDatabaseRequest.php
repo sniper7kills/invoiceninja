@@ -33,15 +33,15 @@ class CheckDatabaseRequest extends Request
      */
     public function rules()
     {
-		if ( config( 'ninja.preconfigured_install' ) ) {
-			return [];
-		}
+        if (config('ninja.preconfigured_install')) {
+            return [];
+        }
 
-		return [
-			'db_host'     => [ 'required' ],
-			'db_port'     => [ 'required' ],
-			'db_database' => [ 'required' ],
-			'db_username' => [ 'required' ],
-		];
-	}
+        return [
+            'db_host'     => [ 'required' ],
+            'db_port'     => [ 'required' ],
+            'db_database' => [ 'required' ],
+            'db_username' => [ 'required' ],
+        ];
+    }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\ClientPortal\Subscriptions;
 
-use App\Models\Subscription;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Foundation\Http\FormRequest;
 

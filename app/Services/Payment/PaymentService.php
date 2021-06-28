@@ -59,16 +59,13 @@ class PaymentService
         $client = $this->payment->client;
 
         $invoices->each(function ($invoice) {
-            
             if ($invoice->pivot->amount > 0) {
-
                 $invoice->service()
                         ->updateBalance($invoice->pivot->amount)
                         ->updatePaidToDate($invoice->pivot->amount*-1)
                         ->setStatus(Invoice::STATUS_SENT)
                         ->save();
             }
-
         });
 
         $this->payment
@@ -109,7 +106,6 @@ class PaymentService
     {
         /* Iterate through the invoices and apply credits to them */
         collect($payment_hash->invoices())->each(function ($payable_invoice) use ($payment_hash) {
-
             $invoice = Invoice::find($this->decodePrimaryKey($payable_invoice->invoice_id));
             
             $amount = $payable_invoice->amount;
@@ -139,7 +135,7 @@ class PaymentService
             }
         });
 
-        return $this; 
+        return $this;
     }
 
     public function save()

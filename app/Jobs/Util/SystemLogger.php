@@ -49,8 +49,9 @@ class SystemLogger implements ShouldQueue
 
     public function handle() :void
     {
-        if(!$this->company)
+        if (!$this->company) {
             return;
+        }
 
         MultiDB::setDb($this->company->db);
 
@@ -67,8 +68,9 @@ class SystemLogger implements ShouldQueue
             'type_id' => $this->type_id,
         ];
 
-        if(!$this->log)
+        if (!$this->log) {
             return;
+        }
 
         SystemLog::create($sl);
     }

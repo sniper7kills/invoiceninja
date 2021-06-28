@@ -45,7 +45,7 @@ class CreditEmailedNotification implements ShouldQueue
         $credit->save();
 
         $nmo = new NinjaMailerObject;
-        $nmo->mailable = new NinjaMailer( (new EntitySentObject($event->invitation, 'credit', $event->template))->build() );
+        $nmo->mailable = new NinjaMailer((new EntitySentObject($event->invitation, 'credit', $event->template))->build());
         $nmo->company = $credit->company;
         $nmo->settings = $credit->company->settings;
 

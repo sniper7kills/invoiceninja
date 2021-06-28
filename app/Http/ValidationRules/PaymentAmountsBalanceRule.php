@@ -69,7 +69,7 @@ class PaymentAmountsBalanceRule implements Rule
             }
         } else {
             return true;
-        } 
+        }
         
 
         return  $payment_amounts >= $invoice_amounts;

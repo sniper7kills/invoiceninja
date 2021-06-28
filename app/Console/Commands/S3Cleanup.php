@@ -39,7 +39,6 @@ class S3Cleanup extends Command
      */
     public function handle()
     {
-
         $c1 = Company::on('db-ninja-01')->pluck('company_key');
         $c2 = Company::on('db-ninja-02')->pluck('company_key');
 
@@ -49,17 +48,14 @@ class S3Cleanup extends Command
 
         $this->LogMessage("Disk Cleanup");
 
-            foreach($directories as $dir)
-            {
-                if(!in_array($dir, $merged))
-                {
-                    $this->logMessage("Deleting $dir");
-                    Storage::disk(config('filesystems.default'))->deleteDirectory($dir);
-                }
-            }        
+        foreach ($directories as $dir) {
+            if (!in_array($dir, $merged)) {
+                $this->logMessage("Deleting $dir");
+                Storage::disk(config('filesystems.default'))->deleteDirectory($dir);
+            }
+        }
 
         $this->logMessage("exiting");
-
     }
 
     private function logMessage($str)

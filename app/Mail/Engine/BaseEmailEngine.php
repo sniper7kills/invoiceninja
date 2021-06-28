@@ -155,4 +155,3 @@ class BaseEmailEngine implements EngineInterface
         return $this->invitation;
     }
 }
-

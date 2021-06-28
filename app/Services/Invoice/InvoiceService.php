@@ -13,7 +13,6 @@ namespace App\Services\Invoice;
 
 use App\Jobs\Entity\CreateEntityPdf;
 use App\Jobs\Invoice\InvoiceWorkflowSettings;
-use App\Jobs\Util\UnlinkFile;
 use App\Libraries\Currency\Conversion\CurrencyApi;
 use App\Models\CompanyGateway;
 use App\Models\Expense;
@@ -21,7 +20,6 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Task;
 use App\Services\Client\ClientService;
-use App\Services\Invoice\UpdateReminder;
 use App\Utils\Ninja;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Support\Carbon;
@@ -71,12 +69,10 @@ class InvoiceService
      */
     public function setExchangeRate()
     {
-
         $client_currency = $this->invoice->client->getSetting('currency_id');
         $company_currency = $this->invoice->company->settings->currency_id;
 
         if ($company_currency != $client_currency) {
-
             $exchange_rate = new CurrencyApi();
 
             $this->invoice->exchange_rate = $exchange_rate->exchangeRate($client_currency, $company_currency, now());
@@ -112,7 +108,6 @@ class InvoiceService
 
     public function addGatewayFee(CompanyGateway $company_gateway, $gateway_type_id, float $amount)
     {
-
         $this->invoice = (new AddGatewayFee($company_gateway, $gateway_type_id, $this->invoice, $amount))->run();
 
         return $this;
@@ -274,7 +269,6 @@ class InvoiceService
     public function updateStatus()
     {
         if ((int)$this->invoice->balance == 0) {
-            
             InvoiceWorkflowSettings::dispatchNow($this->invoice);
 
             $this->setStatus(Invoice::STATUS_PAID);
@@ -307,14 +301,12 @@ class InvoiceService
 
     public function deletePdf()
     {
-        $this->invoice->invitations->each(function ($invitation){
-
+        $this->invoice->invitations->each(function ($invitation) {
             Storage::disk(config('filesystems.default'))->delete($this->invoice->client->invoice_filepath($invitation) . $this->invoice->numberFormatter().'.pdf');
             
-            if(Ninja::isHosted()) {
+            if (Ninja::isHosted()) {
                 Storage::disk('public')->delete($this->invoice->client->invoice_filepath($invitation) . $this->invoice->numberFormatter().'.pdf');
             }
-
         });
 
         return $this;
@@ -356,8 +348,7 @@ class InvoiceService
      */
     public function touchPdf($force = false)
     {
-        if($force){
-
+        if ($force) {
             $this->invoice->invitations->each(function ($invitation) {
                 CreateEntityPdf::dispatchNow($invitation);
             });
@@ -434,21 +425,26 @@ class InvoiceService
     {
         $settings = $this->invoice->client->getMergedSettings();
 
-        if (! $this->invoice->design_id) 
+        if (! $this->invoice->design_id) {
             $this->invoice->design_id = $this->decodePrimaryKey($settings->invoice_design_id);
+        }
         
-        if (!isset($this->invoice->footer)) 
+        if (!isset($this->invoice->footer)) {
             $this->invoice->footer = $settings->invoice_footer;
+        }
 
-        if (!isset($this->invoice->terms)) 
+        if (!isset($this->invoice->terms)) {
             $this->invoice->terms = $settings->invoice_terms;
+        }
 
-        if (!isset($this->invoice->public_notes)) 
+        if (!isset($this->invoice->public_notes)) {
             $this->invoice->public_notes = $this->invoice->client->public_notes;
+        }
         
         /* If client currency differs from the company default currency, then insert the client exchange rate on the model.*/
-        if(!isset($this->invoice->exchange_rate) && $this->invoice->client->currency()->id != (int) $this->invoice->company->settings->currency_id)
+        if (!isset($this->invoice->exchange_rate) && $this->invoice->client->currency()->id != (int) $this->invoice->company->settings->currency_id) {
             $this->invoice->exchange_rate = $this->invoice->client->currency()->exchange_rate;
+        }
 
         return $this;
     }

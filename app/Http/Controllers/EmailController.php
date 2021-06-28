@@ -13,10 +13,8 @@ namespace App\Http\Controllers;
 
 use App\Events\Credit\CreditWasEmailed;
 use App\Events\Quote\QuoteWasEmailed;
-use App\Http\Middleware\UserVerified;
 use App\Http\Requests\Email\SendEmailRequest;
 use App\Jobs\Entity\EmailEntity;
-use App\Jobs\Mail\EntitySentMailer;
 use App\Models\Credit;
 use App\Models\Invoice;
 use App\Models\Quote;
@@ -126,16 +124,12 @@ class EmailController extends BaseController
         ];
 
         $entity_obj->invitations->each(function ($invitation) use ($data, $entity_string, $entity_obj, $template) {
-
             if ($invitation->contact->send_email && $invitation->contact->email) {
-                
                 $entity_obj->service()->markSent()->save();
 
                 EmailEntity::dispatch($invitation->fresh(), $invitation->company, $template, $data)
                             ->delay(now()->addSeconds(30));
-                
             }
-
         });
 
         $entity_obj->last_sent_date = now();
@@ -147,27 +141,27 @@ class EmailController extends BaseController
             $this->entity_type = Invoice::class;
             $this->entity_transformer = InvoiceTransformer::class;
 
-            if ($entity_obj->invitations->count() >= 1) 
+            if ($entity_obj->invitations->count() >= 1) {
                 $entity_obj->entityEmailEvent($entity_obj->invitations->first(), 'invoice', $template);
-            
+            }
         }
 
         if ($entity_obj instanceof Quote) {
             $this->entity_type = Quote::class;
             $this->entity_transformer = QuoteTransformer::class;
 
-            if ($entity_obj->invitations->count() >= 1) 
+            if ($entity_obj->invitations->count() >= 1) {
                 event(new QuoteWasEmailed($entity_obj->invitations->first(), $entity_obj->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null), 'quote'));
-            
+            }
         }
 
         if ($entity_obj instanceof Credit) {
             $this->entity_type = Credit::class;
             $this->entity_transformer = CreditTransformer::class;
 
-            if ($entity_obj->invitations->count() >= 1) 
+            if ($entity_obj->invitations->count() >= 1) {
                 event(new CreditWasEmailed($entity_obj->invitations->first(), $entity_obj->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null), 'credit'));
-            
+            }
         }
 
         if ($entity_obj instanceof RecurringInvoice) {

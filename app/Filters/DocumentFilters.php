@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class DocumentFilters extends QueryFilters
 {
-
     public function client_id(int $client_id) :Builder
     {
         return $this->builder->where('client_id', $client_id);

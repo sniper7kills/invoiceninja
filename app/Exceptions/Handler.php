@@ -11,9 +11,6 @@
 
 namespace App\Exceptions;
 
-use App\Exceptions\FilePermissionsFailure;
-use App\Exceptions\InternalPDFFailure;
-use App\Exceptions\PhantomPDFFailure;
 use App\Utils\Ninja;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -77,28 +74,25 @@ class Handler extends ExceptionHandler
             return;
         }
 
-        if(Ninja::isHosted() && !($exception instanceof ValidationException)){
-
+        if (Ninja::isHosted() && !($exception instanceof ValidationException)) {
             app('sentry')->configureScope(function (Scope $scope): void {
-
-                if(auth()->guard('contact') && auth()->guard('contact')->user())
+                if (auth()->guard('contact') && auth()->guard('contact')->user()) {
                     $key = auth()->guard('contact')->user()->company->account->key;
-                elseif (auth()->guard('user') && auth()->guard('user')->user()) 
+                } elseif (auth()->guard('user') && auth()->guard('user')->user()) {
                     $key = auth()->user()->account->key;
-                else
+                } else {
                     $key = 'Anonymous';
+                }
                 
-                 $scope->setUser([
+                $scope->setUser([
                         'id'    => 'Hosted_User',
                         'email' => 'hosted@invoiceninja.com',
                         'name'  => $key,
                     ]);
             });
 
-                app('sentry')->captureException($exception);
-
-        }
-        elseif (app()->bound('sentry') && $this->shouldReport($exception)) {
+            app('sentry')->captureException($exception);
+        } elseif (app()->bound('sentry') && $this->shouldReport($exception)) {
             app('sentry')->configureScope(function (Scope $scope): void {
                 if (auth()->guard('contact') && auth()->guard('contact')->user() && auth()->guard('contact')->user()->company->account->report_errors) {
                     $scope->setUser([
@@ -121,29 +115,34 @@ class Handler extends ExceptionHandler
         }
 
         // if(config('ninja.expanded_logging'))
-            parent::report($exception);
-
+        parent::report($exception);
     }
 
     private function validException($exception)
     {
-        if (strpos($exception->getMessage(), 'file_put_contents') !== false) 
+        if (strpos($exception->getMessage(), 'file_put_contents') !== false) {
             return false;
+        }
 
-        if (strpos($exception->getMessage(), 'Permission denied') !== false) 
+        if (strpos($exception->getMessage(), 'Permission denied') !== false) {
             return false;
+        }
         
-        if (strpos($exception->getMessage(), 'flock') !== false) 
+        if (strpos($exception->getMessage(), 'flock') !== false) {
             return false;
+        }
 
-        if (strpos($exception->getMessage(), 'expects parameter 1 to be resource') !== false) 
+        if (strpos($exception->getMessage(), 'expects parameter 1 to be resource') !== false) {
             return false;
+        }
 
-        if (strpos($exception->getMessage(), 'fwrite()') !== false)
+        if (strpos($exception->getMessage(), 'fwrite()') !== false) {
             return false;
+        }
         
-        if(strpos($exception->getMessage(), 'LockableFile') !== false)
+        if (strpos($exception->getMessage(), 'LockableFile') !== false) {
             return false;
+        }
 
         return true;
     }
@@ -160,11 +159,11 @@ class Handler extends ExceptionHandler
     {
         if ($exception instanceof ModelNotFoundException && $request->expectsJson()) {
             return response()->json(['message'=>$exception->getMessage()], 400);
-        }elseif($exception instanceof InternalPDFFailure && $request->expectsJson()){
+        } elseif ($exception instanceof InternalPDFFailure && $request->expectsJson()) {
             return response()->json(['message' => $exception->getMessage()], 500);
-        }elseif($exception instanceof PhantomPDFFailure && $request->expectsJson()){
+        } elseif ($exception instanceof PhantomPDFFailure && $request->expectsJson()) {
             return response()->json(['message' => $exception->getMessage()], 500);
-        }elseif($exception instanceof FilePermissionsFailure) {
+        } elseif ($exception instanceof FilePermissionsFailure) {
             return response()->json(['message' => $exception->getMessage()], 500);
         } elseif ($exception instanceof ThrottleRequestsException && $request->expectsJson()) {
             return response()->json(['message'=>'Too many requests'], 429);
@@ -192,7 +191,7 @@ class Handler extends ExceptionHandler
             return response()->json(['message' => $exception->getMessage()], 400);
         } elseif ($exception instanceof GenericPaymentDriverFailure) {
             $data['message'] = $exception->getMessage();
-        } 
+        }
 
         return parent::render($request, $exception);
     }

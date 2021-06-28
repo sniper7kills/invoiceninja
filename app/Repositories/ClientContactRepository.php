@@ -60,8 +60,9 @@ class ClientContactRepository extends BaseRepository
             }
 
             /* We need to set NULL email addresses to blank strings to pass authentication*/
-            if(array_key_exists('email', $contact) && is_null($contact['email']))
+            if (array_key_exists('email', $contact) && is_null($contact['email'])) {
                 $contact['email'] = '';
+            }
 
             $update_contact->fill($contact);
 

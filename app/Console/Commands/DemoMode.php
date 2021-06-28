@@ -311,13 +311,10 @@ class DemoMode extends Command
                 'company_id' => $client->company_id,
             ]);
 
-        Expense::all()->each(function ($expense){
-
+        Expense::all()->each(function ($expense) {
             $expense->number = $this->getNextExpenseNumber($expense);
             $expense->save();
-
         });
-        
     }
 
     private function createVendor($client, $assigned_user_id = null)
@@ -358,7 +355,6 @@ class DemoMode extends Command
 
         $task->number = $this->getNextTaskNumber($task);
         $task->save();
-
     }
 
     private function createProject($client, $assigned_user_id = null)

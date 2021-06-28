@@ -13,7 +13,6 @@
 namespace App\PaymentDrivers\Stripe;
 
 use App\Exceptions\PaymentFailed;
-use App\Http\Requests\ClientPortal\PaymentMethod\VerifyPaymentMethodRequest;
 use App\Http\Requests\Request;
 use App\Jobs\Mail\NinjaMailerJob;
 use App\Jobs\Mail\NinjaMailerObject;
@@ -136,7 +135,6 @@ class ACH
 
     public function paymentResponse($request)
     {
-
         $this->stripe->init();
 
         $source = ClientGatewayToken::query()
@@ -217,7 +215,6 @@ class ACH
 
     public function processUnsuccessfulPayment($state)
     {
-
         PaymentFailureMailer::dispatch(
             $this->stripe->client,
             $state['charge'],

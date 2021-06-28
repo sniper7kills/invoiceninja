@@ -214,7 +214,6 @@ class SendReminders implements ShouldQueue
                 nlog("firing email");
 
                 EmailEntity::dispatchNow($invitation, $invitation->company, $template);
-                
             }
         });
 

@@ -56,7 +56,6 @@ class InvoiceBalanceSanity implements Rule
      */
     private function checkIfInvoiceBalanceIsSane() : bool
     {
-
         DB::connection(config('database.default'))->beginTransaction();
 
         $this->invoice = Invoice::on(config('database.default'))->find($this->invoice->id);
@@ -65,13 +64,12 @@ class InvoiceBalanceSanity implements Rule
  
         DB::connection(config('database.default'))->rollBack();
 
-        if($temp_invoice->balance < 0){
+        if ($temp_invoice->balance < 0) {
             $this->message = 'Invoice balance cannot go negative';
             return false;
         }
 
 
-       return true;
-
+        return true;
     }
 }

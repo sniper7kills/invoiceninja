@@ -221,6 +221,4 @@ class InvoiceTest extends TestCase
         //$this->assertEquals($this->invoice_calc->getTotalTaxes(), 4);
         //$this->assertEquals(count($this->invoice_calc->getTaxMap()), 1);
     }
-
-
 }

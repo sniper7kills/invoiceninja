@@ -104,19 +104,19 @@ class HandleRestore extends AbstractService
         }
         
         try {
-
             $exists = Invoice::where(['company_id' => $this->invoice->company_id, 'number' => $new_invoice_number])->exists();
 
-            if($exists)
+            if ($exists) {
                 $this->invoice->number = $this->getNextInvoiceNumber($this->invoice->client, $this->invoice, $this->invoice->recurring_id);
-            else
-            $this->invoice->number = $new_invoice_number;
+            } else {
+                $this->invoice->number = $new_invoice_number;
+            }
             
             $this->invoice->save();
         } catch (\Exception $e) {
             nlog("I could not wind back the invoice number");
 
-            if(Ninja::isHosted()){
+            if (Ninja::isHosted()) {
                 \Sentry\captureMessage("I could not wind back the invoice number");
                 app('sentry')->captureException($e);
             }

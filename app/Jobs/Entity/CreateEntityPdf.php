@@ -40,7 +40,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
 
 class CreateEntityPdf implements ShouldQueue
@@ -132,14 +131,16 @@ class CreateEntityPdf implements ShouldQueue
 
         $entity_design_id = $this->entity->design_id ? $this->entity->design_id : $this->decodePrimaryKey($this->entity->client->getSetting($entity_design_id));
 
-        if(!$this->company->account->hasFeature(Account::FEATURE_DIFFERENT_DESIGNS))
+        if (!$this->company->account->hasFeature(Account::FEATURE_DIFFERENT_DESIGNS)) {
             $entity_design_id = 2;
+        }
 
         $design = Design::find($entity_design_id);
 
         /* Catch all in case migration doesn't pass back a valid design */
-        if(!$design)
+        if (!$design) {
             $design = Design::find(2);
+        }
 
         $html = new HtmlEngine($this->invitation);
 
@@ -178,14 +179,11 @@ class CreateEntityPdf implements ShouldQueue
         $pdf = null;
 
         try {
-
-            if(config('ninja.invoiceninja_hosted_pdf_generation') || config('ninja.pdf_generator') == 'hosted_ninja'){
+            if (config('ninja.invoiceninja_hosted_pdf_generation') || config('ninja.pdf_generator') == 'hosted_ninja') {
                 $pdf = (new NinjaPdf())->build($maker->getCompiledHTML(true));
-            }
-            else {
+            } else {
                 $pdf = $this->makePdf(null, null, $maker->getCompiledHTML(true));
             }
-
         } catch (\Exception $e) {
             nlog(print_r($e->getMessage(), 1));
         }
@@ -196,22 +194,16 @@ class CreateEntityPdf implements ShouldQueue
 
 
         if ($pdf) {
-
-            try{
-                
-                if(!Storage::disk($this->disk)->exists($path))
+            try {
+                if (!Storage::disk($this->disk)->exists($path)) {
                     Storage::disk($this->disk)->makeDirectory($path, 0775);
+                }
 
                 nlog($file_path);
                 
                 Storage::disk($this->disk)->put($file_path, $pdf);
-                
-            }
-            catch(\Exception $e)
-            {
-
+            } catch (\Exception $e) {
                 throw new FilePermissionsFailure($e->getMessage());
-
             }
         }
 
@@ -220,7 +212,5 @@ class CreateEntityPdf implements ShouldQueue
 
     public function failed($e)
     {
-
     }
-    
 }

@@ -90,8 +90,9 @@ class Phantom
 
         $this->checkMime($pdf, $invitation, $entity);
         
-        if(!Storage::disk(config('filesystems.default'))->exists($path))
+        if (!Storage::disk(config('filesystems.default'))->exists($path)) {
             Storage::disk(config('filesystems.default'))->makeDirectory($path, 0775);
+        }
                 
         $instance = Storage::disk(config('filesystems.default'))->put($file_path, $pdf);
 
@@ -118,11 +119,9 @@ class Phantom
     /* Check if the returning PDF is valid. */
     private function checkMime($pdf, $invitation, $entity)
     {
-
         $finfo = new \finfo(FILEINFO_MIME);
 
-        if($finfo->buffer($pdf) != 'application/pdf; charset=binary')
-        {
+        if ($finfo->buffer($pdf) != 'application/pdf; charset=binary') {
             SystemLogger::dispatch(
                 $pdf,
                 SystemLog::CATEGORY_PDF,
@@ -133,9 +132,7 @@ class Phantom
             );
 
             throw new PhantomPDFFailure('There was an error generating the PDF with Phantom JS');
-        }
-        else {
-
+        } else {
             SystemLogger::dispatch(
                 "Entity PDF generated sucessfully => " . $invitation->{$entity}->number,
                 SystemLog::CATEGORY_PDF,
@@ -144,9 +141,7 @@ class Phantom
                 $invitation->contact->client,
                 $invitation->company,
             );
-
         }
-
     }
 
     public function displayInvitation(string $entity, string $invitation_key)
@@ -164,8 +159,9 @@ class Phantom
 
         $entity_design_id = $entity . '_design_id';
 
-        if($entity == 'recurring_invoice')
+        if ($entity == 'recurring_invoice') {
             $entity_design_id = 'invoice_design_id';
+        }
 
         $design_id = $entity_obj->design_id ? $entity_obj->design_id : $this->decodePrimaryKey($entity_obj->client->getSetting($entity_design_id));
 

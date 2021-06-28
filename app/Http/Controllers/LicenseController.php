@@ -152,7 +152,7 @@ class LicenseController extends BaseController
     {
         $account = auth()->user()->company()->account;
 
-        if($account->plan == 'white_label' && $account->plan_expires->lt(now())){
+        if ($account->plan == 'white_label' && $account->plan_expires->lt(now())) {
             $account->plan = null;
             $account->plan_expires = null;
             $account->save();

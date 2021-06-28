@@ -19,9 +19,7 @@ class ContactRegister
      */
     public function handle($request, Closure $next)
     {
-
-        if (strpos($request->getHost(), 'invoicing.co') !== false) 
-        {
+        if (strpos($request->getHost(), 'invoicing.co') !== false) {
             $subdomain = explode('.', $request->getHost())[0];
             
             $query = [
@@ -31,24 +29,21 @@ class ContactRegister
 
             $company = Company::where($query)->first();
 
-            if($company)
-            {
+            if ($company) {
                 abort_unless($company->client_can_register, 404);
 
                 $request->merge(['key' => $company->company_key]);
 
                 return $next($request);
             }
-
         }
 
-       $query = [
+        $query = [
             'portal_domain' => $request->getSchemeAndHttpHost(),
             'portal_mode' => 'domain',
         ];
 
-        if($company = Company::where($query)->first())
-        {
+        if ($company = Company::where($query)->first()) {
             abort_unless($company->client_can_register, 404);
 
             $request->merge(['key' => $company->company_key]);

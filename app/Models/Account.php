@@ -16,7 +16,6 @@ use App\Utils\Ninja;
 use App\Utils\Traits\MakesHash;
 use Carbon\Carbon;
 use DateTime;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laracasts\Presenter\PresentableTrait;
 
 class Account extends BaseModel
@@ -243,10 +242,9 @@ class Account extends BaseModel
             $trial_started = $this->trial_started;
             $trial_expires = $this->trial_started->addSeconds($this->trial_duration);
 
-            if($trial_expires->greaterThan(now())){
+            if ($trial_expires->greaterThan(now())) {
                 $trial_active = true;
-             }
-
+            }
         }
 
         $plan_active = false;
@@ -320,5 +318,4 @@ class Account extends BaseModel
             ];
         }
     }
-
 }

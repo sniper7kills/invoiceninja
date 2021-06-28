@@ -34,7 +34,6 @@ use App\Repositories\QuoteRepository;
 use App\Transformers\InvoiceTransformer;
 use App\Transformers\QuoteTransformer;
 use App\Utils\Ninja;
-use App\Utils\TempFile;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\SavesDocuments;
 use Illuminate\Http\Request;
@@ -717,7 +716,7 @@ class QuoteController extends BaseController
                 }
                 break;
             default:
-                return response()->json(['message' => ctrans('texts.action_unavailable',['action' => $action])], 400);
+                return response()->json(['message' => ctrans('texts.action_unavailable', ['action' => $action])], 400);
                 break;
         }
     }
@@ -786,14 +785,14 @@ class QuoteController extends BaseController
      */
     public function upload(UploadQuoteRequest $request, Quote $quote)
     {
-
-        if(!$this->checkFeature(Account::FEATURE_DOCUMENTS))
+        if (!$this->checkFeature(Account::FEATURE_DOCUMENTS)) {
             return $this->featureFailure();
+        }
 
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->file('documents'), $quote);
+        }
 
         return $this->itemResponse($quote->fresh());
-
-    }  
+    }
 }

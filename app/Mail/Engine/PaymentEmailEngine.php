@@ -75,16 +75,13 @@ class PaymentEmailEngine extends BaseEmailEngine
             ->setViewText('');
 
         if ($this->client->getSetting('pdf_email_attachment') !== false && $this->company->account->hasFeature(Account::FEATURE_PDF_ATTACHMENT)) {
-
-            $this->payment->invoices->each(function ($invoice){
-                
-                if(Ninja::isHosted())
+            $this->payment->invoices->each(function ($invoice) {
+                if (Ninja::isHosted()) {
                     $this->setAttachments([$invoice->pdf_file_path($invoice->invitations->first(), 'url', true)]);
-                else
+                } else {
                     $this->setAttachments([$invoice->pdf_file_path($invoice->invitations->first())]);
-
+                }
             });
-
         }
 
         return $this;

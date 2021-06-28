@@ -26,9 +26,9 @@ use App\Utils\Ninja;
 use DB;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use Mail;
 use Symfony\Component\Console\Input\InputOption;
-use Illuminate\Support\Str;
 
 /*
 
@@ -316,7 +316,6 @@ class CheckData extends Command
             $total_invoice_payments = 0;
 
             foreach ($client->invoices()->where('is_deleted', false)->where('status_id', '>', 1)->get() as $invoice) {
-
                 $total_amount = $invoice->payments()->where('is_deleted', false)->whereIn('status_id', [Payment::STATUS_COMPLETED, Payment:: STATUS_PENDING, Payment::STATUS_PARTIALLY_REFUNDED, Payment::STATUS_REFUNDED])->get()->sum('pivot.amount');
                 $total_refund = $invoice->payments()->where('is_deleted', false)->whereIn('status_id', [Payment::STATUS_COMPLETED, Payment:: STATUS_PENDING, Payment::STATUS_PARTIALLY_REFUNDED, Payment::STATUS_REFUNDED])->get()->sum('pivot.refunded');
 
@@ -330,7 +329,7 @@ class CheckData extends Command
 
             if ($credit_total_applied < 0) {
                 $total_invoice_payments += $credit_total_applied;
-            } 
+            }
 
 
             if (round($total_invoice_payments, 2) != round($client->paid_to_date, 2)) {
@@ -340,7 +339,7 @@ class CheckData extends Command
 
                 $this->isValid = false;
 
-                if($this->option('paid_to_date')){
+                if ($this->option('paid_to_date')) {
                     $this->logMessage("# {$client->id} " . $client->present()->name.' - '.$client->number." Fixing {$client->paid_to_date} to {$total_invoice_payments}");
                     $client->paid_to_date = $total_invoice_payments;
                     $client->save();
@@ -356,7 +355,6 @@ class CheckData extends Command
         $this->wrong_balances = 0;
 
         Client::cursor()->where('is_deleted', 0)->each(function ($client) {
-            
             $client->invoices->where('is_deleted', false)->whereIn('status_id', '!=', Invoice::STATUS_DRAFT)->each(function ($invoice) use ($client) {
                 $total_amount = $invoice->payments()->whereIn('status_id', [Payment::STATUS_COMPLETED, Payment:: STATUS_PENDING, Payment::STATUS_PARTIALLY_REFUNDED])->get()->sum('pivot.amount');
                 $total_refund = $invoice->payments()->get()->whereIn('status_id', [Payment::STATUS_COMPLETED, Payment:: STATUS_PENDING, Payment::STATUS_PARTIALLY_REFUNDED])->sum('pivot.refunded');
@@ -373,7 +371,6 @@ class CheckData extends Command
                     $this->isValid = false;
                 }
             });
-            
         });
 
         $this->logMessage("{$this->wrong_balances} clients with incorrect invoice balances");
@@ -390,8 +387,9 @@ class CheckData extends Command
             $credit_balance = Credit::where('client_id', $client->id)->where('is_deleted', false)->withTrashed()->sum('balance');
 
             /*Legacy - V4 will add credits to the balance - we may need to reverse engineer this and remove the credits from the client balance otherwise we need this hack here and in the invoice balance check.*/
-            if($client->balance != $invoice_balance)
+            if ($client->balance != $invoice_balance) {
                 $invoice_balance -= $credit_balance;
+            }
 
             $ledger = CompanyLedger::where('client_id', $client->id)->orderBy('id', 'DESC')->first();
 
@@ -406,7 +404,7 @@ class CheckData extends Command
         $this->logMessage("{$this->wrong_paid_to_dates} clients with incorrect client balances");
     }
 
-    //fix for client balances = 
+    //fix for client balances =
     //$adjustment = ($invoice_balance-$client->balance)
     //$client->balance += $adjustment;
 

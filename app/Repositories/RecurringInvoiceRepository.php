@@ -11,7 +11,6 @@
 
 namespace App\Repositories;
 
-use App\Helpers\Invoice\InvoiceSum;
 use App\Models\RecurringInvoice;
 use App\Models\RecurringInvoiceInvitation;
 
@@ -22,7 +21,6 @@ class RecurringInvoiceRepository extends BaseRepository
 {
     public function save($data, RecurringInvoice $invoice) : ?RecurringInvoice
     {
-
         $invoice = $this->alternativeSave($data, $invoice);
 
         return $invoice;

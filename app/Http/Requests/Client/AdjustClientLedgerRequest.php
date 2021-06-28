@@ -13,7 +13,6 @@ namespace App\Http\Requests\Client;
 
 use App\Http\Requests\Request;
 use App\Utils\Traits\MakesHash;
-use Illuminate\Validation\Rule;
 
 class AdjustClientLedgerRequest extends Request
 {
@@ -50,6 +49,4 @@ class AdjustClientLedgerRequest extends Request
 
         $this->replace($input);
     }
-
-
 }

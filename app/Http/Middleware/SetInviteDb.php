@@ -46,7 +46,7 @@ class SetInviteDb
             if (request()->json) {
                 return response()->json($error, 403);
             } else {
-                abort(404,'I could not find the database for this object.');
+                abort(404, 'I could not find the database for this object.');
             }
         }
 

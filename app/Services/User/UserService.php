@@ -15,13 +15,11 @@ use App\Jobs\Mail\NinjaMailer;
 use App\Jobs\Mail\NinjaMailerJob;
 use App\Jobs\Mail\NinjaMailerObject;
 use App\Mail\Admin\VerifyUserObject;
-use App\Models\Company;
 use App\Models\User;
 use App\Utils\Ninja;
 
 class UserService
 {
-
     public $user;
 
     public function __construct(User $user)
@@ -32,7 +30,6 @@ class UserService
     public function invite($company)
     {
         try {
-
             $nmo = new NinjaMailerObject;
             $nmo->mailable = new NinjaMailer((new VerifyUserObject($this->user, $company))->build());
             $nmo->company = $company;
@@ -42,7 +39,6 @@ class UserService
             NinjaMailerJob::dispatch($nmo);
 
             Ninja::registerNinjaUser($this->user);
-            
         } catch (\Exception $e) {
             nlog("I couldn't send the verification email " . $e->getMessage());
         }

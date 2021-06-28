@@ -10,7 +10,6 @@
  */
 namespace Tests\Unit;
 
-use App\DataMapper\ClientSettings;
 use Tests\TestCase;
 
 /**
@@ -34,6 +33,5 @@ class S3CleanupTest extends TestCase
 
         $this->assertTrue(in_array("1", $merged));
         $this->assertFalse(in_array("10", $merged));
-           
     }
 }

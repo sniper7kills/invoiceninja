@@ -55,11 +55,13 @@ class UpdateClientRequest extends Request
         //$rules['id_number'] = 'unique:clients,id_number,,id,company_id,' . auth()->user()->company()->id;
         //$rules['id_number'] = 'unique:clients,id_number,'.$this->id.',id,company_id,'.$this->company_id;
 
-        if($this->id_number)
+        if ($this->id_number) {
             $rules['id_number'] = Rule::unique('clients')->where('company_id', auth()->user()->company()->id)->ignore($this->client->id);
+        }
         
-        if($this->number)
+        if ($this->number) {
             $rules['number'] = Rule::unique('clients')->where('company_id', auth()->user()->company()->id)->ignore($this->client->id);
+        }
 
         $rules['settings'] = new ValidClientGroupSettingsRule();
         $rules['contacts.*.email'] = 'bail|nullable|distinct|sometimes|email';

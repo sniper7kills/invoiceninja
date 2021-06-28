@@ -15,8 +15,8 @@ namespace App\Http\Controllers\ClientPortal;
 use App\Events\Quote\QuoteWasApproved;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\Quotes\ProcessQuotesInBulkRequest;
-use App\Http\Requests\ClientPortal\Quotes\ShowQuotesRequest;
 use App\Http\Requests\ClientPortal\Quotes\ShowQuoteRequest;
+use App\Http\Requests\ClientPortal\Quotes\ShowQuotesRequest;
 use App\Jobs\Invoice\InjectSignature;
 use App\Models\Quote;
 use App\Utils\Ninja;
@@ -87,9 +87,8 @@ class QuoteController extends Controller
         }
 
         if ($quotes->count() == 1) {
-
-           $file = $quotes->first()->pdf_file_path();
-           return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+            $file = $quotes->first()->pdf_file_path();
+            return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
         }
 
         // enable output of HTTP headers

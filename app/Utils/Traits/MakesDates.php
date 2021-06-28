@@ -103,9 +103,8 @@ trait MakesDates
 
         try {
             return Carbon::parse($date)->translatedFormat($format);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return 'Invalid date!';
         }
     }
-
 }

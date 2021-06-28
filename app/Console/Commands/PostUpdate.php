@@ -56,7 +56,7 @@ class PostUpdate extends Command
 
         exec('vendor/bin/composer install --no-dev -o', $output);
 
-        info(print_r($output,1));        
+        info(print_r($output, 1));
         info("finished running composer install ");
 
         try {
@@ -78,6 +78,5 @@ class PostUpdate extends Command
         VersionCheck::dispatch();
 
         info("Sent for version check");
-        
     }
 }

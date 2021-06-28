@@ -11,7 +11,6 @@
 
 namespace App\Jobs\Util;
 
-use App\Jobs\Util\SystemLogger;
 use App\Libraries\MultiDB;
 use App\Models\SystemLog;
 use App\Models\Webhook;
@@ -110,13 +109,13 @@ class WebhookHandler implements ShouldQueue
         $client = new Client(['headers' => array_merge($base_headers, $headers)]);
 
         try {
-
-        $response = $client->post($subscription->target_url, [
+            $response = $client->post($subscription->target_url, [
                         RequestOptions::JSON => $data, // or 'json' => [...]
                     ]);
 
-            if ($response->getStatusCode() == 410 || $response->getStatusCode() == 200)
+            if ($response->getStatusCode() == 410 || $response->getStatusCode() == 200) {
                 $subscription->delete();
+            }
 
             SystemLogger::dispatch(
                 $response,
@@ -126,13 +125,11 @@ class WebhookHandler implements ShouldQueue
                 $this->company->clients->first(),
                 $this->company
             );
-
-        }
-        catch(\Exception $e){
+        } catch (\Exception $e) {
 
         // nlog($e->getMessage());
 
-                SystemLogger::dispatch(
+            SystemLogger::dispatch(
                 $e->getMessage(),
                 SystemLog::CATEGORY_WEBHOOK,
                 SystemLog::EVENT_WEBHOOK_RESPONSE,
@@ -140,11 +137,7 @@ class WebhookHandler implements ShouldQueue
                 $this->company->clients->first(),
                 $this->company,
             );
-
         }
-
-
-
     }
 
     public function failed($exception)

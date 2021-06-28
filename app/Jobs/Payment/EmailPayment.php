@@ -12,7 +12,6 @@
 namespace App\Jobs\Payment;
 
 use App\Events\Payment\PaymentWasEmailed;
-use App\Events\Payment\PaymentWasEmailedAndFailed;
 use App\Jobs\Mail\NinjaMailerJob;
 use App\Jobs\Mail\NinjaMailerObject;
 use App\Libraries\MultiDB;
@@ -27,7 +26,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 
 class EmailPayment implements ShouldQueue
 {
@@ -67,20 +65,21 @@ class EmailPayment implements ShouldQueue
      */
     public function handle()
     {
-        if ($this->company->is_disabled) 
+        if ($this->company->is_disabled) {
             return true;
+        }
         
         
         if ($this->contact->email) {
-
             MultiDB::setDb($this->company->db);
 
             $email_builder = (new PaymentEmailEngine($this->payment, $this->contact))->build();
 
             $invitation = null;
 
-            if($this->payment->invoices()->exists())
+            if ($this->payment->invoices()->exists()) {
                 $invitation = $this->payment->invoices()->first()->invitations()->first();
+            }
 
             $nmo = new NinjaMailerObject;
             $nmo->mailable = new TemplateEmail($email_builder, $this->contact, $invitation);

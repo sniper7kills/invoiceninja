@@ -12,7 +12,6 @@
 namespace App\Models;
 
 use App\Models\Presenters\CompanyPresenter;
-use App\Models\User;
 use App\Services\Notification\NotificationService;
 use App\Utils\Ninja;
 use App\Utils\Traits\CompanySettingsSaver;
@@ -449,9 +448,9 @@ class Company extends BaseModel
     public function domain()
     {
         if (Ninja::isHosted()) {
-
-            if($this->portal_mode == 'domain')
+            if ($this->portal_mode == 'domain') {
                 return $this->portal_domain;
+            }
 
             return "https://{$this->subdomain}." . config('ninja.app_domain');
         }

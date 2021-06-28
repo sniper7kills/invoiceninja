@@ -14,13 +14,12 @@ namespace App\Notifications;
 use App\Utils\TempFile;
 use App\Utils\Traits\MakesInvoiceHtml;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class BaseNotification extends Notification 
+class BaseNotification extends Notification
 {
-  //  use Queueable;
+    //  use Queueable;
     use MakesInvoiceHtml;
 
     /**

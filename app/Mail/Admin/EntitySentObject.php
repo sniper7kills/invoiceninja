@@ -119,13 +119,13 @@ class EntitySentObject
     private function getMessage()
     {
         return ctrans(
-                $this->template_body,
-                [
+            $this->template_body,
+            [
                     'amount' => $this->getAmount(),
                     'client' => $this->contact->present()->name(),
                     'invoice' => $this->entity->number,
                 ]
-            );
+        );
     }
 
     private function getData()

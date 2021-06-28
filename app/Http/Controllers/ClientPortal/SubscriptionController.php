@@ -13,7 +13,6 @@
 namespace App\Http\Controllers\ClientPortal;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
 {

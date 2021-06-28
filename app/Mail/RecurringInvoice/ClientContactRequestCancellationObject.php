@@ -13,7 +13,6 @@ namespace App\Mail\RecurringInvoice;
 
 class ClientContactRequestCancellationObject
 {
-
     public $recurring_invoice;
 
     public $client_contact;
@@ -32,7 +31,6 @@ class ClientContactRequestCancellationObject
 
     public function build()
     {
-
         $data = [
             'title' => ctrans('texts.recurring_cancellation_request', ['contact' => $this->client_contact->present()->name()]),
             'content' => ctrans('texts.recurring_cancellation_request_body', ['contact' => $this->client_contact->present()->name(), 'client' => $this->client_contact->client->present()->name(), 'invoice' => $this->recurring_invoice->number]),

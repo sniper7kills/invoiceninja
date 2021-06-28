@@ -17,7 +17,6 @@ use App\Jobs\Mail\PaymentFailureMailer;
 use App\Jobs\Util\SystemLogger;
 use App\Models\ClientGatewayToken;
 use App\Models\GatewayType;
-use App\Models\Payment;
 use App\Models\PaymentHash;
 use App\Models\PaymentType;
 use App\Models\SystemLog;
@@ -104,7 +103,6 @@ class AuthorizeCreditCard
 
         /*Refactor and push to BaseDriver*/
         if ($data['response'] != null && $data['response']->getMessages()->getResultCode() == 'Ok') {
-
             $response = $data['response'];
 
             $this->storePayment($payment_hash, $data);
@@ -123,7 +121,6 @@ class AuthorizeCreditCard
 
             return true;
         } else {
-
             $vars = [
                 'invoices' => $payment_hash->invoices(),
                 'amount' => $amount,
@@ -148,7 +145,6 @@ class AuthorizeCreditCard
         $response = $data['response'];
 
         if ($response != null && $response->getMessages()->getResultCode() == 'Ok') {
-
             return $this->processSuccessfulResponse($data, $request);
         }
 
@@ -215,7 +211,7 @@ class AuthorizeCreditCard
         $code = '';
         $description = '';
 
-        if($response->getTransactionResponse()->getMessages() !== null){
+        if ($response->getTransactionResponse()->getMessages() !== null) {
             $code = $response->getTransactionResponse()->getMessages()[0]->getCode();
             $description = $response->getTransactionResponse()->getMessages()[0]->getDescription();
         }

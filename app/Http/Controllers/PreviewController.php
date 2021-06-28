@@ -26,7 +26,6 @@ use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\MakesInvoiceHtml;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Response;
 
 class PreviewController extends BaseController
@@ -136,7 +135,7 @@ class PreviewController extends BaseController
                 return (new Phantom)->convertHtmlToPdf($maker->getCompiledHTML(true));
             }
             
-            if(config('ninja.invoiceninja_hosted_pdf_generation') || config('ninja.pdf_generator') == 'hosted_ninja'){
+            if (config('ninja.invoiceninja_hosted_pdf_generation') || config('ninja.pdf_generator') == 'hosted_ninja') {
                 return (new NinjaPdf())->build($maker->getCompiledHTML(true));
             }
 
@@ -224,7 +223,7 @@ class PreviewController extends BaseController
             return (new Phantom)->convertHtmlToPdf($maker->getCompiledHTML(true));
         }
 
-        if(config('ninja.invoiceninja_hosted_pdf_generation')){
+        if (config('ninja.invoiceninja_hosted_pdf_generation')) {
             return (new NinjaPdf())->build($maker->getCompiledHTML(true));
         }
             

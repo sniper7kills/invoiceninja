@@ -39,7 +39,7 @@ class CheckClientExistence
             ->whereHas('client', function ($query) {
                 return $query->whereNull('deleted_at');
             })
-            ->whereHas('client.company', function ($query){
+            ->whereHas('client.company', function ($query) {
                 return $query->where('account_id', auth('contact')->user()->client->company->account->id);
             })
             ->get();

@@ -12,7 +12,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Import\ImportJsonRequest;
-use App\Jobs\Company\CompanyExport;
 use App\Jobs\Company\CompanyImport;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Http\Response;
@@ -59,7 +58,6 @@ class ImportJsonController extends BaseController
      */
     public function import(ImportJsonRequest $request)
     {
-
         $import_file = $request->file('files');
 
         $contents = $this->unzipFile($import_file->getPathname());
@@ -68,12 +66,11 @@ class ImportJsonController extends BaseController
     
         nlog($hash);
 
-        Cache::put( $hash, base64_encode( $contents ), 3600 );
+        Cache::put($hash, base64_encode($contents), 3600);
 
         CompanyImport::dispatch(auth()->user()->getCompany(), auth()->user(), $hash, $request->except('files'))->delay(now()->addMinutes(1));
 
         return response()->json(['message' => 'Processing'], 200);
-
     }
 
     private function unzipFile($file_contents)
@@ -86,8 +83,9 @@ class ImportJsonController extends BaseController
         $zip->close();
         $file_location = public_path("storage/backups/$filename/backup.json");
 
-        if (! file_exists($file_location)) 
+        if (! file_exists($file_location)) {
             throw new NonExistingMigrationFile('Backup file does not exist, or is corrupted.');
+        }
         
         $data = file_get_contents($file_location);
 

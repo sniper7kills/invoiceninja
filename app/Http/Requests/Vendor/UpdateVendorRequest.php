@@ -37,11 +37,13 @@ class UpdateVendorRequest extends Request
 
         $rules['country_id'] = 'integer|nullable';
         
-        if($this->number)
+        if ($this->number) {
             $rules['number'] = Rule::unique('vendors')->where('company_id', auth()->user()->company()->id)->ignore($this->vendor->id);
+        }
 
-        if($this->id_number)   
+        if ($this->id_number) {
             $rules['id_number'] = Rule::unique('vendors')->where('company_id', auth()->user()->company()->id)->ignore($this->vendor->id);
+        }
 
         $rules['contacts.*.email'] = 'nullable|distinct';
 

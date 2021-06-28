@@ -32,7 +32,7 @@ class InvitationController extends Controller
     use MakesDates;
 
     public function router(string $entity, string $invitation_key)
-    {   
+    {
         Auth::logout();
 
         return $this->genericRouter($entity, $invitation_key);
@@ -45,7 +45,6 @@ class InvitationController extends Controller
 
     private function genericRouter(string $entity, string $invitation_key)
     {
-
         $key = $entity.'_id';
 
         $entity_obj = 'App\Models\\'.ucfirst(Str::camel($entity)).'Invitation';
@@ -57,16 +56,16 @@ class InvitationController extends Controller
         /* Return early if we have the correct client_hash embedded */
         $client_contact = $invitation->contact;
 
-        if(empty($client_contact->email))
-            $client_contact->email = Str::random(15) . "@example.com"; $client_contact->save();
+        if (empty($client_contact->email)) {
+            $client_contact->email = Str::random(15) . "@example.com";
+        }
+        $client_contact->save();
 
         if (request()->has('client_hash') && request()->input('client_hash') == $invitation->contact->client->client_hash) {
             auth()->guard('contact')->login($client_contact, true);
-
         } elseif ((bool) $invitation->contact->client->getSetting('enable_client_portal_password') !== false) {
             $this->middleware('auth:contact');
             return redirect()->route('client.login');
-
         } else {
             nlog("else - default - login contact");
             auth()->guard('contact')->login($client_contact, true);

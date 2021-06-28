@@ -71,22 +71,20 @@ class PostMarkController extends BaseController
      */
     public function webhook(Request $request)
     {
-
-        if($request->header('X-API-SECURITY') && $request->header('X-API-SECURITY') == config('postmark.secret'))
-        {
+        if ($request->header('X-API-SECURITY') && $request->header('X-API-SECURITY') == config('postmark.secret')) {
             // nlog($request->all());
 
             MultiDB::findAndSetDbByCompanyKey($request->input('Tag'));
             
             $this->invitation = $this->discoverInvitation($request->input('MessageID'));
 
-            if($this->invitation)
+            if ($this->invitation) {
                 $this->invitation->email_error = $request->input('Details');
-            else
+            } else {
                 return response()->json(['message' => 'Message not found']);
+            }
 
-            switch ($request->input('RecordType')) 
-            {
+            switch ($request->input('RecordType')) {
                 case 'Delivery':
                     return $this->processDelivery($request);
                 case 'Bounce':
@@ -99,66 +97,65 @@ class PostMarkController extends BaseController
             }
 
             return response()->json(['message' => 'Success'], 200);
-
         }
 
         return response()->json(['message' => 'Unauthorized'], 403);
-
     }
 
-// {
-//   "RecordType": "Delivery",
-//   "ServerID": 23,
-//   "MessageStream": "outbound",
-//   "MessageID": "00000000-0000-0000-0000-000000000000",
-//   "Recipient": "john@example.com",
-//   "Tag": "welcome-email",
-//   "DeliveredAt": "2021-02-21T16:34:52Z",
-//   "Details": "Test delivery webhook details",
-//   "Metadata": {
+    // {
+    //   "RecordType": "Delivery",
+    //   "ServerID": 23,
+    //   "MessageStream": "outbound",
+    //   "MessageID": "00000000-0000-0000-0000-000000000000",
+    //   "Recipient": "john@example.com",
+    //   "Tag": "welcome-email",
+    //   "DeliveredAt": "2021-02-21T16:34:52Z",
+    //   "Details": "Test delivery webhook details",
+    //   "Metadata": {
 //     "example": "value",
 //     "example_2": "value"
-//   }
-// }
+    //   }
+    // }
     private function processDelivery($request)
     {
         $this->invitation->email_status = 'delivered';
         $this->invitation->save();
 
-        SystemLogger::dispatch($request->all(), 
-            SystemLog::CATEGORY_MAIL, 
-            SystemLog::EVENT_MAIL_DELIVERY, 
-            SystemLog::TYPE_WEBHOOK_RESPONSE, 
+        SystemLogger::dispatch(
+            $request->all(),
+            SystemLog::CATEGORY_MAIL,
+            SystemLog::EVENT_MAIL_DELIVERY,
+            SystemLog::TYPE_WEBHOOK_RESPONSE,
             $this->invitation->contact->client,
             $this->invitation->company
         );
     }
 
-// {
-//   "Metadata": {
+    // {
+    //   "Metadata": {
 //     "example": "value",
 //     "example_2": "value"
-//   },
-//   "RecordType": "Bounce",
-//   "ID": 42,
-//   "Type": "HardBounce",
-//   "TypeCode": 1,
-//   "Name": "Hard bounce",
-//   "Tag": "Test",
-//   "MessageID": "00000000-0000-0000-0000-000000000000",
-//   "ServerID": 1234,
-//   "MessageStream": "outbound",
-//   "Description": "The server was unable to deliver your message (ex: unknown user, mailbox not found).",
-//   "Details": "Test bounce details",
-//   "Email": "john@example.com",
-//   "From": "sender@example.com",
-//   "BouncedAt": "2021-02-21T16:34:52Z",
-//   "DumpAvailable": true,
-//   "Inactive": true,
-//   "CanActivate": true,
-//   "Subject": "Test subject",
-//   "Content": "Test content"
-// }
+    //   },
+    //   "RecordType": "Bounce",
+    //   "ID": 42,
+    //   "Type": "HardBounce",
+    //   "TypeCode": 1,
+    //   "Name": "Hard bounce",
+    //   "Tag": "Test",
+    //   "MessageID": "00000000-0000-0000-0000-000000000000",
+    //   "ServerID": 1234,
+    //   "MessageStream": "outbound",
+    //   "Description": "The server was unable to deliver your message (ex: unknown user, mailbox not found).",
+    //   "Details": "Test bounce details",
+    //   "Email": "john@example.com",
+    //   "From": "sender@example.com",
+    //   "BouncedAt": "2021-02-21T16:34:52Z",
+    //   "DumpAvailable": true,
+    //   "Inactive": true,
+    //   "CanActivate": true,
+    //   "Subject": "Test subject",
+    //   "Content": "Test content"
+    // }
 
     private function processBounce($request)
     {
@@ -176,34 +173,33 @@ class PostMarkController extends BaseController
         SystemLogger::dispatch($request->all(), SystemLog::CATEGORY_MAIL, SystemLog::EVENT_MAIL_BOUNCED, SystemLog::TYPE_WEBHOOK_RESPONSE, $this->invitation->contact->client, $this->invitation->company);
     }
 
-// {
-//   "Metadata": {
+    // {
+    //   "Metadata": {
 //     "example": "value",
 //     "example_2": "value"
-//   },
-//   "RecordType": "SpamComplaint",
-//   "ID": 42,
-//   "Type": "SpamComplaint",
-//   "TypeCode": 100001,
-//   "Name": "Spam complaint",
-//   "Tag": "Test",
-//   "MessageID": "00000000-0000-0000-0000-000000000000",
-//   "ServerID": 1234,
-//   "MessageStream": "outbound",
-//   "Description": "The subscriber explicitly marked this message as spam.",
-//   "Details": "Test spam complaint details",
-//   "Email": "john@example.com",
-//   "From": "sender@example.com",
-//   "BouncedAt": "2021-02-21T16:34:52Z",
-//   "DumpAvailable": true,
-//   "Inactive": true,
-//   "CanActivate": false,
-//   "Subject": "Test subject",
-//   "Content": "Test content"
-// }
+    //   },
+    //   "RecordType": "SpamComplaint",
+    //   "ID": 42,
+    //   "Type": "SpamComplaint",
+    //   "TypeCode": 100001,
+    //   "Name": "Spam complaint",
+    //   "Tag": "Test",
+    //   "MessageID": "00000000-0000-0000-0000-000000000000",
+    //   "ServerID": 1234,
+    //   "MessageStream": "outbound",
+    //   "Description": "The subscriber explicitly marked this message as spam.",
+    //   "Details": "Test spam complaint details",
+    //   "Email": "john@example.com",
+    //   "From": "sender@example.com",
+    //   "BouncedAt": "2021-02-21T16:34:52Z",
+    //   "DumpAvailable": true,
+    //   "Inactive": true,
+    //   "CanActivate": false,
+    //   "Subject": "Test subject",
+    //   "Content": "Test content"
+    // }
     private function processSpamComplaint($request)
     {
-
         $this->invitation->email_status = 'spam';
         $this->invitation->save();
 
@@ -222,15 +218,16 @@ class PostMarkController extends BaseController
     {
         $invitation = false;
 
-        if($invitation = InvoiceInvitation::whereRaw('BINARY `message_id`= ?', [$message_id])->first())
+        if ($invitation = InvoiceInvitation::whereRaw('BINARY `message_id`= ?', [$message_id])->first()) {
             return $invitation;
-        elseif($invitation = QuoteInvitation::whereRaw('BINARY `message_id`= ?', [$message_id])->first())
+        } elseif ($invitation = QuoteInvitation::whereRaw('BINARY `message_id`= ?', [$message_id])->first()) {
             return $invitation;
-        elseif($invitation = RecurringInvoiceInvitation::whereRaw('BINARY `message_id`= ?', [$message_id])->first())
+        } elseif ($invitation = RecurringInvoiceInvitation::whereRaw('BINARY `message_id`= ?', [$message_id])->first()) {
             return $invitation;
-        elseif($invitation = CreditInvitation::whereRaw('BINARY `message_id`= ?', [$message_id])->first())
+        } elseif ($invitation = CreditInvitation::whereRaw('BINARY `message_id`= ?', [$message_id])->first()) {
             return $invitation;
-        else
+        } else {
             return $invitation;
+        }
     }
 }

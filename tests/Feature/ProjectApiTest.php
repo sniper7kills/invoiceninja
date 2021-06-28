@@ -14,9 +14,9 @@ use App\Utils\Traits\MakesHash;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\ValidationException;
 use Tests\MockAccountData;
 use Tests\TestCase;
-use Illuminate\Validation\ValidationException;
 
 /**
  * @test
@@ -74,18 +74,14 @@ class ProjectApiTest extends TestCase
             'X-API-TOKEN' => $this->token,
         ])->put('/api/v1/projects/'.$arr['data']['id'], $data)->assertStatus(200);
 
-        try{
-        $response = $this->withHeaders([
+        try {
+            $response = $this->withHeaders([
                 'X-API-SECRET' => config('ninja.api_secret'),
                 'X-API-TOKEN' => $this->token,
         ])->post('/api/v1/projects', $data);
-        }
-        catch(ValidationException $e){
+        } catch (ValidationException $e) {
             $response->assertStatus(302);
         }
-
-
-
     }
 
     public function testProjectPut()

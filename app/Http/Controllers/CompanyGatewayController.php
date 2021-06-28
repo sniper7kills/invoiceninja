@@ -194,8 +194,7 @@ class CompanyGatewayController extends BaseController
         $company_gateway->save();
 
         /*Always ensure at least one fees and limits object is set per gateway*/
-        if(!isset($company_gateway->fees_and_limits)) {
-
+        if (!isset($company_gateway->fees_and_limits)) {
             $gateway_types = $company_gateway->driver(new Client)->gatewayTypes();
 
             $fees_and_limits = new \stdClass;

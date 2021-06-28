@@ -20,7 +20,6 @@ use App\Models\Company;
 use App\Models\CompanyGateway;
 use App\Models\GatewayType;
 use App\PaymentDrivers\Stripe\Connect\Account;
-use Illuminate\Http\Request;
 use Stripe\Exception\ApiErrorException;
 
 class StripeConnectController extends BaseController
@@ -35,8 +34,9 @@ class StripeConnectController extends BaseController
     {
         // Should we check if company has set country in the ap? Otherwise this will fail.
 
-        if(!is_array($request->getTokenContent()))
+        if (!is_array($request->getTokenContent())) {
             abort(400, 'Invalid token');
+        }
 
         MultiDB::findAndSetDbByCompanyKey($request->getTokenContent()['company_key']);
 
@@ -48,12 +48,11 @@ class StripeConnectController extends BaseController
             ->first();
 
         if ($company_gateway) {
-
             $config = $company_gateway->getConfig();
 
-            if(property_exists($config, 'account_id'))
+            if (property_exists($config, 'account_id')) {
                 return view('auth.connect.existing');
-
+            }
         }
 
         $stripe_client_id = config('ninja.ninja_stripe_client_id');
@@ -71,7 +70,6 @@ class StripeConnectController extends BaseController
 
     public function completed(InitializeStripeConnectRequest $request)
     {
-
         \Stripe\Stripe::setApiKey(config('ninja.ninja_stripe_key'));
 
         try {
@@ -79,12 +77,8 @@ class StripeConnectController extends BaseController
               'grant_type' => 'authorization_code',
               'code' => $request->input('code'),
             ]);
-
-        }catch(\Exception $e)
-        {
-            
+        } catch (\Exception $e) {
             nlog($e->getMessage());
-        
         }
 
         // nlog($response);
@@ -138,14 +132,13 @@ class StripeConnectController extends BaseController
         //Pull the list of Stripe Accounts and see if we match
         $accounts = $company_gateway->driver($client)->getAllConnectedAccounts()->data;
 
-        foreach($accounts as $account)
-        {
-            if($account['email'] == $email)
+        foreach ($accounts as $account) {
+            if ($account['email'] == $email) {
                 return $account['id'];
+            }
         }
 
         return false;
-
     }
     
 

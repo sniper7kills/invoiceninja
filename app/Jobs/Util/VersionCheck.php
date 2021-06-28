@@ -42,14 +42,14 @@ class VersionCheck implements ShouldQueue
             Account::whereNotNull('id')->update(['latest_version' => $version_file]);
         }
 
-        if(Ninja::isSelfHost())
-        {
+        if (Ninja::isSelfHost()) {
             $account = Account::first();
 
-            if(!$account)
+            if (!$account) {
                 return;
+            }
 
-            if($account->plan == 'white_label' && $account->plan_expires && $account->plan_expires->lt(now())){
+            if ($account->plan == 'white_label' && $account->plan_expires && $account->plan_expires->lt(now())) {
                 $account->plan = null;
                 $account->plan_expires = null;
                 $account->save();

@@ -43,11 +43,10 @@ trait GeneratesCounter
 
         $is_client_counter = false;
 
-        $counter_string = $this->getEntityCounter($entity, $client);  
-        $pattern = $this->getNumberPattern($entity, $client);  
+        $counter_string = $this->getEntityCounter($entity, $client);
+        $pattern = $this->getNumberPattern($entity, $client);
 
-        if ((strpos($pattern, 'clientCounter') !== false) || (strpos($pattern, 'client_counter') !==false) ) {
-
+        if ((strpos($pattern, 'clientCounter') !== false) || (strpos($pattern, 'client_counter') !==false)) {
             if (property_exists($client->settings, $counter_string)) {
                 $counter = $client->settings->{$counter_string};
             } else {
@@ -56,38 +55,36 @@ trait GeneratesCounter
 
             $counter_entity = $client;
         } elseif ((strpos($pattern, 'groupCounter') !== false) || (strpos($pattern, 'group_counter') !== false)) {
-
             if (property_exists($client->group_settings, $counter_string)) {
-            $counter = $client->group_settings->{$counter_string};
+                $counter = $client->group_settings->{$counter_string};
             } else {
                 $counter = 1;
             }
 
             $counter_entity = $client->group_settings;
-
         } else {
             $counter = $client->company->settings->{$counter_string};
             $counter_entity = $client->company;
         }
 
-        //If it is a quote - we need to 
+        //If it is a quote - we need to
         $pattern = $this->getNumberPattern($entity, $client);
         
-        if(strlen($pattern) > 1 && (stripos($pattern, 'counter') === false)){
+        if (strlen($pattern) > 1 && (stripos($pattern, 'counter') === false)) {
             $pattern = $pattern.'{$counter}';
         }
 
         $padding = $client->getSetting('counter_padding');
 
-        if($is_recurring)
+        if ($is_recurring) {
             $prefix = $client->getSetting('recurring_number_prefix');
+        }
 
         $entity_number = $this->checkEntityNumber($entity, $client, $counter, $padding, $pattern, $prefix);
 
         $this->incrementCounter($counter_entity, $counter_string);
 
         return $entity_number;
-
     }
 
     private function getNumberPattern($entity, Client $client)
@@ -126,8 +123,9 @@ trait GeneratesCounter
                 break;
             case Quote::class:
 
-                if ($this->hasSharedCounter($client)) 
+                if ($this->hasSharedCounter($client)) {
                     return 'invoice_number_counter';
+                }
                 
                 return 'quote_number_counter';
                 break;
@@ -138,8 +136,9 @@ trait GeneratesCounter
                 return 'payment_number_counter';
                 break;
             case Credit::class:
-                if ($this->hasSharedCounter($client)) 
+                if ($this->hasSharedCounter($client)) {
                     return 'invoice_number_counter';
+                }
             
                 return 'credit_number_counter';
                 break;
@@ -318,7 +317,7 @@ trait GeneratesCounter
      *
      * @return     bool             True if has shared counter, False otherwise.
      */
-    public function hasSharedCounter(Client $client) : bool 
+    public function hasSharedCounter(Client $client) : bool
     {
         return (bool) $client->getSetting('shared_invoice_quote_counter') || (bool) $client->getSetting('shared_invoice_credit_counter');
     }
@@ -337,7 +336,6 @@ trait GeneratesCounter
      */
     private function checkEntityNumber($class, $entity, $counter, $padding, $pattern, $prefix = '')
     {
-
         $check = false;
 
         do {
@@ -359,12 +357,11 @@ trait GeneratesCounter
     /*Check if a number is available for use. */
     public function checkNumberAvailable($class, $entity, $number) :bool
     {
-
-        if ($entity = $class::whereCompanyId($entity->company_id)->whereNumber($number)->withTrashed()->first()) 
+        if ($entity = $class::whereCompanyId($entity->company_id)->whereNumber($number)->withTrashed()->first()) {
             return false;
+        }
         
         return true;
-
     }
 
     /**
@@ -381,8 +378,9 @@ trait GeneratesCounter
             $settings->invoice_number_counter = 0;
         }
 
-        if(!property_exists($settings, $counter_name))
+        if (!property_exists($settings, $counter_name)) {
             $settings->{$counter_name} = 1;
+        }
 
         $settings->{$counter_name} = $settings->{$counter_name} + 1;
 
@@ -424,8 +422,9 @@ trait GeneratesCounter
     {
         $reset_counter_frequency = (int)$client->getSetting('reset_counter_frequency_id');
 
-        if($reset_counter_frequency == 0)
+        if ($reset_counter_frequency == 0) {
             return;
+        }
         
         $timezone = Timezone::find($client->getSetting('timezone_id'));
 
@@ -479,7 +478,6 @@ trait GeneratesCounter
 
         $client->company->settings = $settings;
         $client->company->save();
-
     }
 
     private function resetCompanyCounters($company)

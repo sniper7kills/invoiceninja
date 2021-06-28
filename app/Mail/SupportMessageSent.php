@@ -11,7 +11,7 @@ use SplFileObject;
 
 class SupportMessageSent extends Mailable
 {
- //   use Queueable, SerializesModels;
+    //   use Queueable, SerializesModels;
 
     public $support_message;
 
@@ -57,12 +57,13 @@ class SupportMessageSent extends Mailable
         $company = auth()->user()->company();
         $user = auth()->user();
 
-        if(Ninja::isHosted())
+        if (Ninja::isHosted()) {
             $subject = "Hosted {$user->present()->name} - [{$plan} - DB:{$company->db}]";
-        else
+        } else {
             $subject = "Self Host {$user->present()->name} - [{$plan} - DB:{$company->db}]";
+        }
 
-        return $this->from(config('mail.from.address'), config('mail.from.name')) 
+        return $this->from(config('mail.from.address'), config('mail.from.name'))
                 ->replyTo($user->email, $user->present()->name())
                 ->subject($subject)
                 ->view('email.support.message', [

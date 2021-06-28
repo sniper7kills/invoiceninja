@@ -43,7 +43,7 @@ class QuoteCreatedNotification implements ShouldQueue
         $quote = $event->quote;
 
         $nmo = new NinjaMailerObject;
-        $nmo->mailable = new NinjaMailer( (new EntityCreatedObject($quote, 'quote'))->build() );
+        $nmo->mailable = new NinjaMailer((new EntityCreatedObject($quote, 'quote'))->build());
         $nmo->company = $quote->company;
         $nmo->settings = $quote->company->settings;
 
@@ -75,7 +75,7 @@ class QuoteCreatedNotification implements ShouldQueue
             /* Override the methods in the Notification Class */
             // $notification->method = $methods;
 
-            //  Notify on the alternate channels 
+            //  Notify on the alternate channels
             // $user->notify($notification);
         }
     }

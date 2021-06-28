@@ -11,7 +11,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Libraries\MultiDB;
 use App\Models\Account;
 use App\Utils\Ninja;
 use Closure;
@@ -28,12 +27,9 @@ class ContactAccount
      */
     public function handle($request, Closure $next)
     {
-
-        if(!Ninja::isHosted()) {
-
+        if (!Ninja::isHosted()) {
             $account_id = Account::first()->id;
             $request->attributes->add(['account_id' => $account_id]);
-            
         }
 
         return $next($request);

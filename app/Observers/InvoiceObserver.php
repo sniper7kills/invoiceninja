@@ -11,7 +11,6 @@
 
 namespace App\Observers;
 
-use App\Jobs\Util\UnlinkFile;
 use App\Jobs\Util\WebhookHandler;
 use App\Models\Client;
 use App\Models\Invoice;
@@ -51,7 +50,6 @@ class InvoiceObserver
         if ($subscriptions) {
             WebhookHandler::dispatch(Webhook::EVENT_UPDATE_INVOICE, $invoice, $invoice->company);
         }
-
     }
 
     /**

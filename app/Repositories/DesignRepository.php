@@ -19,10 +19,8 @@ use Illuminate\Support\Str;
  */
 class DesignRepository extends BaseRepository
 {
-
     public function delete($design) :Design
     {
-
         $design->name = $design->name . "_deleted_" . Str::random(5);
 
         parent::delete($design);

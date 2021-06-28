@@ -65,11 +65,11 @@ class Activity extends StaticModel
     const RESTORE_TASK = 46; //
     const UPDATE_EXPENSE = 47;//
 
-    const CREATE_USER = 48; 
+    const CREATE_USER = 48;
     const UPDATE_USER = 49;
-    const ARCHIVE_USER = 50; 
-    const DELETE_USER = 51; 
-    const RESTORE_USER = 52; 
+    const ARCHIVE_USER = 50;
+    const DELETE_USER = 51;
+    const RESTORE_USER = 52;
     const MARK_SENT_INVOICE = 53; // not needed?
     const PAID_INVOICE = 54; //
     const EMAIL_INVOICE_FAILED = 57;
@@ -91,10 +91,10 @@ class Activity extends StaticModel
     const RESTORE_SUBSCRIPTION = 84;
     
     const CREATE_RECURRING_INVOICE = 100;
-    const UPDATE_RECURRING_INVOICE = 101; 
-    const ARCHIVE_RECURRING_INVOICE = 102; 
-    const DELETE_RECURRING_INVOICE = 103; 
-    const RESTORE_RECURRING_INVOICE = 104; 
+    const UPDATE_RECURRING_INVOICE = 101;
+    const ARCHIVE_RECURRING_INVOICE = 102;
+    const DELETE_RECURRING_INVOICE = 103;
+    const RESTORE_RECURRING_INVOICE = 104;
 
     protected $casts = [
         'is_system' => 'boolean',

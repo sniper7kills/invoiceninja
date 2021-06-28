@@ -22,7 +22,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 use stdClass;
 
 class UserEmailChanged implements ShouldQueue
@@ -81,7 +80,6 @@ class UserEmailChanged implements ShouldQueue
         // NinjaMailerJob::dispatch($nmo);
 
         $this->new_user->service()->invite($this->company);
-
     }
 
     private function getData()

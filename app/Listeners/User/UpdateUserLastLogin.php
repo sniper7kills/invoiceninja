@@ -16,7 +16,6 @@ use App\Jobs\Mail\NinjaMailerObject;
 use App\Jobs\Util\SystemLogger;
 use App\Libraries\MultiDB;
 use App\Mail\User\UserLoggedIn;
-use App\Models\Client;
 use App\Models\SystemLog;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -44,7 +43,6 @@ class UpdateUserLastLogin implements ShouldQueue
      */
     public function handle($event)
     {
-        
         MultiDB::setDb($event->company->db);
 
         $user = $event->user;
@@ -54,8 +52,7 @@ class UpdateUserLastLogin implements ShouldQueue
         $event_vars = $event->event_vars;
         $ip = array_key_exists('ip', $event->event_vars) ? $event->event_vars['ip'] : 'IP address not resolved';
 
-        if($user->ip != $ip)
-        {
+        if ($user->ip != $ip) {
             $nmo = new NinjaMailerObject;
             $nmo->mailable = new UserLoggedIn($user, $user->account->companies->first(), $ip);
             $nmo->company = $user->account->companies->first();
@@ -77,6 +74,5 @@ class UpdateUserLastLogin implements ShouldQueue
             null,
             $event->company,
         );
-
     }
 }

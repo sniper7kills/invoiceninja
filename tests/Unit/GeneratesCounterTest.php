@@ -102,7 +102,6 @@ class GeneratesCounterTest extends TestCase
         $this->assertEquals($date_formatted."-0001", $invoice_number);
 
         $this->travelBack();
-
     }
 
     public function testHasSharedCounter()
@@ -146,7 +145,6 @@ class GeneratesCounterTest extends TestCase
         $invoice_number = $this->getNextInvoiceNumber($this->client, $this->invoice);
 
         $this->assertEquals('test-0001', $invoice_number);
-
     }
 
     public function testNoCounterBeingSpecifiedInCounterStringWithFix()
@@ -165,7 +163,6 @@ class GeneratesCounterTest extends TestCase
         $invoice_number = $this->getNextInvoiceNumber($this->client, $this->invoice);
 
         $this->assertEquals('test-0100', $invoice_number);
-
     }
 
 

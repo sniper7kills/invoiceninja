@@ -13,7 +13,6 @@ namespace App\Transformers;
 
 use App\Models\Account;
 use App\Models\Activity;
-use App\Models\Subscription;
 use App\Models\Client;
 use App\Models\Company;
 use App\Models\CompanyGateway;
@@ -32,6 +31,7 @@ use App\Models\Product;
 use App\Models\Project;
 use App\Models\Quote;
 use App\Models\RecurringInvoice;
+use App\Models\Subscription;
 use App\Models\SystemLog;
 use App\Models\Task;
 use App\Models\TaskStatus;

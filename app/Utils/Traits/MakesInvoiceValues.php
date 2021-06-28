@@ -11,10 +11,7 @@
 
 namespace App\Utils\Traits;
 
-use App\Models\Country;
-use App\Models\Credit;
 use App\Models\Invoice;
-use App\Models\Quote;
 use App\Utils\Helpers;
 use App\Utils\Number;
 use Carbon\Carbon;
@@ -416,7 +413,10 @@ trait MakesInvoiceValues
                 $replacement = sprintf('%s to %s', $_left, $_right);
 
                 $value = preg_replace(
-                    sprintf('/%s/', preg_quote($match)), $replacement, $value, 1
+                    sprintf('/%s/', preg_quote($match)),
+                    $replacement,
+                    $value,
+                    1
                 );
             }
         }
@@ -438,7 +438,10 @@ trait MakesInvoiceValues
 
             if (!Str::contains($match, ['-', '+', '/', '*'])) {
                 $value = preg_replace(
-                    sprintf('/%s/', $matches->keys()->first()), $replacements['literal'][$matches->keys()->first()], $value, 1
+                    sprintf('/%s/', $matches->keys()->first()),
+                    $replacements['literal'][$matches->keys()->first()],
+                    $value,
+                    1
                 );
             }
 
@@ -478,7 +481,10 @@ trait MakesInvoiceValues
                 }
 
                 $value = preg_replace(
-                    $target, $output, $value, 1
+                    $target,
+                    $output,
+                    $value,
+                    1
                 );
             }
         }

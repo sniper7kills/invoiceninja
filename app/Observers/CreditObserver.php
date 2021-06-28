@@ -11,11 +11,8 @@
 
 namespace App\Observers;
 
-use App\Jobs\Util\UnlinkFile;
-use App\Jobs\Util\WebhookHandler;
 use App\Models\Client;
 use App\Models\Credit;
-use App\Models\Webhook;
 
 class CreditObserver
 {
@@ -37,7 +34,6 @@ class CreditObserver
      */
     public function updated(Credit $credit)
     {
-
     }
 
     /**
@@ -48,7 +44,6 @@ class CreditObserver
      */
     public function deleted(Credit $credit)
     {
-
     }
 
     /**

@@ -49,7 +49,6 @@ class PaymentFailureObject
         $this->amount = $amount;
 
         $this->company = $company;
-
     }
 
     public function build()
@@ -69,20 +68,16 @@ class PaymentFailureObject
 
     private function getAmount()
     {
-
-       return $this->amount;
-
+        return $this->amount;
     }
 
     private function getSubject()
     {
-
         return
             ctrans(
                 'texts.payment_failed_subject',
                 ['client' => $this->client->present()->name()]
             );
-
     }
 
     private function getData()
@@ -111,7 +106,6 @@ class PaymentFailureObject
 
     private function buildFailedInvoices()
     {
-
         $text = '';
 
         // foreach($this->invoices as $invoice)
@@ -122,6 +116,5 @@ class PaymentFailureObject
         // }
 
         return $text;
-
     }
 }

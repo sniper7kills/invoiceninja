@@ -39,8 +39,7 @@ class CreateAccountActivity implements ShouldQueue
     {
         MultiDB::setDb($event->company->db);
 
-        if(Ninja::isHosted())
-        {
+        if (Ninja::isHosted()) {
             $nmo = new NinjaMailerObject;
             $nmo->mailable = new \Modules\Admin\Mail\Welcome($event->user);
             $nmo->company =  $event->company;

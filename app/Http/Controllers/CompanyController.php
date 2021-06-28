@@ -25,14 +25,12 @@ use App\Jobs\Company\CreateCompany;
 use App\Jobs\Company\CreateCompanyPaymentTerms;
 use App\Jobs\Company\CreateCompanyTaskStatuses;
 use App\Jobs\Company\CreateCompanyToken;
-use App\Jobs\Ninja\RefundCancelledAccount;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Repositories\CompanyRepository;
 use App\Transformers\CompanyTransformer;
 use App\Transformers\CompanyUserTransformer;
-use App\Utils\Ninja;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\SavesDocuments;
 use App\Utils\Traits\Uploadable;
@@ -406,16 +404,18 @@ class CompanyController extends BaseController
      */
     public function update(UpdateCompanyRequest $request, Company $company)
     {
-        if ($request->hasFile('company_logo') || (is_array($request->input('settings')) && !array_key_exists('company_logo', $request->input('settings')))) 
+        if ($request->hasFile('company_logo') || (is_array($request->input('settings')) && !array_key_exists('company_logo', $request->input('settings')))) {
             $this->removeLogo($company);
+        }
         
 
         $company = $this->company_repo->save($request->all(), $company);
 
         $company->saveSettings($request->input('settings'), $company);
 
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->input('documents'), $company, false);
+        }
         
         $this->uploadLogo($request->file('company_logo'), $company, $company);
 
@@ -491,7 +491,7 @@ class CompanyController extends BaseController
         } else {
             $company_id = $company->id;
 
-            $company->company_users->each(function ($company_user){
+            $company->company_users->each(function ($company_user) {
                 $company_user->forceDelete();
             });
 
@@ -561,14 +561,14 @@ class CompanyController extends BaseController
      */
     public function upload(UploadCompanyRequest $request, Company $company)
     {
-
-        if(!$this->checkFeature(Account::FEATURE_DOCUMENTS))
+        if (!$this->checkFeature(Account::FEATURE_DOCUMENTS)) {
             return $this->featureFailure();
+        }
         
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->file('documents'), $company);
+        }
 
         return $this->itemResponse($company->fresh());
-
     }
 }

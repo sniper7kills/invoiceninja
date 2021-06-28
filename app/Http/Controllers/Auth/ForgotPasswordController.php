@@ -115,12 +115,12 @@ class ForgotPasswordController extends Controller
         // need to show to the user. Finally, we'll send out a proper response.
         $response = $this->broker()->sendResetLink(
             $this->credentials($request)
-        );        
+        );
 
         if ($request->ajax()) {
-
-            if($response == Password::RESET_THROTTLED)
+            if ($response == Password::RESET_THROTTLED) {
                 return response()->json(['message' => ctrans('passwords.throttled'), 'status' => false], 429);
+            }
 
             return $response == Password::RESET_LINK_SENT
                 ? response()->json(['message' => 'Reset link sent to your email.', 'status' => true], 201)

@@ -97,7 +97,7 @@ class PaymentController extends Controller
         $payable_invoices = collect($request->payable_invoices);
         $invoices = Invoice::whereIn('id', $this->transformKeys($payable_invoices->pluck('invoice_id')->toArray()))->withTrashed()->get();
 
-        $invoices->each(function($invoice){
+        $invoices->each(function ($invoice) {
             $invoice->service()->removeUnpaidGatewayFees()->save();
         });
 
@@ -174,7 +174,6 @@ class PaymentController extends Controller
                     ->route('client.invoices.index')
                     ->with('message', ctrans('texts.over_payments_disabled'));
             }
-
         }
 
         /*Iterate through invoices and add gateway fees and other payment metadata*/
@@ -304,7 +303,7 @@ class PaymentController extends Controller
 
         $payment_hash = PaymentHash::whereRaw('BINARY `hash`= ?', [$request->payment_hash])->first();
 
-            return $gateway
+        return $gateway
                 ->driver(auth()->user()->client)
                 ->setPaymentMethod($request->input('payment_method_id'))
                 ->setPaymentHash($payment_hash)

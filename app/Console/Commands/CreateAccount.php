@@ -12,36 +12,16 @@
 namespace App\Console\Commands;
 
 use App\DataMapper\CompanySettings;
-use App\DataMapper\FeesAndLimits;
-use App\Events\Invoice\InvoiceWasCreated;
-use App\Factory\InvoiceFactory;
-use App\Factory\InvoiceItemFactory;
-use App\Helpers\Invoice\InvoiceSum;
 use App\Jobs\Company\CreateCompanyPaymentTerms;
 use App\Jobs\Company\CreateCompanyTaskStatuses;
 use App\Jobs\Util\VersionCheck;
 use App\Models\Account;
-use App\Models\Client;
-use App\Models\ClientContact;
 use App\Models\Company;
-use App\Models\CompanyGateway;
 use App\Models\CompanyToken;
-use App\Models\Country;
-use App\Models\Credit;
-use App\Models\Expense;
-use App\Models\Product;
-use App\Models\Project;
-use App\Models\Quote;
-use App\Models\Task;
 use App\Models\User;
-use App\Models\Vendor;
-use App\Models\VendorContact;
 use App\Repositories\InvoiceRepository;
-use App\Utils\Ninja;
 use App\Utils\Traits\GeneratesCounter;
 use App\Utils\Traits\MakesHash;
-use Carbon\Carbon;
-use Faker\Factory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
@@ -82,12 +62,10 @@ class CreateAccount extends Command
         $this->warmCache();
 
         $this->createAccount();
-
     }
 
     private function createAccount()
     {
-
         $account = Account::factory()->create();
         $company = Company::factory()->create([
             'account_id' => $account->id,
@@ -132,7 +110,6 @@ class CreateAccount extends Command
         CreateCompanyPaymentTerms::dispatchNow($company, $user);
         CreateCompanyTaskStatuses::dispatchNow($company, $user);
         VersionCheck::dispatchNow();
-
     }
 
     private function warmCache()
@@ -162,5 +139,4 @@ class CreateAccount extends Command
             }
         }
     }
-
 }

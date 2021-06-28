@@ -45,7 +45,6 @@ class CreateCompanyTaskStatuses
      */
     public function handle()
     {
-
         MultiDB::setDb($this->company->db);
         
         $task_statuses = [

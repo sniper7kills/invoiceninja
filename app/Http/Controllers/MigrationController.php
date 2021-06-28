@@ -233,98 +233,94 @@ class MigrationController extends BaseController
             nlog($request->all());
         }
 
-    try {
-        return response()->json([
+        try {
+            return response()->json([
         '_id' => Str::uuid(),
         'method' => config('queue.default'),
         'started_at' => now(),
     ], 200);
+        } finally {
+            // Controller logic here
 
-    } finally {
-    // Controller logic here
+            foreach ($companies as $company) {
+                $is_valid = $request->file($company->company_index)->isValid();
 
-        foreach ($companies as $company) {
-            $is_valid = $request->file($company->company_index)->isValid();
+                if (!$is_valid) {
+                    continue;
+                }
 
-            if (!$is_valid) {
-                continue;
-            }
+                $user = auth()->user();
 
-            $user = auth()->user();
+                $company_count = $user->account->companies()->count();
 
-            $company_count = $user->account->companies()->count();
+                // Look for possible existing company (based on company keys).
+                $existing_company = Company::whereRaw('BINARY `company_key` = ?', [$company->company_key])->first();
 
-            // Look for possible existing company (based on company keys).
-            $existing_company = Company::whereRaw('BINARY `company_key` = ?', [$company->company_key])->first();
+                if (!$existing_company && $company_count >=10) {
+                    $nmo = new NinjaMailerObject;
+                    $nmo->mailable = new MaxCompanies($user->account->companies()->first());
+                    $nmo->company = $user->account->companies()->first();
+                    $nmo->settings = $user->account->companies()->first()->settings;
+                    $nmo->to_user = $user;
+                    NinjaMailerJob::dispatch($nmo);
+                    return;
+                } elseif ($existing_company && $company_count > 10) {
+                    $nmo = new NinjaMailerObject;
+                    $nmo->mailable = new MaxCompanies($user->account->companies()->first());
+                    $nmo->company = $user->account->companies()->first();
+                    $nmo->settings = $user->account->companies()->first()->settings;
+                    $nmo->to_user = $user;
+                    NinjaMailerJob::dispatch($nmo);
+                    return;
+                }
 
-            if(!$existing_company && $company_count >=10) {
-
-                $nmo = new NinjaMailerObject;
-                $nmo->mailable = new MaxCompanies($user->account->companies()->first());
-                $nmo->company = $user->account->companies()->first();
-                $nmo->settings = $user->account->companies()->first()->settings;
-                $nmo->to_user = $user;
-                NinjaMailerJob::dispatch($nmo);
-                return;
-            }
-            elseif($existing_company && $company_count > 10 ){
-
-                $nmo = new NinjaMailerObject;
-                $nmo->mailable = new MaxCompanies($user->account->companies()->first());
-                $nmo->company = $user->account->companies()->first();
-                $nmo->settings = $user->account->companies()->first()->settings;
-                $nmo->to_user = $user;
-                NinjaMailerJob::dispatch($nmo);
-                return;
-            }
-
-            $checks = [
+                $checks = [
                 'existing_company' => $existing_company ? (bool)1 : false,
                 'force' => property_exists($company, 'force') ? (bool) $company->force : false,
             ];
 
-            // If there's existing company and ** no ** force is provided - skip migration.
-            if ($checks['existing_company'] == true && $checks['force'] == false) {
-                nlog('Migrating: Existing company without force. (CASE_01)');
+                // If there's existing company and ** no ** force is provided - skip migration.
+                if ($checks['existing_company'] == true && $checks['force'] == false) {
+                    nlog('Migrating: Existing company without force. (CASE_01)');
 
-                $nmo = new NinjaMailerObject;
-                $nmo->mailable = new ExistingMigration($existing_company);
-                $nmo->company = $user->account->companies()->first();
-                $nmo->settings = $user->account->companies()->first();
-                $nmo->to_user = $user;
+                    $nmo = new NinjaMailerObject;
+                    $nmo->mailable = new ExistingMigration($existing_company);
+                    $nmo->company = $user->account->companies()->first();
+                    $nmo->settings = $user->account->companies()->first();
+                    $nmo->to_user = $user;
                 
-                NinjaMailerJob::dispatch($nmo);
+                    NinjaMailerJob::dispatch($nmo);
 
-                return response()->json([
+                    return response()->json([
                     '_id' => Str::uuid(),
                     'method' => config('queue.default'),
                     'started_at' => now(),
                 ], 200);
-            }
+                }
 
-            // If there's existing company and force ** is provided ** - purge the company and migrate again.
-            if ($checks['existing_company'] == true && $checks['force'] == true) {
-                nlog("purging the existing company here");
-                $this->purgeCompanyWithForceFlag($existing_company);
+                // If there's existing company and force ** is provided ** - purge the company and migrate again.
+                if ($checks['existing_company'] == true && $checks['force'] == true) {
+                    nlog("purging the existing company here");
+                    $this->purgeCompanyWithForceFlag($existing_company);
 
-                $account = auth()->user()->account;
-                $fresh_company = (new ImportMigrations())->getCompany($account);
-                $fresh_company->is_disabled = true;
-                $fresh_company->save();
+                    $account = auth()->user()->account;
+                    $fresh_company = (new ImportMigrations())->getCompany($account);
+                    $fresh_company->is_disabled = true;
+                    $fresh_company->save();
 
-                $account->default_company_id = $fresh_company->id;
-                $account->save();
+                    $account->default_company_id = $fresh_company->id;
+                    $account->save();
 
-                $fresh_company_token = new CompanyToken();
-                $fresh_company_token->user_id = $user->id;
-                $fresh_company_token->company_id = $fresh_company->id;
-                $fresh_company_token->account_id = $account->id;
-                $fresh_company_token->name = $request->token_name ?? Str::random(12);
-                $fresh_company_token->token = $request->token ?? Str::random(64);
-                $fresh_company_token->is_system = true;
-                $fresh_company_token->save();
+                    $fresh_company_token = new CompanyToken();
+                    $fresh_company_token->user_id = $user->id;
+                    $fresh_company_token->company_id = $fresh_company->id;
+                    $fresh_company_token->account_id = $account->id;
+                    $fresh_company_token->name = $request->token_name ?? Str::random(12);
+                    $fresh_company_token->token = $request->token ?? Str::random(64);
+                    $fresh_company_token->is_system = true;
+                    $fresh_company_token->save();
 
-                $user->companies()->attach($fresh_company->id, [
+                    $user->companies()->attach($fresh_company->id, [
                     'account_id' => $account->id,
                     'is_owner' => 1,
                     'is_admin' => 1,
@@ -333,30 +329,29 @@ class MigrationController extends BaseController
                     'permissions' => '',
                     'settings' => null,
                 ]);
-            }
+                }
 
-            // If there's no existing company migrate just normally.
-            if ($checks['existing_company'] == false) {
-
-                nlog("creating fresh company");
+                // If there's no existing company migrate just normally.
+                if ($checks['existing_company'] == false) {
+                    nlog("creating fresh company");
                 
-                $account = auth()->user()->account;
-                $fresh_company = (new ImportMigrations())->getCompany($account);
+                    $account = auth()->user()->account;
+                    $fresh_company = (new ImportMigrations())->getCompany($account);
 
-                $fresh_company->is_disabled = true;
-                $fresh_company->save();
+                    $fresh_company->is_disabled = true;
+                    $fresh_company->save();
 
-                $fresh_company_token = new CompanyToken();
-                $fresh_company_token->user_id = $user->id;
-                $fresh_company_token->company_id = $fresh_company->id;
-                $fresh_company_token->account_id = $account->id;
-                $fresh_company_token->name = $request->token_name ?? Str::random(12);
-                $fresh_company_token->token = $request->token ?? Str::random(64);
-                $fresh_company_token->is_system = true;
+                    $fresh_company_token = new CompanyToken();
+                    $fresh_company_token->user_id = $user->id;
+                    $fresh_company_token->company_id = $fresh_company->id;
+                    $fresh_company_token->account_id = $account->id;
+                    $fresh_company_token->name = $request->token_name ?? Str::random(12);
+                    $fresh_company_token->token = $request->token ?? Str::random(64);
+                    $fresh_company_token->is_system = true;
 
-                $fresh_company_token->save();
+                    $fresh_company_token->save();
 
-                $user->companies()->attach($fresh_company->id, [
+                    $user->companies()->attach($fresh_company->id, [
                     'account_id' => $account->id,
                     'is_owner' => 1,
                     'is_admin' => 1,
@@ -365,32 +360,29 @@ class MigrationController extends BaseController
                     'permissions' => '',
                     'settings' => null,
                 ]);
-            }
+                }
 
-            $migration_file = $request->file($company->company_index)
+                $migration_file = $request->file($company->company_index)
                 ->storeAs(
                     'migrations',
                     $request->file($company->company_index)->getClientOriginalName(),
                     'public'
                 );
 
-            if (app()->environment() == 'testing') {
-                nlog("environment is testing = bailing out now");
-                return;
-            }
+                if (app()->environment() == 'testing') {
+                    nlog("environment is testing = bailing out now");
+                    return;
+                }
 
                 nlog("starting migration job");
                 nlog($migration_file);
 
-                if(Ninja::isHosted())
+                if (Ninja::isHosted()) {
                     StartMigration::dispatch($migration_file, $user, $fresh_company)->onQueue('migration');
-                else
+                } else {
                     StartMigration::dispatch($migration_file, $user, $fresh_company);
-
-
+                }
+            }
         }
-
-    }
-
     }
 }

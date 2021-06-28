@@ -50,7 +50,6 @@ class AuthorizeTest extends TestCase
         if (! config('ninja.testvars.authorize')) {
             $this->markTestSkipped('authorize.net not configured');
         }
-
     }
 
     public function testUnpackingVars()
@@ -319,7 +318,7 @@ class AuthorizeTest extends TestCase
         $code = '';
         $description = '';
         
-        if($response->getTransactionResponse()->getMessages() !== null){
+        if ($response->getTransactionResponse()->getMessages() !== null) {
             $code = $response->getTransactionResponse()->getMessages()[0]->getCode();
             $description = $response->getTransactionResponse()->getMessages()[0]->getDescription();
         }

@@ -32,7 +32,6 @@ class QuotesTable extends Component
     public function mount()
     {
         MultiDB::setDb($this->company->db);
-
     }
 
     public function render()

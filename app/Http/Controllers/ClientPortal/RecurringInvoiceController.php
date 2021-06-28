@@ -13,8 +13,8 @@ namespace App\Http\Controllers\ClientPortal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\RecurringInvoices\RequestCancellationRequest;
-use App\Http\Requests\ClientPortal\RecurringInvoices\ShowRecurringInvoicesRequest;
 use App\Http\Requests\ClientPortal\RecurringInvoices\ShowRecurringInvoiceRequest;
+use App\Http\Requests\ClientPortal\RecurringInvoices\ShowRecurringInvoicesRequest;
 use App\Jobs\Mail\NinjaMailer;
 use App\Jobs\Mail\NinjaMailerJob;
 use App\Jobs\Mail\NinjaMailerObject;
@@ -70,11 +70,9 @@ class RecurringInvoiceController extends Controller
 
             $notifiable_users = $this->filterUsersByPermissions($recurring_invoice->company->company_users, $recurring_invoice, ['recurring_cancellation']);
 
-            $notifiable_users->each(function ($company_user) use($nmo){
-
+            $notifiable_users->each(function ($company_user) use ($nmo) {
                 $nmo->to_user = $company_user->user;
                 NinjaMailerJob::dispatch($nmo);
-
             });
 
             //$recurring_invoice->user->notify(new ClientContactRequestCancellation($recurring_invoice, auth()->user()));

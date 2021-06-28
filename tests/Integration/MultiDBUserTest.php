@@ -250,6 +250,5 @@ class MultiDBUserTest extends TestCase
         DB::connection('db-ninja-02')->table('users')->delete();
 
         config(['database.default' => config('ninja.db.default')]);
-
     }
 }

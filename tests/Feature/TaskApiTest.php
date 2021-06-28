@@ -66,14 +66,14 @@ class TaskApiTest extends TestCase
 
         $response->assertStatus(200);
 
-        try{
-        $response = $this->withHeaders([
+        try {
+            $response = $this->withHeaders([
                 'X-API-SECRET' => config('ninja.api_secret'),
                 'X-API-TOKEN' => $this->token,
             ])->post('/api/v1/tasks', $data);
 
-        $arr = $response->json();
-        }catch(ValidationException $e){
+            $arr = $response->json();
+        } catch (ValidationException $e) {
             $response->assertStatus(302);
         }
 
@@ -93,7 +93,6 @@ class TaskApiTest extends TestCase
         
         $arr = $response->json();
         $response->assertStatus(200);
-
     }
 
     public function testTaskPut()

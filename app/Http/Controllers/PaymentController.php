@@ -208,8 +208,9 @@ class PaymentController extends BaseController
     {
         $payment = $this->payment_repo->save($request->all(), PaymentFactory::create(auth()->user()->company()->id, auth()->user()->id));
 
-        if($request->has('email_receipt') && $request->input('email_receipt') == 'true' && !$payment->client->getSetting('client_manual_payment_notification'))
+        if ($request->has('email_receipt') && $request->input('email_receipt') == 'true' && !$payment->client->getSetting('client_manual_payment_notification')) {
             $payment->service()->sendEmail();
+        }
 
         return $this->itemResponse($payment);
     }
@@ -442,7 +443,6 @@ class PaymentController extends BaseController
      */
     public function destroy(DestroyPaymentRequest $request, Payment $payment)
     {
-
         $this->payment_repo->delete($payment);
 
         return $this->itemResponse($payment);
@@ -686,74 +686,74 @@ class PaymentController extends BaseController
     {
         $payment = $request->payment();
 
-// nlog($request->all());
+        // nlog($request->all());
 
         $payment = $payment->refund($request->all());
 
         return $this->itemResponse($payment);
     }
 
-/**
-     * Update the specified resource in storage.
-     *
-     * @param UploadPaymentRequest $request
-     * @param Payment $payment
-     * @return Response
-     *
-     *
-     *
-     * @OA\Put(
-     *      path="/api/v1/payments/{id}/upload",
-     *      operationId="uploadPayment",
-     *      tags={"payments"},
-     *      summary="Uploads a document to a payment",
-     *      description="Handles the uploading of a document to a payment",
-     *      @OA\Parameter(ref="#/components/parameters/X-Api-Secret"),
-     *      @OA\Parameter(ref="#/components/parameters/X-Api-Token"),
-     *      @OA\Parameter(ref="#/components/parameters/X-Requested-With"),
-     *      @OA\Parameter(ref="#/components/parameters/include"),
-     *      @OA\Parameter(
-     *          name="id",
-     *          in="path",
-     *          description="The Payment Hashed ID",
-     *          example="D2J234DFA",
-     *          required=true,
-     *          @OA\Schema(
-     *              type="string",
-     *              format="string",
-     *          ),
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Returns the Payment object",
-     *          @OA\Header(header="X-MINIMUM-CLIENT-VERSION", ref="#/components/headers/X-MINIMUM-CLIENT-VERSION"),
-     *          @OA\Header(header="X-RateLimit-Remaining", ref="#/components/headers/X-RateLimit-Remaining"),
-     *          @OA\Header(header="X-RateLimit-Limit", ref="#/components/headers/X-RateLimit-Limit"),
-     *          @OA\JsonContent(ref="#/components/schemas/Payment"),
-     *       ),
-     *       @OA\Response(
-     *          response=422,
-     *          description="Validation error",
-     *          @OA\JsonContent(ref="#/components/schemas/ValidationError"),
-     *
-     *       ),
-     *       @OA\Response(
-     *           response="default",
-     *           description="Unexpected Error",
-     *           @OA\JsonContent(ref="#/components/schemas/Error"),
-     *       ),
-     *     )
-     */
+    /**
+         * Update the specified resource in storage.
+         *
+         * @param UploadPaymentRequest $request
+         * @param Payment $payment
+         * @return Response
+         *
+         *
+         *
+         * @OA\Put(
+         *      path="/api/v1/payments/{id}/upload",
+         *      operationId="uploadPayment",
+         *      tags={"payments"},
+         *      summary="Uploads a document to a payment",
+         *      description="Handles the uploading of a document to a payment",
+         *      @OA\Parameter(ref="#/components/parameters/X-Api-Secret"),
+         *      @OA\Parameter(ref="#/components/parameters/X-Api-Token"),
+         *      @OA\Parameter(ref="#/components/parameters/X-Requested-With"),
+         *      @OA\Parameter(ref="#/components/parameters/include"),
+         *      @OA\Parameter(
+         *          name="id",
+         *          in="path",
+         *          description="The Payment Hashed ID",
+         *          example="D2J234DFA",
+         *          required=true,
+         *          @OA\Schema(
+         *              type="string",
+         *              format="string",
+         *          ),
+         *      ),
+         *      @OA\Response(
+         *          response=200,
+         *          description="Returns the Payment object",
+         *          @OA\Header(header="X-MINIMUM-CLIENT-VERSION", ref="#/components/headers/X-MINIMUM-CLIENT-VERSION"),
+         *          @OA\Header(header="X-RateLimit-Remaining", ref="#/components/headers/X-RateLimit-Remaining"),
+         *          @OA\Header(header="X-RateLimit-Limit", ref="#/components/headers/X-RateLimit-Limit"),
+         *          @OA\JsonContent(ref="#/components/schemas/Payment"),
+         *       ),
+         *       @OA\Response(
+         *          response=422,
+         *          description="Validation error",
+         *          @OA\JsonContent(ref="#/components/schemas/ValidationError"),
+         *
+         *       ),
+         *       @OA\Response(
+         *           response="default",
+         *           description="Unexpected Error",
+         *           @OA\JsonContent(ref="#/components/schemas/Error"),
+         *       ),
+         *     )
+         */
     public function upload(UploadPaymentRequest $request, Payment $payment)
     {
-
-        if(!$this->checkFeature(Account::FEATURE_DOCUMENTS))
+        if (!$this->checkFeature(Account::FEATURE_DOCUMENTS)) {
             return $this->featureFailure();
+        }
 
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->file('documents'), $payment);
+        }
 
         return $this->itemResponse($payment->fresh());
-
-    }  
+    }
 }

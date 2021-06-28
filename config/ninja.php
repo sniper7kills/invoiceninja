@@ -38,7 +38,7 @@ return [
     'is_docker' => env('IS_DOCKER', false),
     'sentry_dsn' => env('SENTRY_LARAVEL_DSN', 'https://9b4e15e575214354a7d666489783904a@sentry.invoicing.co/6'),
     'environment' => env('NINJA_ENVIRONMENT', 'selfhost'), // 'hosted', 'development', 'selfhost', 'reseller'
-	'preconfigured_install' => env('PRECONFIGURED_INSTALL',false),
+    'preconfigured_install' => env('PRECONFIGURED_INSTALL', false),
     'update_secret' => env('UPDATE_SECRET', ''),
     // Settings used by invoiceninja.com
 
@@ -151,7 +151,7 @@ return [
     'wepay' => [
         'environment' => env('WEPAY_ENVIRONMENT', 'stage'),
         'client_id' => env('WEPAY_CLIENT_ID', ''),
-        'client_secret' => env('WEPAY_CLIENT_SECRET',''),
+        'client_secret' => env('WEPAY_CLIENT_SECRET', ''),
         'fee_payer' => env('WEPAY_FEE_PAYER'),
         'fee_cc_multiplier' => env('WEPAY_APP_FEE_CC_MULTIPLIER'),
         'fee_ach_multiplier' => env('WEPAY_APP_FEE_ACH_MULTIPLIER'),

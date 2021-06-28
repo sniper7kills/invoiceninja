@@ -19,7 +19,6 @@ use Illuminate\Support\Carbon;
  */
 trait MakesReminders
 {
-    
     public function inReminderWindow($schedule_reminder, $num_days_reminder)
     {
         switch ($schedule_reminder) {
@@ -76,7 +75,7 @@ trait MakesReminders
     }
 
     private function checkEndlessReminder($last_sent_date, $endless_reminder_frequency_id) :bool
-    {   
+    {
         nlog("endless date match = ".$this->addTimeInterval($last_sent_date, $endless_reminder_frequency_id));
         nlog("Endless reminder bool = ");
         nlog(Carbon::now()->startOfDay()->eq($this->addTimeInterval($last_sent_date, $endless_reminder_frequency_id)));
@@ -89,14 +88,14 @@ trait MakesReminders
     }
 
     private function addTimeInterval($date, $endless_reminder_frequency_id) :?Carbon
-    {   
-
-        if (!$date) 
+    {
+        if (!$date) {
             return null;
+        }
         
         switch ($endless_reminder_frequency_id) {
             case RecurringInvoice::FREQUENCY_DAILY:
-                return Carbon::parse($date)->addDay()->startOfDay(); 
+                return Carbon::parse($date)->addDay()->startOfDay();
            case RecurringInvoice::FREQUENCY_WEEKLY:
                 return Carbon::parse($date)->addWeek()->startOfDay();
             case RecurringInvoice::FREQUENCY_TWO_WEEKS:

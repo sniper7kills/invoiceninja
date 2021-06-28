@@ -399,7 +399,6 @@ class TaskStatusController extends BaseController
      */
     public function destroy(DestroyTaskStatusRequest $request, TaskStatus $task_status)
     {
-        
         $task_status = $this->task_status_repo->delete($task_status);
      
         return $this->itemResponse($task_status);

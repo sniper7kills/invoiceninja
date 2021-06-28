@@ -15,11 +15,9 @@ use App\DataMapper\Analytics\EmailFailure;
 use App\DataMapper\Analytics\EmailSuccess;
 use App\Events\Invoice\InvoiceWasEmailedAndFailed;
 use App\Events\Payment\PaymentWasEmailedAndFailed;
-use App\Jobs\Mail\NinjaMailerObject;
 use App\Jobs\Util\SystemLogger;
 use App\Libraries\Google\Google;
 use App\Libraries\MultiDB;
-use App\Mail\TemplateEmail;
 use App\Models\ClientContact;
 use App\Models\Company;
 use App\Models\Invoice;
@@ -37,7 +35,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Mail;
 use Turbo124\Beacon\Facades\LightLogs;
 
@@ -63,17 +60,16 @@ class NinjaMailerJob implements ShouldQueue
 
     public function __construct(NinjaMailerObject $nmo, bool $override = false)
     {
-
         $this->nmo = $nmo;
         $this->override = $override;
-
     }
 
     public function handle()
     {
         /*If we are migrating data we don't want to fire any emails*/
-        if ($this->nmo->company->is_disabled && !$this->override) 
+        if ($this->nmo->company->is_disabled && !$this->override) {
             return true;
+        }
         
         /*Set the correct database*/
         MultiDB::setDb($this->nmo->company->db);
@@ -85,16 +81,14 @@ class NinjaMailerJob implements ShouldQueue
         $this->setMailDriver();
 
         if (strlen($this->nmo->settings->reply_to_email) > 1) {
-            
-            if(property_exists($this->nmo->settings, 'reply_to_name'))
+            if (property_exists($this->nmo->settings, 'reply_to_name')) {
                 $reply_to_name = strlen($this->nmo->settings->reply_to_name) > 3 ? $this->nmo->settings->reply_to_name : $this->nmo->settings->reply_to_email;
-            else
+            } else {
                 $reply_to_name = $this->nmo->settings->reply_to_email;
+            }
 
             $this->nmo->mailable->replyTo($this->nmo->settings->reply_to_email, $reply_to_name);
-
-        }
-        else {
+        } else {
             $this->nmo->mailable->replyTo($this->company->owner()->email, $this->company->owner()->present()->name());
         }
 
@@ -109,16 +103,16 @@ class NinjaMailerJob implements ShouldQueue
 
             LightLogs::create(new EmailSuccess($this->nmo->company->company_key))
                      ->batch();
-
         } catch (\Exception $e) {
-
             nlog("error failed with {$e->getMessage()}");
 
-            if($this->nmo->entity)
+            if ($this->nmo->entity) {
                 $this->entityEmailFailed($e->getMessage());
+            }
 
-            if(Ninja::isHosted())
+            if (Ninja::isHosted()) {
                 app('sentry')->captureException($e);
+            }
         }
     }
 
@@ -139,8 +133,9 @@ class NinjaMailerJob implements ShouldQueue
                 break;
         }
 
-        if ($this->nmo->to_user instanceof ClientContact) 
+        if ($this->nmo->to_user instanceof ClientContact) {
             $this->logMailError($message, $this->nmo->to_user->client);
+        }
     }
 
     private function setMailDriver()
@@ -161,13 +156,13 @@ class NinjaMailerJob implements ShouldQueue
             default:
                 break;
         }
-
     }
 
     private function setGmailMailer()
     {
-        if(LaravelGmail::check())
+        if (LaravelGmail::check()) {
             LaravelGmail::logout();
+        }
 
         $sending_user = $this->nmo->settings->gmail_sending_user_id;
 
@@ -177,17 +172,14 @@ class NinjaMailerJob implements ShouldQueue
 
         $google = (new Google())->init();
 
-        try{
-
+        try {
             if ($google->getClient()->isAccessTokenExpired()) {
                 $google->refreshToken($user);
                 $user = $user->fresh();
             }
 
             $google->getClient()->setAccessToken(json_encode($user->oauth_user_token));
-
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->logMailError('Gmail Token Invalid', $this->company->clients()->first());
             $this->nmo->settings->email_sending_method = 'default';
             return $this->setMailDriver();
@@ -209,10 +201,9 @@ class NinjaMailerJob implements ShouldQueue
         $this->nmo
              ->mailable
              ->from($user->email, $user->name())
-             ->withSwiftMessage(function ($message) use($token) {
-                $message->getHeaders()->addTextHeader('GmailToken', $token);     
+             ->withSwiftMessage(function ($message) use ($token) {
+                 $message->getHeaders()->addTextHeader('GmailToken', $token);
              });
-
     }
 
     private function logMailError($errors, $recipient_object)

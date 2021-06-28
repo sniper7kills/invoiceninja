@@ -29,10 +29,9 @@ class CreateInvitations extends AbstractService
 
     public function run()
     {
-
         $contacts = $this->invoice->client->contacts;
 
-        if($contacts->count() == 0){
+        if ($contacts->count() == 0) {
             $this->createBlankContact();
 
             $this->invoice->refresh();
@@ -56,14 +55,13 @@ class CreateInvitations extends AbstractService
             }
         });
 
-        if($this->invoice->invitations()->count() == 0) {
-            
+        if ($this->invoice->invitations()->count() == 0) {
             $contact = $this->createBlankContact();
 
-                $ii = InvoiceInvitationFactory::create($this->invoice->company_id, $this->invoice->user_id);
-                $ii->invoice_id = $this->invoice->id;
-                $ii->client_contact_id = $contact->id;
-                $ii->save();
+            $ii = InvoiceInvitationFactory::create($this->invoice->company_id, $this->invoice->user_id);
+            $ii->invoice_id = $this->invoice->id;
+            $ii->client_contact_id = $contact->id;
+            $ii->save();
         }
 
         return $this->invoice;

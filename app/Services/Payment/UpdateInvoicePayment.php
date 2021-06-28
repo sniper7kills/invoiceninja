@@ -40,7 +40,6 @@ class UpdateInvoicePayment
         $invoices = Invoice::whereIn('id', $this->transformKeys(array_column($paid_invoices, 'invoice_id')))->withTrashed()->get();
 
         collect($paid_invoices)->each(function ($paid_invoice) use ($invoices) {
-
             $invoice = $invoices->first(function ($inv) use ($paid_invoice) {
                 return $paid_invoice->invoice_id == $inv->hashed_id;
             });
@@ -52,8 +51,9 @@ class UpdateInvoicePayment
             }
 
             /* Need to determine here is we have an OVER payment - if YES only apply the max invoice amount */
-                if($paid_amount > $invoice->partial && $paid_amount > $invoice->balance)
-                    $paid_amount = $invoice->balance;
+            if ($paid_amount > $invoice->partial && $paid_amount > $invoice->balance) {
+                $paid_amount = $invoice->balance;
+            }
 
             /* Updates the company ledger */
             $this->payment

@@ -224,12 +224,13 @@ class RecurringInvoice extends BaseModel
         
         $offset = $this->client->timezone_offset();
 
-        /* 
+        /*
         As we are firing at UTC+0 if our offset is negative it is technically firing the day before so we always need
         to add ON a day - a day = 86400 seconds
         */
-        if($offset < 0)
+        if ($offset < 0) {
             $offset += 86400;
+        }
 
         switch ($this->frequency_id) {
             case self::FREQUENCY_DAILY:
@@ -436,11 +437,11 @@ class RecurringInvoice extends BaseModel
             ];
 
             /* Fixes the timeshift in case the offset is negative which cause a infinite loop due to UTC +0*/
-            if($this->client->timezone_offset() < 0){
+            if ($this->client->timezone_offset() < 0) {
                 $next_send_date = $this->nextDateByFrequency($next_send_date->addDay()->format('Y-m-d'));
-            }
-            else
+            } else {
                 $next_send_date = $this->nextDateByFrequency($next_send_date->format('Y-m-d'));
+            }
         }
 
         return $data;

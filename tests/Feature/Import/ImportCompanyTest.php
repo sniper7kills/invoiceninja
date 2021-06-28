@@ -10,7 +10,6 @@
  */
 namespace Tests\Feature\Import;
 
-use App\Jobs\Import\CSVImport;
 use App\Models\Account;
 use App\Models\Activity;
 use App\Models\Backup;
@@ -32,8 +31,8 @@ use App\Models\GroupSetting;
 use App\Models\Invoice;
 use App\Models\InvoiceInvitation;
 use App\Models\Payment;
-use App\Models\PaymentTerm;
 use App\Models\Paymentable;
+use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\Project;
 use App\Models\Quote;
@@ -46,20 +45,14 @@ use App\Models\TaskStatus;
 use App\Models\TaxRate;
 use App\Models\User;
 use App\Models\Vendor;
-use App\Models\VendorContact;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Routing\Middleware\ThrottleRequests;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
-use League\Csv\Reader;
-use League\Csv\Statement;
-use Tests\MockAccountData;
 use Tests\TestCase;
 
 /**
  * @test
- * 
+ *
  */
 class ImportCompanyTest extends TestCase
 {
@@ -81,7 +74,7 @@ class ImportCompanyTest extends TestCase
 
         $this->withoutExceptionHandling();
 
-        Account::all()->each(function ($account){
+        Account::all()->each(function ($account) {
             $account->delete();
         });
 
@@ -92,20 +85,20 @@ class ImportCompanyTest extends TestCase
 
         $zip = new \ZipArchive;
         $res = $zip->open($backup_json_file_zip);
-        if ($res === TRUE) {
-          $zip->extractTo(sys_get_temp_dir());
-          $zip->close();
-        } 
+        if ($res === true) {
+            $zip->extractTo(sys_get_temp_dir());
+            $zip->close();
+        }
 
         $backup_json_file = sys_get_temp_dir() . "/backup/backup.json";
 
         $this->backup_json_object = json_decode(file_get_contents($backup_json_file));
 
-        Credit::all()->each(function($credit){
+        Credit::all()->each(function ($credit) {
             $credit->forceDelete();
         });
 
-        CreditInvitation::all()->each(function($credit){
+        CreditInvitation::all()->each(function ($credit) {
             $credit->forceDelete();
         });
     }
@@ -117,14 +110,14 @@ class ImportCompanyTest extends TestCase
         $zip = new \ZipArchive;
         $res = $zip->open($backup_json_file_zip);
 
-        if ($res === TRUE) {
-          $zip->extractTo(sys_get_temp_dir());
-          $zip->close();
-        } 
+        if ($res === true) {
+            $zip->extractTo(sys_get_temp_dir());
+            $zip->close();
+        }
 
         $backup_json_file = sys_get_temp_dir() . "/backup/backup.json";
 
-        $this->assertTrue(is_array(json_decode(file_get_contents($backup_json_file),1)));
+        $this->assertTrue(is_array(json_decode(file_get_contents($backup_json_file), 1)));
 
         unlink($backup_json_file);
     }
@@ -136,13 +129,12 @@ class ImportCompanyTest extends TestCase
 
     public function testImportUsers()
     {
-
         $this->assertTrue(property_exists($this->backup_json_object, 'app_version'));
 
         /***************************** Users *****************************/
         $this->assertTrue(property_exists($this->backup_json_object, 'users'));
 
-        User::all()->each(function ($user){
+        User::all()->each(function ($user) {
             $user->forceDelete();
         });
 
@@ -150,8 +142,7 @@ class ImportCompanyTest extends TestCase
 
         $this->assertEquals(2, count($this->backup_json_object->users));
 
-        foreach ($this->backup_json_object->users as $user)
-        {
+        foreach ($this->backup_json_object->users as $user) {
             $user_array = (array)$user;
             unset($user_array['laravel_through_key']);
             unset($user_array['hashed_id']);
@@ -164,7 +155,6 @@ class ImportCompanyTest extends TestCase
             $new_user->save(['timestamps' => false]);
 
             $this->ids['users']["{$user->hashed_id}"] = $new_user->id;
-
         }
 
         User::reguard();
@@ -179,8 +169,7 @@ class ImportCompanyTest extends TestCase
 
         CompanyUser::unguard();
 
-        foreach($this->backup_json_object->company_users as $cu)
-        {
+        foreach ($this->backup_json_object->company_users as $cu) {
             $user_id = $this->transformId('users', $cu->user_id);
 
             $cu_array = (array)$cu;
@@ -191,13 +180,12 @@ class ImportCompanyTest extends TestCase
             unset($cu_array['id']);
 
             $new_cu = CompanyUser::firstOrNew(
-                        ['user_id' => $user_id, 'company_id' => $this->company->id],
-                        $cu_array,
-                    );
+                ['user_id' => $user_id, 'company_id' => $this->company->id],
+                $cu_array,
+            );
 
             $new_cu->account_id = $this->account->id;
             $new_cu->save(['timestamps' => false]);
-            
         }
 
         CompanyUser::reguard();
@@ -212,8 +200,7 @@ class ImportCompanyTest extends TestCase
 
         CompanyToken::unguard();
 
-        foreach($this->backup_json_object->company_tokens as $ct)
-        {
+        foreach ($this->backup_json_object->company_tokens as $ct) {
             $user_id = $this->transformId('users', $ct->user_id);
 
             $ct_array = (array)$ct;
@@ -224,13 +211,12 @@ class ImportCompanyTest extends TestCase
             unset($ct_array['id']);
 
             $new_ct = CompanyToken::firstOrNew(
-                        ['user_id' => $user_id, 'company_id' => $this->company->id],
-                        $ct_array,
-                    );
+                ['user_id' => $user_id, 'company_id' => $this->company->id],
+                $ct_array,
+            );
 
             $new_ct->account_id = $this->account->id;
             $new_ct->save(['timestamps' => false]);
-            
         }
 
         CompanyToken::reguard();
@@ -244,9 +230,7 @@ class ImportCompanyTest extends TestCase
 
         $this->assertEquals(8, count($this->backup_json_object->payment_terms));
 
-        foreach($this->backup_json_object->payment_terms as $obj)
-        {
-        
+        foreach ($this->backup_json_object->payment_terms as $obj) {
             $user_id = $this->transformId('users', $obj->user_id);
 
             $obj_array = (array)$obj;
@@ -257,12 +241,11 @@ class ImportCompanyTest extends TestCase
             unset($obj_array['id']);
 
             $new_obj = PaymentTerm::firstOrNew(
-                        ['num_days' => $obj->num_days, 'company_id' => $this->company->id],
-                        $obj_array,
-                    );
+                ['num_days' => $obj->num_days, 'company_id' => $this->company->id],
+                $obj_array,
+            );
 
             $new_obj->save(['timestamps' => false]);
-            
         }
 
         PaymentTerm::reguard();
@@ -275,9 +258,7 @@ class ImportCompanyTest extends TestCase
 
         $this->assertEquals(2, count($this->backup_json_object->tax_rates));
 
-        foreach($this->backup_json_object->tax_rates as $obj)
-        {
-        
+        foreach ($this->backup_json_object->tax_rates as $obj) {
             $user_id = $this->transformId('users', $obj->user_id);
 
             $obj_array = (array)$obj;
@@ -288,12 +269,11 @@ class ImportCompanyTest extends TestCase
             unset($obj_array['tax_rate_id']);
 
             $new_obj = TaxRate::firstOrNew(
-                        ['name' => $obj->name, 'company_id' => $this->company->id, 'rate' => $obj->rate],
-                        $obj_array,
-                    );
+                ['name' => $obj->name, 'company_id' => $this->company->id, 'rate' => $obj->rate],
+                $obj_array,
+            );
 
             $new_obj->save(['timestamps' => false]);
-            
         }
 
         TaxRate::reguard();
@@ -306,9 +286,7 @@ class ImportCompanyTest extends TestCase
 
         $this->assertEquals(2, count($this->backup_json_object->expense_categories));
 
-        foreach($this->backup_json_object->expense_categories as $obj)
-        {
-        
+        foreach ($this->backup_json_object->expense_categories as $obj) {
             $user_id = $this->transformId('users', $obj->user_id);
 
             $obj_array = (array)$obj;
@@ -318,12 +296,11 @@ class ImportCompanyTest extends TestCase
             unset($obj_array['id']);
 
             $new_obj = ExpenseCategory::firstOrNew(
-                        ['name' => $obj->name, 'company_id' => $this->company->id],
-                        $obj_array,
-                    );
+                ['name' => $obj->name, 'company_id' => $this->company->id],
+                $obj_array,
+            );
 
             $new_obj->save(['timestamps' => false]);
-            
         }
 
         ExpenseCategory::reguard();
@@ -337,9 +314,7 @@ class ImportCompanyTest extends TestCase
 
         $this->assertEquals(4, count($this->backup_json_object->task_statuses));
 
-        foreach($this->backup_json_object->task_statuses as $obj)
-        {
-        
+        foreach ($this->backup_json_object->task_statuses as $obj) {
             $user_id = $this->transformId('users', $obj->user_id);
 
             $obj_array = (array)$obj;
@@ -349,12 +324,11 @@ class ImportCompanyTest extends TestCase
             unset($obj_array['id']);
 
             $new_obj = TaskStatus::firstOrNew(
-                        ['name' => $obj->name, 'company_id' => $this->company->id],
-                        $obj_array,
-                    );
+                ['name' => $obj->name, 'company_id' => $this->company->id],
+                $obj_array,
+            );
 
             $new_obj->save(['timestamps' => false]);
-            
         }
 
         TaskStatus::reguard();
@@ -367,9 +341,7 @@ class ImportCompanyTest extends TestCase
 
         $this->assertEquals(1, count($this->backup_json_object->clients));
 
-        foreach($this->backup_json_object->clients as $obj)
-        {
-        
+        foreach ($this->backup_json_object->clients as $obj) {
             $user_id = $this->transformId('users', $obj->user_id);
             $assigned_user_id = $this->transformId('users', $obj->assigned_user_id);
 
@@ -384,14 +356,13 @@ class ImportCompanyTest extends TestCase
             unset($obj_array['documents']);
             
             $new_obj = Client::firstOrNew(
-                        ['number' => $obj->number, 'company_id' => $this->company->id],
-                        $obj_array,
-                    );
+                ['number' => $obj->number, 'company_id' => $this->company->id],
+                $obj_array,
+            );
 
             $new_obj->save(['timestamps' => false]);
             
             $this->ids['clients']["{$obj->hashed_id}"] = $new_obj->id;
-
         }
 
         Client::reguard();
@@ -404,9 +375,7 @@ class ImportCompanyTest extends TestCase
 
         $this->assertEquals(1, count($this->backup_json_object->client_contacts));
 
-        foreach($this->backup_json_object->client_contacts as $obj)
-        {
-
+        foreach ($this->backup_json_object->client_contacts as $obj) {
             $user_id = $this->transformId('users', $obj->user_id);
             $client_id = $this->transformId('clients', $obj->client_id);
 
@@ -423,14 +392,13 @@ class ImportCompanyTest extends TestCase
             $obj_array['client_id'] = $client_id;
 
             $new_obj = ClientContact::firstOrNew(
-                        ['email' => $obj->email, 'company_id' => $this->company->id],
-                        $obj_array,
-                    );
+                ['email' => $obj->email, 'company_id' => $this->company->id],
+                $obj_array,
+            );
 
             $new_obj->save(['timestamps' => false]);
             
             $this->ids['client_contacts']["{$obj->hashed_id}"] = $new_obj->id;
-
         }
 
         ClientContact::reguard();
@@ -438,15 +406,17 @@ class ImportCompanyTest extends TestCase
         $this->assertEquals(1, ClientContact::count());
         /***************************** Client Contacts *****************************/
 
-//vendors!
+        //vendors!
         /* Generic */
         $this->assertEquals(1, count($this->backup_json_object->vendors));
 
-        $this->genericImport(Vendor::class, 
-            ['user_id', 'assigned_user_id', 'company_id', 'id', 'hashed_id'], 
-            [['users' => 'user_id'], ['users' =>'assigned_user_id']], 
+        $this->genericImport(
+            Vendor::class,
+            ['user_id', 'assigned_user_id', 'company_id', 'id', 'hashed_id'],
+            [['users' => 'user_id'], ['users' =>'assigned_user_id']],
             'vendors',
-            'number');
+            'number'
+        );
 
         $this->assertEquals(1, Vendor::count());
 
@@ -454,313 +424,344 @@ class ImportCompanyTest extends TestCase
 
         $this->assertEquals(1, count($this->backup_json_object->projects));
         //$class, $unset, $transforms, $object_property, $match_key
-        $this->genericImport(Project::class, 
-            ['user_id', 'assigned_user_id', 'company_id', 'id', 'hashed_id','client_id'], 
-            [['users' => 'user_id'], ['users' =>'assigned_user_id'], ['clients' => 'client_id']], 
+        $this->genericImport(
+            Project::class,
+            ['user_id', 'assigned_user_id', 'company_id', 'id', 'hashed_id','client_id'],
+            [['users' => 'user_id'], ['users' =>'assigned_user_id'], ['clients' => 'client_id']],
             'projects',
-            'number');
+            'number'
+        );
 
         $this->assertEquals(1, Project::count());
 
-//projects!
+        //projects!
 
-//products!
+        //products!
 
         $this->assertEquals(1, count($this->backup_json_object->products));
 
-        $this->genericNewClassImport(Product::class,
+        $this->genericNewClassImport(
+            Product::class,
             ['user_id', 'company_id', 'hashed_id', 'id'],
             [['users' => 'user_id'], ['users' =>'assigned_user_id'], ['vendors' => 'vendor_id'], ['projects' => 'project_id']],
-            'products' 
+            'products'
         );
         $this->assertEquals(1, Product::count());
 
-//company gateways        
+        //company gateways
 
         $this->assertEquals(1, count($this->backup_json_object->company_gateways));
 
-        $this->genericNewClassImport(CompanyGateway::class,
+        $this->genericNewClassImport(
+            CompanyGateway::class,
             ['user_id', 'company_id', 'hashed_id', 'id'],
             [['users' => 'user_id']],
-            'company_gateways' 
+            'company_gateways'
         );
 
         $this->assertEquals(1, CompanyGateway::count());
 
-//company gateways
+        //company gateways
 
 
-//client gateway tokens
+        //client gateway tokens
 
-        $this->genericNewClassImport(ClientGatewayToken::class, 
-            ['company_id', 'id', 'hashed_id','client_id'], 
-            [['clients' => 'client_id']], 
-            'client_gateway_tokens');
+        $this->genericNewClassImport(
+            ClientGatewayToken::class,
+            ['company_id', 'id', 'hashed_id','client_id'],
+            [['clients' => 'client_id']],
+            'client_gateway_tokens'
+        );
 
-//client gateway tokens
+        //client gateway tokens
 
-//Group Settings
-        $this->genericImport(GroupSetting::class, 
-            ['user_id', 'company_id', 'id', 'hashed_id',], 
-            [['users' => 'user_id']], 
+        //Group Settings
+        $this->genericImport(
+            GroupSetting::class,
+            ['user_id', 'company_id', 'id', 'hashed_id',],
+            [['users' => 'user_id']],
             'group_settings',
-            'name');
-//Group Settings
+            'name'
+        );
+        //Group Settings
 
-//Subscriptions
+        //Subscriptions
         $this->assertEquals(1, count($this->backup_json_object->subscriptions));
 
-        $this->genericImport(Subscription::class, 
-            ['user_id', 'assigned_user_id', 'company_id', 'id', 'hashed_id',], 
-            [['group_settings' => 'group_id'], ['users' => 'user_id'], ['users' => 'assigned_user_id']], 
+        $this->genericImport(
+            Subscription::class,
+            ['user_id', 'assigned_user_id', 'company_id', 'id', 'hashed_id',],
+            [['group_settings' => 'group_id'], ['users' => 'user_id'], ['users' => 'assigned_user_id']],
             'subscriptions',
-            'name');
+            'name'
+        );
 
         $this->assertEquals(1, Subscription::count());
 
-//Subscriptions
+        //Subscriptions
 
-// Recurring Invoices
+        // Recurring Invoices
  
         $this->assertEquals(2, count($this->backup_json_object->recurring_invoices));
 
-        $this->genericImport(RecurringInvoice::class, 
-            ['user_id', 'assigned_user_id', 'company_id', 'id', 'hashed_id', 'client_id','subscription_id','project_id','vendor_id','status'], 
+        $this->genericImport(
+            RecurringInvoice::class,
+            ['user_id', 'assigned_user_id', 'company_id', 'id', 'hashed_id', 'client_id','subscription_id','project_id','vendor_id','status'],
             [
-                ['subscriptions' => 'subscription_id'], 
-                ['users' => 'user_id'], 
+                ['subscriptions' => 'subscription_id'],
+                ['users' => 'user_id'],
                 ['users' => 'assigned_user_id'],
                 ['clients' => 'client_id'],
                 ['projects' => 'project_id'],
                 ['vendors' => 'vendor_id'],
                 ['clients' => 'client_id'],
-            ], 
+            ],
             'recurring_invoices',
-            'number');
+            'number'
+        );
 
         $this->assertEquals(2, RecurringInvoice::count());
 
-// Recurring Invoices
+        // Recurring Invoices
 
 
-// Recurring Invoice Invitations
+        // Recurring Invoice Invitations
 
         $this->assertEquals(2, count($this->backup_json_object->recurring_invoice_invitations));
 
-        $this->genericImport(RecurringInvoiceInvitation::class, 
-            ['user_id', 'client_contact_id', 'company_id', 'id', 'hashed_id', 'recurring_invoice_id'], 
+        $this->genericImport(
+            RecurringInvoiceInvitation::class,
+            ['user_id', 'client_contact_id', 'company_id', 'id', 'hashed_id', 'recurring_invoice_id'],
             [
-                ['users' => 'user_id'], 
+                ['users' => 'user_id'],
                 ['recurring_invoices' => 'recurring_invoice_id'],
                 ['client_contacts' => 'client_contact_id'],
-            ], 
+            ],
             'recurring_invoice_invitations',
-            'key');
+            'key'
+        );
 
         $this->assertEquals(2, RecurringInvoiceInvitation::count());
  
-// Recurring Invoice Invitations
+        // Recurring Invoice Invitations
  
-// Invoices
+        // Invoices
 
         $this->assertEquals(2, count($this->backup_json_object->invoices));
 
-        $this->genericImport(Invoice::class, 
-            ['user_id', 'client_id', 'company_id', 'id', 'hashed_id', 'recurring_id','status'], 
+        $this->genericImport(
+            Invoice::class,
+            ['user_id', 'client_id', 'company_id', 'id', 'hashed_id', 'recurring_id','status'],
             [
-                ['users' => 'user_id'], 
-                ['users' => 'assigned_user_id'], 
+                ['users' => 'user_id'],
+                ['users' => 'assigned_user_id'],
                 ['recurring_invoices' => 'recurring_id'],
                 ['clients' => 'client_id'],
                 ['subscriptions' => 'subscription_id'],
                 ['projects' => 'project_id'],
                 ['vendors' => 'vendor_id'],
-            ], 
+            ],
             'invoices',
-            'number');
+            'number'
+        );
 
         $this->assertEquals(2, Invoice::count());
 
 
-// Invoices
+        // Invoices
 
-//  Invoice Invitations
+        //  Invoice Invitations
 
         $this->assertEquals(2, count($this->backup_json_object->invoice_invitations));
 
-        $this->genericImport(InvoiceInvitation::class, 
-            ['user_id', 'client_contact_id', 'company_id', 'id', 'hashed_id', 'invoice_id'], 
+        $this->genericImport(
+            InvoiceInvitation::class,
+            ['user_id', 'client_contact_id', 'company_id', 'id', 'hashed_id', 'invoice_id'],
             [
-                ['users' => 'user_id'], 
+                ['users' => 'user_id'],
                 ['invoices' => 'invoice_id'],
                 ['client_contacts' => 'client_contact_id'],
-            ], 
+            ],
             'invoice_invitations',
-            'key');
+            'key'
+        );
 
         $this->assertEquals(2, InvoiceInvitation::count());
  
-//  Invoice Invitations
+        //  Invoice Invitations
 
 
-// Quotes
+        // Quotes
         $this->assertEquals(2, count($this->backup_json_object->quotes));
 
-        $this->genericImport(Quote::class, 
-            ['user_id', 'client_id', 'company_id', 'id', 'hashed_id', 'recurring_id','status'], 
+        $this->genericImport(
+            Quote::class,
+            ['user_id', 'client_id', 'company_id', 'id', 'hashed_id', 'recurring_id','status'],
             [
-                ['users' => 'user_id'], 
-                ['users' => 'assigned_user_id'], 
+                ['users' => 'user_id'],
+                ['users' => 'assigned_user_id'],
                 ['recurring_invoices' => 'recurring_id'],
                 ['clients' => 'client_id'],
                 ['subscriptions' => 'subscription_id'],
                 ['projects' => 'project_id'],
                 ['vendors' => 'vendor_id'],
-            ], 
+            ],
             'quotes',
-            'number');
+            'number'
+        );
 
         $this->assertEquals(2, Quote::count());
 
 
-// Quotes
+        // Quotes
 
-//  Quotes Invitations
+        //  Quotes Invitations
 
         $this->assertEquals(2, count($this->backup_json_object->quote_invitations));
 
-        $this->genericImport(QuoteInvitation::class, 
-            ['user_id', 'client_contact_id', 'company_id', 'id', 'hashed_id', 'quote_id'], 
+        $this->genericImport(
+            QuoteInvitation::class,
+            ['user_id', 'client_contact_id', 'company_id', 'id', 'hashed_id', 'quote_id'],
             [
-                ['users' => 'user_id'], 
+                ['users' => 'user_id'],
                 ['quotes' => 'quote_id'],
                 ['client_contacts' => 'client_contact_id'],
-            ], 
+            ],
             'quote_invitations',
-            'key');
+            'key'
+        );
 
         $this->assertEquals(2, QuoteInvitation::count());
  
-//  Quotes Invitations
+        //  Quotes Invitations
 
-// Credits
+        // Credits
         $this->assertEquals(2, count($this->backup_json_object->credits));
 
-        $this->genericImport(Credit::class, 
-            ['user_id', 'client_id', 'company_id', 'id', 'hashed_id', 'recurring_id','status'], 
+        $this->genericImport(
+            Credit::class,
+            ['user_id', 'client_id', 'company_id', 'id', 'hashed_id', 'recurring_id','status'],
             [
-                ['users' => 'user_id'], 
-                ['users' => 'assigned_user_id'], 
+                ['users' => 'user_id'],
+                ['users' => 'assigned_user_id'],
                 ['recurring_invoices' => 'recurring_id'],
                 ['clients' => 'client_id'],
                 ['subscriptions' => 'subscription_id'],
                 ['projects' => 'project_id'],
                 ['vendors' => 'vendor_id'],
-            ], 
+            ],
             'credits',
-            'number');
+            'number'
+        );
 
         $this->assertEquals(2, Credit::count());
 
 
-// Credits
+        // Credits
 
-//  Credits Invitations
+        //  Credits Invitations
 
         $this->assertEquals(2, count($this->backup_json_object->credit_invitations));
 
-        $this->genericImport(CreditInvitation::class, 
-            ['user_id', 'client_contact_id', 'company_id', 'id', 'hashed_id', 'credit_id'], 
+        $this->genericImport(
+            CreditInvitation::class,
+            ['user_id', 'client_contact_id', 'company_id', 'id', 'hashed_id', 'credit_id'],
             [
-                ['users' => 'user_id'], 
+                ['users' => 'user_id'],
                 ['credits' => 'credit_id'],
                 ['client_contacts' => 'client_contact_id'],
-            ], 
+            ],
             'credit_invitations',
-            'key');
+            'key'
+        );
 
         $this->assertEquals(2, CreditInvitation::count());
  
-//  Credits Invitations
+        //  Credits Invitations
 
 
-// Expenses
+        // Expenses
 
         $this->assertEquals(2, count($this->backup_json_object->expenses));
 
-        $this->genericImport(Expense::class, 
-            ['assigned_user_id', 'user_id', 'client_id', 'company_id', 'id', 'hashed_id', 'project_id','vendor_id'], 
+        $this->genericImport(
+            Expense::class,
+            ['assigned_user_id', 'user_id', 'client_id', 'company_id', 'id', 'hashed_id', 'project_id','vendor_id'],
             [
-                ['users' => 'user_id'], 
-                ['users' => 'assigned_user_id'], 
+                ['users' => 'user_id'],
+                ['users' => 'assigned_user_id'],
                 ['clients' => 'client_id'],
                 ['projects' => 'project_id'],
                 ['vendors' => 'vendor_id'],
-            ], 
+            ],
             'expenses',
-            'number');
+            'number'
+        );
 
         $this->assertEquals(2, Expense::count());
 
-// Expenses
+        // Expenses
 
-// Tasks
+        // Tasks
 
         $this->assertEquals(3, count($this->backup_json_object->tasks));
 
-        $this->genericImport(Task::class, 
-            ['assigned_user_id', 'user_id', 'client_id', 'company_id', 'id', 'hashed_id', 'invoice_id','project_id'], 
+        $this->genericImport(
+            Task::class,
+            ['assigned_user_id', 'user_id', 'client_id', 'company_id', 'id', 'hashed_id', 'invoice_id','project_id'],
             [
-                ['users' => 'user_id'], 
-                ['users' => 'assigned_user_id'], 
+                ['users' => 'user_id'],
+                ['users' => 'assigned_user_id'],
                 ['clients' => 'client_id'],
                 ['projects' => 'project_id'],
                 ['invoices' => 'invoice_id'],
-            ], 
+            ],
             'tasks',
-            'number');
+            'number'
+        );
 
         $this->assertEquals(3, Task::count());
 
-// Tasks
+        // Tasks
 
-// Payments
+        // Payments
 
         $this->assertEquals(2, count($this->backup_json_object->payments));
 
-        $this->genericImport(Payment::class, 
-            ['assigned_user_id', 'user_id', 'client_id', 'company_id', 'id', 'hashed_id', 'client_contact_id','invitation_id','vendor_id','paymentables'], 
+        $this->genericImport(
+            Payment::class,
+            ['assigned_user_id', 'user_id', 'client_id', 'company_id', 'id', 'hashed_id', 'client_contact_id','invitation_id','vendor_id','paymentables'],
             [
-                ['users' => 'user_id'], 
-                ['users' => 'assigned_user_id'], 
+                ['users' => 'user_id'],
+                ['users' => 'assigned_user_id'],
                 ['clients' => 'client_id'],
                 ['client_contacts' => 'client_contact_id'],
                 ['vendors' => 'vendor_id'],
                 ['invoice_invitations' => 'invitation_id'],
                 ['company_gateways' => 'company_gateway_id'],
-            ], 
+            ],
             'payments',
-            'number');
+            'number'
+        );
 
         $this->assertEquals(2, Payment::count());
 
-// Payments
+        // Payments
  
-// Paymentables
+        // Paymentables
 
         $this->paymentablesImport();
 
         $this->assertEquals(1, Paymentable::count());
 
 
-// Paymentables
+        // Paymentables
 
 
-// Activities
+        // Activities
         $activities = [];
 
-        foreach($this->backup_json_object->activities as $activity)
-        {
+        foreach ($this->backup_json_object->activities as $activity) {
             $activity->account_id = $this->company->account_id;
             $activities[] = $activity;
         }
@@ -769,7 +770,8 @@ class ImportCompanyTest extends TestCase
 
         $this->backup_json_object->activities = $activities;
 
-        $this->genericNewClassImport(Activity::class, 
+        $this->genericNewClassImport(
+            Activity::class,
             [
                 'user_id',
                 'company_id',
@@ -789,9 +791,9 @@ class ImportCompanyTest extends TestCase
                 'recurring_invoice_id',
                 'hashed_id',
                 'company_id',
-            ], 
+            ],
             [
-                ['users' => 'user_id'], 
+                ['users' => 'user_id'],
                 ['clients' => 'client_id'],
                 ['client_contacts' => 'client_contact_id'],
                 ['projects' => 'project_id'],
@@ -805,74 +807,78 @@ class ImportCompanyTest extends TestCase
                 ['subscriptions' => 'subscription_id'],
                 ['recurring_invoices' => 'recurring_invoice_id'],
                 ['invitations' => 'invitation_id'],
-            ], 
-            'activities');
+            ],
+            'activities'
+        );
 
         $this->assertEquals(25, Activity::count());
 
-// Activities
+        // Activities
 
-// Backup
+        // Backup
 
         $this->assertEquals(25, count($this->backup_json_object->backups));
 
-        $this->genericImportWithoutCompany(Backup::class, 
-            ['activity_id','hashed_id'], 
+        $this->genericImportWithoutCompany(
+            Backup::class,
+            ['activity_id','hashed_id'],
             [
-                ['activities' => 'activity_id'], 
-            ], 
+                ['activities' => 'activity_id'],
+            ],
             'backups',
-            'created_at');
+            'created_at'
+        );
 
         $this->assertEquals(25, Backup::count());
 
-// Backup
+        // Backup
 
-// Company Ledger
+        // Company Ledger
         $this->assertEquals(3, count($this->backup_json_object->company_ledger));
 
-        $this->genericImport(CompanyLedger::class, 
-            ['company_id', 'user_id', 'client_id', 'activity_id', 'id','account_id'], 
+        $this->genericImport(
+            CompanyLedger::class,
+            ['company_id', 'user_id', 'client_id', 'activity_id', 'id','account_id'],
             [
-                ['users' => 'user_id'], 
+                ['users' => 'user_id'],
                 ['clients' => 'client_id'],
                 ['activities' => 'activity_id'],
-            ], 
+            ],
             'company_ledger',
-            'created_at');
+            'created_at'
+        );
 
         $this->assertEquals(3, CompanyLedger::count());
 
-// Company Ledger
+        // Company Ledger
  
-// Designs
+        // Designs
 
-        $this->genericImport(Design::class, 
-            ['company_id', 'user_id'], 
+        $this->genericImport(
+            Design::class,
+            ['company_id', 'user_id'],
             [
                 ['users' => 'user_id'],
-            ], 
+            ],
             'designs',
-            'name');
+            'name'
+        );
 
-//  Designs 
+        //  Designs
 
-// Documents
+        // Documents
         $this->assertEquals(2, count($this->backup_json_object->documents));
 
         $this->documentsImport();
 
         $this->assertEquals(2, Document::count());
 
-// Documents
+        // Documents
     }
 
     private function documentsImport()
     {
-
-        foreach($this->backup_json_object->documents as $document)
-        {
-
+        foreach ($this->backup_json_object->documents as $document) {
             $new_document = new Document();
             $new_document->user_id = $this->transformId('users', $document->user_id);
             $new_document->assigned_user_id = $this->transformId('users', $document->assigned_user_id);
@@ -898,7 +904,6 @@ class ImportCompanyTest extends TestCase
             $new_document->documentable_type = $document->documentable_type;
 
             $new_document->save(['timestamps' => false]);
-        
         }
     }
 
@@ -948,13 +953,8 @@ class ImportCompanyTest extends TestCase
 
     private function paymentablesImport()
     {
-
-        foreach($this->backup_json_object->payments as $payment)
-        {
-
-            foreach($payment->paymentables as $paymentable_obj)
-            {
-
+        foreach ($this->backup_json_object->payments as $payment) {
+            foreach ($payment->paymentables as $paymentable_obj) {
                 $paymentable = new Paymentable();
                 $paymentable->payment_id = $this->transformId('payments', $paymentable_obj->payment_id);
                 $paymentable->paymentable_type = $paymentable_obj->paymentable_type;
@@ -978,9 +978,9 @@ class ImportCompanyTest extends TestCase
                 break;
             case Credit::class:
                 return $this->transformId('credits', $id);
-                break;    
+                break;
             case Payment::class:
-                return $this->transformId('payments', $id);        
+                return $this->transformId('payments', $id);
             default:
                 # code...
                 break;
@@ -990,46 +990,41 @@ class ImportCompanyTest extends TestCase
 
     private function genericNewClassImport($class, $unset, $transforms, $object_property)
     {
-
         $class::unguard();
 
-        foreach($this->backup_json_object->{$object_property} as $obj)
-        {
+        foreach ($this->backup_json_object->{$object_property} as $obj) {
             /* Remove unwanted keys*/
             $obj_array = (array)$obj;
-            foreach($unset as $un){
+            foreach ($unset as $un) {
                 unset($obj_array[$un]);
             }
 
             $activity_invitation_key = false;
 
-            if($class instanceof Activity){
-
-                if(isset($obj->invitation_id)){
-
-                    if(isset($obj->invoice_id))
+            if ($class instanceof Activity) {
+                if (isset($obj->invitation_id)) {
+                    if (isset($obj->invoice_id)) {
                         $activity_invitation_key = 'invoice_invitations';
-                    elseif(isset($obj->quote_id))
+                    } elseif (isset($obj->quote_id)) {
                         $activity_invitation_key = 'quote_invitations';
-                    elseif($isset($obj->credit_id))
+                    } elseif ($isset($obj->credit_id)) {
                         $activity_invitation_key  = 'credit_invitations';
+                    }
                 }
-
             }
 
             /* Transform old keys to new keys */
-            foreach($transforms as $transform)
-            {
-                foreach($transform as $key => $value)
-                {
-                    if($class instanceof Activity && $activity_invitation_key)
+            foreach ($transforms as $transform) {
+                foreach ($transform as $key => $value) {
+                    if ($class instanceof Activity && $activity_invitation_key) {
                         $key = $activity_invitation_key;
+                    }
                     
                     $obj_array["{$value}"] = $this->transformId($key, $obj->{$value});
-                }    
+                }
             }
 
-            if($class instanceof CompanyGateway) {
+            if ($class instanceof CompanyGateway) {
                 $obj_array['config'] = encrypt($obj_array['config']);
             }
 
@@ -1040,127 +1035,110 @@ class ImportCompanyTest extends TestCase
             $new_obj->save(['timestamps' => false]);
             
             $this->ids["{$object_property}"]["{$obj->hashed_id}"] = $new_obj->id;
-
         }
 
         $class::reguard();
-    
-
     }
 
     private function genericImportWithoutCompany($class, $unset, $transforms, $object_property, $match_key)
     {
-
         $class::unguard();
 
-        foreach($this->backup_json_object->{$object_property} as $obj)
-        {
+        foreach ($this->backup_json_object->{$object_property} as $obj) {
             /* Remove unwanted keys*/
             $obj_array = (array)$obj;
-            foreach($unset as $un){
+            foreach ($unset as $un) {
                 unset($obj_array[$un]);
             }
 
             /* Transform old keys to new keys */
-            foreach($transforms as $transform)
-            {
-                foreach($transform as $key => $value)
-                {
+            foreach ($transforms as $transform) {
+                foreach ($transform as $key => $value) {
                     $obj_array["{$value}"] = $this->transformId($key, $obj->{$value});
-                }    
+                }
             }
             
             /* New to convert product ids from old hashes to new hashes*/
-            if($class instanceof Subscription){
-                $obj_array['product_ids'] = $this->recordProductIds($obj_array['product_ids']); 
-                $obj_array['recurring_product_ids'] = $this->recordProductIds($obj_array['recurring_product_ids']); 
+            if ($class instanceof Subscription) {
+                $obj_array['product_ids'] = $this->recordProductIds($obj_array['product_ids']);
+                $obj_array['recurring_product_ids'] = $this->recordProductIds($obj_array['recurring_product_ids']);
             }
 
             $new_obj = $class::firstOrNew(
-                    [$match_key => $obj->{$match_key}],
-                    $obj_array,
-                );
+                [$match_key => $obj->{$match_key}],
+                $obj_array,
+            );
 
             $new_obj->save(['timestamps' => false]);
             
-            if($new_obj instanceof CompanyLedger){
-
-            }
-            else
+            if ($new_obj instanceof CompanyLedger) {
+            } else {
                 $this->ids["{$object_property}"]["{$obj->hashed_id}"] = $new_obj->id;
-
+            }
         }
 
         $class::reguard();
-    
     }
 
 
     private function genericImport($class, $unset, $transforms, $object_property, $match_key)
     {
-
         $class::unguard();
 
-        foreach($this->backup_json_object->{$object_property} as $obj)
-        {
+        foreach ($this->backup_json_object->{$object_property} as $obj) {
             /* Remove unwanted keys*/
             $obj_array = (array)$obj;
-            foreach($unset as $un){
+            foreach ($unset as $un) {
                 unset($obj_array[$un]);
             }
 
             /* Transform old keys to new keys */
-            foreach($transforms as $transform)
-            {
-                foreach($transform as $key => $value)
-                {
+            foreach ($transforms as $transform) {
+                foreach ($transform as $key => $value) {
                     $obj_array["{$value}"] = $this->transformId($key, $obj->{$value});
-                }    
+                }
             }
             
             /* New to convert product ids from old hashes to new hashes*/
-            if($class instanceof Subscription){
-                $obj_array['product_ids'] = $this->recordProductIds($obj_array['product_ids']); 
-                $obj_array['recurring_product_ids'] = $this->recordProductIds($obj_array['recurring_product_ids']); 
+            if ($class instanceof Subscription) {
+                $obj_array['product_ids'] = $this->recordProductIds($obj_array['product_ids']);
+                $obj_array['recurring_product_ids'] = $this->recordProductIds($obj_array['recurring_product_ids']);
             }
 
             $new_obj = $class::firstOrNew(
-                    [$match_key => $obj->{$match_key}, 'company_id' => $this->company->id],
-                    $obj_array,
-                );
+                [$match_key => $obj->{$match_key}, 'company_id' => $this->company->id],
+                $obj_array,
+            );
 
             $new_obj->save(['timestamps' => false]);
             
-            if($new_obj instanceof CompanyLedger){
-            }
-            else
+            if ($new_obj instanceof CompanyLedger) {
+            } else {
                 $this->ids["{$object_property}"]["{$obj->hashed_id}"] = $new_obj->id;
-
+            }
         }
 
         $class::reguard();
-    
     }
 
     private function recordProductIds($ids)
     {
-
         $id_array = explode(",", $ids);
 
         $tmp_arr = [];
 
-        foreach($id_array as $id) {
-
+        foreach ($id_array as $id) {
             $tmp_arr[] = $this->encodePrimaryKey($this->transformId('products', $id));
-        }     
+        }
 
         return implode(",", $tmp_arr);
     }
 
     private function transformId(string $resource, ?string $old): ?int
     {
-        if(empty($old))
+        if (empty($old)) {
             return null;
+        }
 
         if (! array_key_exists($resource, $this->ids)) {
             throw new \Exception("Resource {$resource} not available.");
@@ -1177,8 +1155,6 @@ class ImportCompanyTest extends TestCase
     {
         $backup_json_file = sys_get_temp_dir() . "/backup/backup.json";
 
-     //   unlink($backup_json_file);
+        //   unlink($backup_json_file);
     }
-
-
 }

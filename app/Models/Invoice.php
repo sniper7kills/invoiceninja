@@ -13,7 +13,6 @@ namespace App\Models;
 
 use App\Events\Invoice\InvoiceReminderWasEmailed;
 use App\Events\Invoice\InvoiceWasEmailed;
-use App\Events\Invoice\InvoiceWasUpdated;
 use App\Helpers\Invoice\InvoiceSum;
 use App\Helpers\Invoice\InvoiceSumInclusive;
 use App\Jobs\Entity\CreateEntityPdf;
@@ -264,7 +263,6 @@ class Invoice extends BaseModel
 
     public function isPayable(): bool
     {
-
         if ($this->status_id == self::STATUS_DRAFT && $this->is_deleted == false) {
             return true;
         } elseif ($this->status_id == self::STATUS_SENT && $this->is_deleted == false) {
@@ -396,34 +394,33 @@ class Invoice extends BaseModel
     public function pdf_file_path($invitation = null, string $type = 'path', bool $portal = false)
     {
         if (! $invitation) {
-
-            if($this->invitations()->exists())
+            if ($this->invitations()->exists()) {
                 $invitation = $this->invitations()->first();
-            else{
+            } else {
                 $this->service()->createInvitations();
                 $invitation = $this->invitations()->first();
             }
-
         }
 
-        if(!$invitation)
+        if (!$invitation) {
             throw new \Exception('Hard fail, could not create an invitation - is there a valid contact?');
+        }
 
         $file_path = $this->client->invoice_filepath($invitation).$this->numberFormatter().'.pdf';
 
-        if(Ninja::isHosted() && $portal && Storage::disk(config('filesystems.default'))->exists($file_path)){
+        if (Ninja::isHosted() && $portal && Storage::disk(config('filesystems.default'))->exists($file_path)) {
             return Storage::disk(config('filesystems.default'))->{$type}($file_path);
-        }
-        elseif(Ninja::isHosted()){
+        } elseif (Ninja::isHosted()) {
             $file_path = CreateEntityPdf::dispatchNow($invitation, config('filesystems.default'));
             return Storage::disk(config('filesystems.default'))->{$type}($file_path);
         }
         
-        if(Storage::disk('public')->exists($file_path))
+        if (Storage::disk('public')->exists($file_path)) {
             return Storage::disk('public')->{$type}($file_path);
+        }
 
         $file_path = CreateEntityPdf::dispatchNow($invitation);
-            return Storage::disk('public')->{$type}($file_path);
+        return Storage::disk('public')->{$type}($file_path);
     }
 
     public function markInvitationsSent()

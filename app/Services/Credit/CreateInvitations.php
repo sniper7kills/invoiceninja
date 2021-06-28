@@ -31,7 +31,7 @@ class CreateInvitations extends AbstractService
     {
         $contacts = $this->credit->client->contacts;
 
-        if($contacts->count() == 0){
+        if ($contacts->count() == 0) {
             $this->createBlankContact();
 
             $this->credit->refresh();

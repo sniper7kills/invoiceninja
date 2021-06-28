@@ -22,13 +22,12 @@ use App\Models\RecurringInvoice;
 use App\Utils\Ninja;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\SavesDocuments;
-use ReflectionClass;
 
 class BaseRepository
 {
     use MakesHash;
     use SavesDocuments;
-	public    $import_mode = false;
+    public $import_mode = false;
 
     /**
      * @param $entity
@@ -134,8 +133,9 @@ class BaseRepository
     /* Returns an invoice if defined as a key in the $resource array*/
     public function getInvitation($invitation, $resource)
     {
-        if (is_array($invitation) && ! array_key_exists('key', $invitation))
+        if (is_array($invitation) && ! array_key_exists('key', $invitation)) {
             return false;
+        }
         
         $invitation_class = sprintf('App\\Models\\%sInvitation', $resource);
 
@@ -153,15 +153,15 @@ class BaseRepository
             case ($model instanceof Invoice):
                 return 'invoice_id';
             case ($model instanceof Quote):
-                return 'quote_id';            
+                return 'quote_id';
             case ($model instanceof Credit):
-                return 'credit_id';        
+                return 'credit_id';
         }
     }
 
     /**
      * Alternative save used for Invoices, Recurring Invoices, Quotes & Credits.
-     * 
+     *
      * @param $data
      * @param $model
      * @return mixed
@@ -170,14 +170,16 @@ class BaseRepository
     protected function alternativeSave($data, $model)
     {
         //forces the client_id if it doesn't exist
-        if(array_key_exists('client_id', $data)) 
+        if (array_key_exists('client_id', $data)) {
             $model->client_id = $data['client_id'];
+        }
 
         //pickup changes here to recalculate reminders
-        if($model instanceof Invoice && ($model->isDirty('date') || $model->isDirty('due_date')))
+        if ($model instanceof Invoice && ($model->isDirty('date') || $model->isDirty('due_date'))) {
             $model->service()->setReminder()->save();
+        }
 
-        $client = Client::where('id', $model->client_id)->withTrashed()->first();    
+        $client = Client::where('id', $model->client_id)->withTrashed()->first();
 
         $state = [];
 
@@ -196,11 +198,13 @@ class BaseRepository
         $tmp_data = $data; //preserves the $data array
 
         /* We need to unset some variable as we sometimes unguard the model */
-        if (isset($tmp_data['invitations'])) 
+        if (isset($tmp_data['invitations'])) {
             unset($tmp_data['invitations']);
+        }
         
-        if (isset($tmp_data['client_contacts'])) 
+        if (isset($tmp_data['client_contacts'])) {
             unset($tmp_data['client_contacts']);
+        }
         
         $model->fill($tmp_data);
 
@@ -214,8 +218,9 @@ class BaseRepository
         /* Model now persisted, now lets do some child tasks */
 
         /* Save any documents */
-        if (array_key_exists('documents', $data)) 
+        if (array_key_exists('documents', $data)) {
             $this->saveDocuments($data['documents'], $model);
+        }
 
         /* Marks whether the client contact should receive emails based on the send_email property */
         if (isset($data['client_contacts'])) {
@@ -237,24 +242,23 @@ class BaseRepository
                 $invitation_class = sprintf('App\\Models\\%sInvitation', $resource);
                 $invitation = $invitation_class::whereRaw('BINARY `key`= ?', [$invitation])->first();
 
-                if ($invitation) 
+                if ($invitation) {
                     $invitation->delete();
-                
+                }
             });
 
             foreach ($data['invitations'] as $invitation) {
 
                 //if no invitations are present - create one.
                 if (! $this->getInvitation($invitation, $resource)) {
-
-                    if (isset($invitation['id'])) 
+                    if (isset($invitation['id'])) {
                         unset($invitation['id']);
+                    }
 
                     //make sure we are creating an invite for a contact who belongs to the client only!
                     $contact = ClientContact::find($invitation['client_contact_id']);
 
                     if ($contact && $model->client_id == $contact->client_id) {
-
                         $invitation_class = sprintf('App\\Models\\%sInvitation', $resource);
 
                         $new_invitation = $invitation_class::withTrashed()
@@ -263,17 +267,13 @@ class BaseRepository
                                             ->first();
 
                         if ($new_invitation && $new_invitation->trashed()) {
-
                             $new_invitation->restore();
-
                         } else {
-
                             $invitation_factory_class = sprintf('App\\Factory\\%sInvitationFactory', $resource);
                             $new_invitation = $invitation_factory_class::create($model->company_id, $model->user_id);
                             $new_invitation->{$lcfirst_resource_id} = $model->id;
                             $new_invitation->client_contact_id = $contact->id;
                             $new_invitation->save();
-
                         }
                     }
                 }
@@ -283,8 +283,9 @@ class BaseRepository
         $model->load('invitations');
 
         /* If no invitations have been created, this is our fail safe to maintain state*/
-        if ($model->invitations->count() == 0) 
+        if ($model->invitations->count() == 0) {
             $model->service()->createInvitations();
+        }
 
         /* Recalculate invoice amounts */
         $model = $model->calc()->getInvoice();
@@ -296,61 +297,57 @@ class BaseRepository
         $model = $model->service()->applyNumber()->save();
 
         /* Handle attempts where the deposit is greater than the amount/balance of the invoice */
-        if((int)$model->balance != 0 && $model->partial > $model->amount)
+        if ((int)$model->balance != 0 && $model->partial > $model->amount) {
             $model->partial = min($model->amount, $model->balance);
+        }
 
         /* Update product details if necessary */
-        if ($model->company->update_products) 
+        if ($model->company->update_products) {
             UpdateOrCreateProduct::dispatch($model->line_items, $model, $model->company);
+        }
 
         /* Perform model specific tasks */
         if ($model instanceof Invoice) {
-            
             nlog("Finished amount = " . $state['finished_amount']);
             nlog("Starting amount = " . $state['starting_amount']);
             nlog("Diff = " . ($state['finished_amount'] - $state['starting_amount']));
 
             if (($state['finished_amount'] != $state['starting_amount']) && ($model->status_id != Invoice::STATUS_DRAFT)) {
-
                 $model->service()->updateStatus()->save();
                 $model->ledger()->updateInvoiceBalance(($state['finished_amount'] - $state['starting_amount']), "Update adjustment for invoice {$model->number}");
                 $model->client->service()->updateBalance(($state['finished_amount'] - $state['starting_amount']))->save();
-
             }
 
-            if (! $model->design_id) 
+            if (! $model->design_id) {
                 $model->design_id = $this->decodePrimaryKey($client->getSetting('invoice_design_id'));
+            }
 
             //links tasks and expenses back to the invoice.
             $model->service()->linkEntities()->save();
-
         }
 
         if ($model instanceof Credit) {
-
             $model = $model->calc()->getCredit();
 
-            if (! $model->design_id) 
+            if (! $model->design_id) {
                 $model->design_id = $this->decodePrimaryKey($client->getSetting('credit_design_id'));
-            
+            }
         }
 
         if ($model instanceof Quote) {
-
-            if (! $model->design_id) 
+            if (! $model->design_id) {
                 $model->design_id = $this->decodePrimaryKey($client->getSetting('quote_design_id'));
+            }
 
             $model = $model->calc()->getQuote();
-
         }
 
         if ($model instanceof RecurringInvoice) {
-
-            if (! $model->design_id) 
+            if (! $model->design_id) {
                 $model->design_id = $this->decodePrimaryKey($client->getSetting('invoice_design_id'));
+            }
             
             $model = $model->calc()->getRecurringInvoice();
-
         }
 
         $model->save();

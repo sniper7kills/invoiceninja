@@ -17,7 +17,6 @@ use App\Models\CompanyGateway;
 use App\Models\User;
 use App\PaymentDrivers\WePayPaymentDriver;
 use App\Utils\Traits\MakesHash;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class WePayController extends BaseController
@@ -29,7 +28,6 @@ class WePayController extends BaseController
      */
     public function signup(string $token)
     {
-
         $hash = Cache::get($token);
 
         MultiDB::findAndSetDbByCompanyKey($hash['company_key']);
@@ -44,7 +42,6 @@ class WePayController extends BaseController
         $wepay_driver = new WePayPaymentDriver(new CompanyGateway, null, null);
 
         return $wepay_driver->setup($data);
-
     }
 
     public function finished()

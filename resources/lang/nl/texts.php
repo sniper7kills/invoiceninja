@@ -1,6 +1,6 @@
 <?php
 
-$LANG = array(
+$LANG = [
     'organization' => 'Organisatie',
     'name' => 'Naam',
     'website' => 'Website',
@@ -4244,8 +4244,6 @@ Kom terug naar deze betalingsmethode pagina zodra u de bedragen heeft ontvangen 
     'contact_details' => 'Contact Details',
     'download_backup_subject' => 'Your company backup is ready for download',
     'account_passwordless_login' => 'Account passwordless login',
-);
+];
 
 return $LANG;
-
-?>

@@ -16,7 +16,6 @@ use stdClass;
 
 class EntityCreatedObject
 {
-
     public $entity_type;
 
     public $entity;
@@ -39,7 +38,6 @@ class EntityCreatedObject
 
     public function build()
     {
-
         $this->contact = $this->entity->invitations()->first()->contact;
         $this->company = $this->entity->company;
 
@@ -100,13 +98,13 @@ class EntityCreatedObject
     private function getMessage()
     {
         return ctrans(
-                $this->template_body,
-                [
+            $this->template_body,
+            [
                     'amount' => $this->getAmount(),
                     'client' => $this->contact->present()->name(),
                     'invoice' => $this->entity->number,
                 ]
-            );
+        );
     }
 
     private function getData()

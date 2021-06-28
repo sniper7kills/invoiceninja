@@ -23,7 +23,6 @@ use App\Utils\Traits\MakesDates;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class PaymentMethodController extends Controller
@@ -129,7 +128,6 @@ class PaymentMethodController extends Controller
             event(new MethodDeleted($payment_method, auth('contact')->user()->company, Ninja::eventVars(auth('contact')->user()->id)));
             $payment_method->delete();
         } catch (Exception $e) {
-
             nlog($e->getMessage());
 
             return back();

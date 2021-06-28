@@ -11,8 +11,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\ClientGatewayToken\ClientGatewayTokenWasCreated;
-use App\Events\ClientGatewayToken\ClientGatewayTokenWasUpdated;
 use App\Factory\ClientGatewayTokenFactory;
 use App\Filters\ClientGatewayTokenFilters;
 use App\Http\Requests\ClientGatewayToken\CreateClientGatewayTokenRequest;
@@ -21,14 +19,11 @@ use App\Http\Requests\ClientGatewayToken\EditClientGatewayTokenRequest;
 use App\Http\Requests\ClientGatewayToken\ShowClientGatewayTokenRequest;
 use App\Http\Requests\ClientGatewayToken\StoreClientGatewayTokenRequest;
 use App\Http\Requests\ClientGatewayToken\UpdateClientGatewayTokenRequest;
-use App\Http\Requests\ClientGatewayToken\UploadClientGatewayTokenRequest;
 use App\Jobs\ClientGatewayToken\StoreClientGatewayToken;
 use App\Jobs\ClientGatewayToken\UpdateClientGatewayToken;
-use App\Models\Account;
 use App\Models\ClientGatewayToken;
 use App\Repositories\ClientGatewayTokenRepository;
 use App\Transformers\ClientGatewayTokenTransformer;
-use App\Utils\Ninja;
 use App\Utils\Traits\BulkOptions;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\SavesDocuments;
@@ -273,7 +268,6 @@ class ClientGatewayTokenController extends BaseController
      */
     public function update(UpdateClientGatewayTokenRequest $request, ClientGatewayToken $client_gateway_token)
     {
-
         $client_gateway_token = $this->client_gateway_token_repo->save($request->all(), $client_gateway_token);
 
         return $this->itemResponse($client_gateway_token->fresh());
@@ -427,11 +421,8 @@ class ClientGatewayTokenController extends BaseController
      */
     public function destroy(DestroyClientGatewayTokenRequest $request, ClientGatewayToken $client_gateway_token)
     {
+        $this->client_gateway_token_repo->delete($client_gateway_token);
 
-       $this->client_gateway_token_repo->delete($client_gateway_token);
-
-       return $this->itemResponse($client_gateway_token->fresh());
-
+        return $this->itemResponse($client_gateway_token->fresh());
     }
-
 }

@@ -74,9 +74,13 @@ class SelfUpdateController extends BaseController
 
             
         $cacheCompiled = base_path('bootstrap/cache/compiled.php');
-        if (file_exists($cacheCompiled)) { unlink ($cacheCompiled); }
+        if (file_exists($cacheCompiled)) {
+            unlink($cacheCompiled);
+        }
         $cacheServices = base_path('bootstrap/cache/services.php');
-        if (file_exists($cacheServices)) { unlink ($cacheServices); }
+        if (file_exists($cacheServices)) {
+            unlink($cacheServices);
+        }
 
         Artisan::call('clear-compiled');
         Artisan::call('route:clear');
@@ -84,7 +88,6 @@ class SelfUpdateController extends BaseController
         Artisan::call('config:clear');
 
         return response()->json(['message' => 'Update completed'], 200);
-
     }
 
     private function testWritable()
@@ -92,9 +95,9 @@ class SelfUpdateController extends BaseController
         $directoryIterator = new \RecursiveDirectoryIterator(base_path(), \RecursiveDirectoryIterator::SKIP_DOTS);
 
         foreach (new \RecursiveIteratorIterator($directoryIterator) as $file) {
-
-            if(strpos($file->getPathname(), '.git') !== false)
+            if (strpos($file->getPathname(), '.git') !== false) {
                 continue;
+            }
 
             // nlog($file->getPathname());
 

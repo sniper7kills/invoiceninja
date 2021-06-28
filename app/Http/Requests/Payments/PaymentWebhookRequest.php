@@ -106,7 +106,7 @@ class PaymentWebhookRequest extends Request
     {
         $hash = $this->getPaymentHash();
 
-        if($hash) {
+        if ($hash) {
             return Client::find($hash->data->client_id)->firstOrFail();
         }
 

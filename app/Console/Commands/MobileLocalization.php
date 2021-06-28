@@ -2,8 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Company;
-use App\Models\User;
 use App\Utils\CurlUtils;
 use Illuminate\Console\Command;
 
@@ -83,9 +81,9 @@ class MobileLocalization extends Command
                     $text = $resources->$key;
                 }
 
-                $text = str_replace(array('<b>', '</b>'), '', $text);
-                $text = str_replace(array('<i>', '</i>'), '', $text);
-                $text = str_replace(array('<strong>', '</strong>'), '', $text);
+                $text = str_replace(['<b>', '</b>'], '', $text);
+                $text = str_replace(['<i>', '</i>'], '', $text);
+                $text = str_replace(['<strong>', '</strong>'], '', $text);
 
                 echo "'$key': '$text',\n";
             }
@@ -116,5 +114,4 @@ class MobileLocalization extends Command
             ['type', null, InputOption::VALUE_OPTIONAL, 'Type', null],
         ];
     }
-
 }

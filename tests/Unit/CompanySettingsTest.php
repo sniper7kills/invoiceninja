@@ -58,7 +58,6 @@ class CompanySettingsTest extends TestCase
 
     public function testStringEquivalence()
     {
-
         $value = (strval(4) != strval(3));
 
         $this->assertTrue($value);
@@ -85,6 +84,5 @@ class CompanySettingsTest extends TestCase
         $value = (strval('4') != strval('3'));
 
         $this->assertTrue($value);
-
     }
 }

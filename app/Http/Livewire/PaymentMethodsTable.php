@@ -24,7 +24,6 @@ class PaymentMethodsTable extends Component
     
     public function mount($client)
     {
-    
         MultiDB::setDb($this->company->db);
 
         $this->client = $client;

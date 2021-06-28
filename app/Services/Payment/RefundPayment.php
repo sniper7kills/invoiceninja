@@ -196,9 +196,7 @@ class RefundPayment
                                        ->save();
 
                     $this->total_refund = 0;
-
                 } else {
-
                     $paymentable_credit->pivot->refunded += $available_credit;
                     $paymentable_credit->pivot->save();
 
