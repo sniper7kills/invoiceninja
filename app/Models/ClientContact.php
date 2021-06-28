@@ -52,9 +52,6 @@ class ClientContact extends Authenticatable implements HasLocalePreference
 
     protected $presenter = ClientContactPresenter::class;
 
-    protected $dates = [
-        'deleted_at',
-    ];
 
     protected $appends = [
         'hashed_id',

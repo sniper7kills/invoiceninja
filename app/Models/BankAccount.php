@@ -26,7 +26,7 @@ class BankAccount extends BaseModel
     /**
      * @var array
      */
-    protected $dates = ['deleted_at'];
+
 
     /**
      * @var array

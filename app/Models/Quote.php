@@ -87,7 +87,6 @@ class Quote extends BaseModel
         'deleted_at' => 'timestamp',
     ];
 
-    protected $dates = [];
 
     const STATUS_DRAFT = 1;
     const STATUS_SENT = 2;

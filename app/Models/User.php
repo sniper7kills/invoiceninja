@@ -45,7 +45,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $guard = 'user';
 
-    protected $dates = ['deleted_at'];
 
     protected $presenter = UserPresenter::class;
 

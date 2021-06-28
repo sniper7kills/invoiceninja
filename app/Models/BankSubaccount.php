@@ -23,7 +23,7 @@ class BankSubaccount extends BaseModel
     /**
      * @var array
      */
-    protected $dates = ['deleted_at'];
+
 
     /**
      * @return BelongsTo
