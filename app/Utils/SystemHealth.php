@@ -122,7 +122,7 @@ class SystemHealth
 
     public static function checkConfigCache()
     {
-        if (env('APP_URL')) {
+        if (config('app.url')) {
             return false;
         }
 
