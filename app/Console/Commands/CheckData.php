@@ -190,7 +190,7 @@ class CheckData extends Command
                     ->where('id', '=', $contact->id)
                     ->whereNull('contact_key')
                     ->update([
-                        'contact_key' => str_random(config('ninja.key_length')),
+                        'contact_key' => Str::random(config('ninja.key_length')),
                     ]);
             }
         }
@@ -301,7 +301,7 @@ class CheckData extends Command
                 $invitation->user_id = $invoice->user_id;
                 $invitation->invoice_id = $invoice->id;
                 $invitation->contact_id = ClientContact::whereClientId($invoice->client_id)->whereIsPrimary(true)->first()->id;
-                $invitation->invitation_key = str_random(config('ninja.key_length'));
+                $invitation->invitation_key = Str::random(config('ninja.key_length'));
                 $invitation->save();
             }
         }
