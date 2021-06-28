@@ -43,10 +43,10 @@ class SetInviteDb
         }
 
         if ($request->getSchemeAndHttpHost() && config('ninja.db.multi_db_enabled') && ! MultiDB::findAndSetDbByInvitation($entity, $request->route('invitation_key'))) {
-            if (request()->json) {
+            if ($request->json) {
                 return response()->json($error, 403);
             } else {
-                abort(404,'I could not find the database for this object.');
+                abort(404, 'I could not find the database for this object.');
             }
         }
 

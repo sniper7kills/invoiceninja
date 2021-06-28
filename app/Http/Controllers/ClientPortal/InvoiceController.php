@@ -12,9 +12,9 @@
 namespace App\Http\Controllers\ClientPortal;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ClientPortal\Invoices\ShowInvoicesRequest;
 use App\Http\Requests\ClientPortal\Invoices\ProcessInvoicesInBulkRequest;
 use App\Http\Requests\ClientPortal\Invoices\ShowInvoiceRequest;
+use App\Http\Requests\ClientPortal\Invoices\ShowInvoicesRequest;
 use App\Models\Invoice;
 use App\Utils\Number;
 use App\Utils\TempFile;
@@ -88,7 +88,7 @@ class InvoiceController extends Controller
     private function makePayment(array $ids)
     {
         $invoices = Invoice::whereIn('id', $ids)
-                            ->whereClientId(auth()->user()->client->id)
+                            ->whereClientId($request->user()->client->id)
                             ->withTrashed()
                             ->get();
 
@@ -99,20 +99,18 @@ class InvoiceController extends Controller
 
         //return early if no invoices.
         if ($invoices->count() == 0) {
-            return back()
+            return redirect()->back()
                 ->with('message', ctrans('texts.no_payable_invoices_selected'));
         }
 
         //iterate and sum the payable amounts either partial or balance
         $total = 0;
-        foreach($invoices as $invoice)
-        {
-
-            if($invoice->partial > 0)
+        foreach ($invoices as $invoice) {
+            if ($invoice->partial > 0) {
                 $total += $invoice->partial;
-            else
+            } else {
                 $total += $invoice->balance;
-
+            }
         }
 
         //format data
@@ -161,17 +159,17 @@ class InvoiceController extends Controller
 
         //generate pdf's of invoices locally
         if (! $invoices || $invoices->count() == 0) {
-            return back()->with(['message' => ctrans('texts.no_items_selected')]);
+            return redirect()->back()->with(['message' => ctrans('texts.no_items_selected')]);
         }
 
         //if only 1 pdf, output to buffer for download
         if ($invoices->count() == 1) {
             $invoice = $invoices->first();
             $invitation = $invoice->invitations->first();
-           //$file = $invoice->pdf_file_path($invitation);
-           $file = $invoice->service()->getInvoicePdf(auth()->user());
-           return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);;
-
+            //$file = $invoice->pdf_file_path($invitation);
+            $file = $invoice->service()->getInvoicePdf(auth()->user());
+            return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+            ;
         }
 
         // enable output of HTTP headers

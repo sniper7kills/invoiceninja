@@ -11,7 +11,6 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\URL;
 use Tests\MockAccountData;
 use Tests\TestCase;
 
@@ -46,7 +45,5 @@ class ClientModelTest extends TestCase
         $payment_methods = $this->client->service()->getPaymentMethods(40);
 
         $this->assertEquals(1, count($payment_methods));
-
     }
-
 }

@@ -116,11 +116,11 @@ class MarkInvoiceDeleted extends AbstractService
         return $this;
     }
 
-    /* 
+    /*
      *
      * This sets the invoice number to _deleted
      * and also removes the links to existing entities
-     * 
+     *
      */
     private function cleanup()
     {

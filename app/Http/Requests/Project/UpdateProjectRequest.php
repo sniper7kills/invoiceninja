@@ -48,8 +48,9 @@ class UpdateProjectRequest extends Request
             unset($input['client_id']);
         }
 
-        if(array_key_exists('color', $input) && is_null($input['color']))
+        if (array_key_exists('color', $input) && is_null($input['color'])) {
             $input['color'] = '#fff';
+        }
 
         $this->replace($input);
     }

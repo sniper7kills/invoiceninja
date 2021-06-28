@@ -1,6 +1,6 @@
 <?php
 
-$LANG = array(
+$LANG = [
     'organization' => 'Empresa',
     'name' => 'Nombre',
     'website' => 'Página Web',
@@ -4242,8 +4242,6 @@ Una vez que tenga los montos, vuelva a esta página de métodos de pago y haga c
     'contact_details' => 'Contact Details',
     'download_backup_subject' => 'Your company backup is ready for download',
     'account_passwordless_login' => 'Account passwordless login',
-);
+];
 
 return $LANG;
-
-?>

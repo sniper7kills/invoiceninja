@@ -34,7 +34,6 @@ class InvitationTest extends TestCase
 
     public function testInvitationSanity()
     {
-        
         $this->assertEquals($this->invoice->invitations->count(), 2);
 
         $invitations = $this->invoice->invitations()->get();
@@ -50,12 +49,10 @@ class InvitationTest extends TestCase
         $response = null;
 
         try {
-
-        $response = $this->withHeaders([
+            $response = $this->withHeaders([
             'X-API-TOKEN' => $this->token,
         ])->put('/api/v1/invoices/'.$this->encodePrimaryKey($this->invoice->id), $this->invoice->toArray());
         } catch (\Exception $e) {
-
             nlog($e->getMessage());
         }
 

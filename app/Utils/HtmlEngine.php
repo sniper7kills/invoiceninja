@@ -17,7 +17,6 @@ use App\Models\CreditInvitation;
 use App\Models\InvoiceInvitation;
 use App\Models\QuoteInvitation;
 use App\Models\RecurringInvoiceInvitation;
-use App\Services\PdfMaker\Designs\Utilities\DesignHelpers;
 use App\Utils\Traits\MakesDates;
 use Exception;
 use Illuminate\Support\Facades\App;
@@ -133,7 +132,7 @@ class HtmlEngine
             $data['$view_url'] = ['value' => $this->invitation->getLink(), 'label' => ctrans('texts.view_invoice')];
             $data['$date'] = ['value' => $this->translateDate($this->entity->date, $this->entity->client->date_format(), $this->entity->client->locale()) ?: '&nbsp;', 'label' => ctrans('texts.invoice_date')];
 
-            if($this->entity->project()->exists()) {
+            if ($this->entity->project()->exists()) {
                 $data['$project.name'] = ['value' => $this->entity->project->name, 'label' => ctrans('texts.project_name')];
             }
         }
@@ -175,7 +174,6 @@ class HtmlEngine
         } else {
             $data['$balance_due'] = ['value' => Number::formatMoney($this->entity->balance, $this->client) ?: '&nbsp;', 'label' => ctrans('texts.balance_due')];
             $data['$balance_due_raw'] = ['value' => $this->entity->balance, 'label' => ctrans('texts.balance_due')];
-
         }
 
         $data['$quote.balance_due'] = &$data['$balance_due'];

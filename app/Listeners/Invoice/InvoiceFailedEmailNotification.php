@@ -18,7 +18,6 @@ use App\Libraries\MultiDB;
 use App\Mail\Admin\EntityFailedSendObject;
 use App\Notifications\Admin\EntitySentNotification;
 use App\Utils\Traits\Notifications\UserNotifies;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class InvoiceFailedEmailNotification
 {
@@ -36,7 +35,7 @@ class InvoiceFailedEmailNotification
      */
     public function handle($event)
     {
-        nlog("inside a failed notification");
+        nlog('inside a failed notification');
         
         MultiDB::setDb($event->company->db);
 
@@ -47,7 +46,7 @@ class InvoiceFailedEmailNotification
         $invoice->save();
 
         $nmo = new NinjaMailerObject;
-        $nmo->mailable = new NinjaMailer( (new EntityFailedSendObject($event->invitation, 'invoice', $event->template, $event->message))->build() );
+        $nmo->mailable = new NinjaMailer((new EntityFailedSendObject($event->invitation, 'invoice', $event->template, $event->message))->build());
         $nmo->company = $invoice->company;
         $nmo->settings = $invoice->company->settings;
 

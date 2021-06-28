@@ -18,7 +18,7 @@ class Project extends BaseModel
     /**
      * @var array
      */
-    protected $dates = ['deleted_at'];
+
 
     /**
      * @var array
@@ -77,5 +77,4 @@ class Project extends BaseModel
     {
         return $this->hasMany(Task::class);
     }
-    
 }

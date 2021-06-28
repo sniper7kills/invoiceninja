@@ -43,7 +43,7 @@ class InvoiceCreatedNotification implements ShouldQueue
         $invoice = $event->invoice;
 
         $nmo = new NinjaMailerObject;
-        $nmo->mailable = new NinjaMailer( (new EntityCreatedObject($invoice, 'invoice'))->build() );
+        $nmo->mailable = new NinjaMailer((new EntityCreatedObject($invoice, 'invoice'))->build());
         $nmo->company = $invoice->company;
         $nmo->settings = $invoice->company->settings;
 
@@ -75,7 +75,7 @@ class InvoiceCreatedNotification implements ShouldQueue
             /* Override the methods in the Notification Class */
             // $notification->method = $methods;
 
-            //  Notify on the alternate channels 
+            //  Notify on the alternate channels
             // $user->notify($notification);
         }
     }

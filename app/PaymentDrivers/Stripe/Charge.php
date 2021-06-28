@@ -12,7 +12,6 @@
 
 namespace App\PaymentDrivers\Stripe;
 
-use App\Events\Payment\PaymentWasCreated;
 use App\Jobs\Util\SystemLogger;
 use App\Models\ClientGatewayToken;
 use App\Models\Invoice;
@@ -20,15 +19,12 @@ use App\Models\PaymentHash;
 use App\Models\PaymentType;
 use App\Models\SystemLog;
 use App\PaymentDrivers\StripePaymentDriver;
-use App\Utils\Ninja;
 use App\Utils\Traits\MakesHash;
-use Stripe\Exception\ApiConnectionException;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Exception\AuthenticationException;
 use Stripe\Exception\CardException;
 use Stripe\Exception\InvalidRequestException;
 use Stripe\Exception\RateLimitException;
-use Stripe\StripeClient;
 
 class Charge
 {
@@ -66,7 +62,6 @@ class Charge
         $response = null;
 
         try {
-
             $data = [
               'amount' => $this->stripe->convertToStripeAmount($amount, $this->stripe->client->currency()->precision),
               'currency' => $this->stripe->client->getCurrencyCode(),
@@ -81,7 +76,6 @@ class Charge
 
             SystemLogger::dispatch($response, SystemLog::CATEGORY_GATEWAY_RESPONSE, SystemLog::EVENT_GATEWAY_SUCCESS, SystemLog::TYPE_STRIPE, $this->stripe->client, $this->stripe->client->company);
         } catch (\Exception $e) {
-
             $data =[
                 'status' => '',
                 'error_type' => '',
@@ -120,7 +114,7 @@ class Charge
             $this->stripe->processInternallyFailedPayment($this->stripe, $e);
 
             SystemLogger::dispatch($data, SystemLog::CATEGORY_GATEWAY_RESPONSE, SystemLog::EVENT_GATEWAY_FAILURE, SystemLog::TYPE_STRIPE, $this->stripe->client, $this->stripe->client->company);
-        }  
+        }
 
         if (! $response) {
             return false;

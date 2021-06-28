@@ -11,10 +11,6 @@
 
 namespace App\Models\Presenters;
 
-use App\Utils\Number;
-use App\Utils\Traits\MakesDates;
-use Laracasts\Presenter\PresentableTrait;
-
 /**
  * Class InvoicePresenter.
  *
@@ -27,5 +23,4 @@ use Laracasts\Presenter\PresentableTrait;
  */
 class RecurringInvoicePresenter extends InvoicePresenter
 {
-
 }

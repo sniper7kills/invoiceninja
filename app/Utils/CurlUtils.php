@@ -11,7 +11,7 @@
 
 namespace App\Utils;
 
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class CurlUtils
 {

@@ -36,13 +36,27 @@ class CheckMailRequest extends Request
         nlog($this->driver);
 
         return [
-            'mail_driver' => 'required',
-            'encryption' => 'required_unless:mail_driver,log',
-            'mail_host' => 'required_unless:mail_driver,log',
-            'mail_username' => 'required_unless:mail_driver,log',
-            'mail_name' => 'required_unless:mail_driver,log',
-            'mail_address' => 'required_unless:mail_driver,log',
-            'mail_password' => 'required_unless:mail_driver,log',
+            'mail_driver' => [
+                'required',
+            ],
+            'encryption' => [
+                'required_unless:mail_driver,log',
+            ],
+            'mail_host' => [
+                'required_unless:mail_driver,log',
+            ],
+            'mail_username' => [
+                'required_unless:mail_driver,log',
+            ],
+            'mail_name' => [
+                'required_unless:mail_driver,log',
+            ],
+            'mail_address' => [
+                'required_unless:mail_driver,log',
+            ],
+            'mail_password' => [
+                'required_unless:mail_driver,log',
+            ],
         ];
     }
 }

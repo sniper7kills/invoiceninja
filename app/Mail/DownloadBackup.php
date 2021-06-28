@@ -13,13 +13,10 @@
 namespace App\Mail;
 
 use App\Models\Company;
-use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
 
 class DownloadBackup extends Mailable
 {
-
     public $file_path;
 
     public $company;

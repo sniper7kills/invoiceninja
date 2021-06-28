@@ -24,8 +24,8 @@ class MagicLink
         $timeout = 600; //seconds
 
         $payload = [
-        	'email' => $email, 
-        	'company_id' => $company_id,
+            'email' => $email,
+            'company_id' => $company_id,
         ];
 
         Cache::add($magic_key, $payload, $timeout);

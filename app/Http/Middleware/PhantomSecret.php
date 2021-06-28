@@ -29,6 +29,6 @@ class PhantomSecret
             return $next($request);
         }
 
-        return redirect('/');
+        return redirect()->to('/');
     }
 }

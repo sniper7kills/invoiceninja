@@ -15,14 +15,15 @@ namespace App\Http\Controllers\ClientPortal;
 use App\Events\Quote\QuoteWasApproved;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\Quotes\ProcessQuotesInBulkRequest;
-use App\Http\Requests\ClientPortal\Quotes\ShowQuotesRequest;
 use App\Http\Requests\ClientPortal\Quotes\ShowQuoteRequest;
+use App\Http\Requests\ClientPortal\Quotes\ShowQuotesRequest;
 use App\Jobs\Invoice\InjectSignature;
 use App\Models\Quote;
 use App\Utils\Ninja;
 use App\Utils\TempFile;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
@@ -73,13 +74,13 @@ class QuoteController extends Controller
             return $this->approve((array) $transformed_ids, $request->has('process'));
         }
 
-        return back();
+        return redirect()->back();
     }
 
     protected function downloadQuotePdf(array $ids)
     {
         $quotes = Quote::whereIn('id', $ids)
-            ->whereClientId(auth()->user()->client->id)
+            ->whereClientId($request->user()->client->id)
             ->get();
 
         if (! $quotes || $quotes->count() == 0) {
@@ -87,9 +88,8 @@ class QuoteController extends Controller
         }
 
         if ($quotes->count() == 1) {
-
-           $file = $quotes->first()->pdf_file_path();
-           return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
+            $file = $quotes->first()->pdf_file_path();
+            return response()->download($file, basename($file), ['Cache-Control:' => 'no-cache'])->deleteFileAfterSend(true);
         }
 
         // enable output of HTTP headers

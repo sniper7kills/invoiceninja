@@ -75,16 +75,13 @@ class PaymentEmailEngine extends BaseEmailEngine
             ->setViewText('');
 
         if ($this->client->getSetting('pdf_email_attachment') !== false && $this->company->account->hasFeature(Account::FEATURE_PDF_ATTACHMENT)) {
-
-            $this->payment->invoices->each(function ($invoice){
-                
-                if(Ninja::isHosted())
+            $this->payment->invoices->each(function ($invoice) {
+                if (Ninja::isHosted()) {
                     $this->setAttachments([$invoice->pdf_file_path($invoice->invitations->first(), 'url', true)]);
-                else
+                } else {
                     $this->setAttachments([$invoice->pdf_file_path($invoice->invitations->first())]);
-
+                }
             });
-
         }
 
         return $this;
@@ -197,7 +194,7 @@ class PaymentEmailEngine extends BaseEmailEngine
         $invoice_list = '<br><br>';
 
         foreach ($this->payment->invoices as $invoice) {
-            $invoice_list .= ctrans('texts.invoice_number_short') . " {$invoice->number} - " . Number::formatMoney($invoice->pivot->amount, $this->client) . "<br>";
+            $invoice_list .= ctrans('texts.invoice_number_short') . " {$invoice->number} - " . Number::formatMoney($invoice->pivot->amount, $this->client) . '<br>';
         }
 
         return $invoice_list;

@@ -126,7 +126,7 @@ class ExpenseCategoryController extends BaseController
      */
     public function create(CreateExpenseCategoryRequest $request)
     {
-        $expense_category = ExpenseCategoryFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $expense_category = ExpenseCategoryFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($expense_category);
     }
@@ -139,7 +139,7 @@ class ExpenseCategoryController extends BaseController
      */
     public function store(StoreExpenseCategoryRequest $request)
     {
-        $expense_category = ExpenseCategoryFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $expense_category = ExpenseCategoryFactory::create($request->user()->company()->id, $request->user()->id);
         $expense_category->fill($request->all());
         $expense_category->save();
 
@@ -421,16 +421,16 @@ class ExpenseCategoryController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $expense_categories = ExpenseCategory::withTrashed()->find($this->transformKeys($ids));
 
         $expense_categories->each(function ($expense_category, $key) use ($action) {
-            if (auth()->user()->can('edit', $expense_category)) {
+            if ($request->user()->can('edit', $expense_category)) {
                 $this->base_repo->{$action}($expense_category);
             }
         });

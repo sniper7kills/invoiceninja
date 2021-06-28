@@ -87,15 +87,16 @@ class PaymentMigrationRepository extends BaseRepository
         //$payment->status_id = Payment::STATUS_COMPLETED;
         
         if (!array_key_exists('status_id', $data)) {
-            info("payment with no status id?");
+            info('payment with no status id?');
             info(print_r($data, 1));
         }
 
         $payment->status_id = $data['status_id'];
         $payment->refunded = $data['refunded'];
 
-        if($payment->status_id == Payment::STATUS_CANCELLED)
+        if ($payment->status_id == Payment::STATUS_CANCELLED) {
             $payment->is_deleted = true;
+        }
 
         $payment->deleted_at = $data['deleted_at'] ?: null;
         $payment->save();
@@ -119,10 +120,7 @@ class PaymentMigrationRepository extends BaseRepository
             $payment->invoices()->saveMany($invoices);
 
             $payment->invoices->each(function ($inv) use ($invoice_totals, $refund_totals, $payment) {
-
-
-                if($payment->status_id != Payment::STATUS_CANCELLED || !$payment->is_deleted)
-                {
+                if ($payment->status_id != Payment::STATUS_CANCELLED || !$payment->is_deleted) {
                     $inv->pivot->amount = $invoice_totals;
                     $inv->pivot->refunded = $refund_totals;
                     $inv->pivot->save();
@@ -130,15 +128,15 @@ class PaymentMigrationRepository extends BaseRepository
                     $inv->paid_to_date += $invoice_totals;
                     $inv->balance -= $invoice_totals;
 
-                    if($inv->status_id == Invoice::STATUS_PAID)
+                    if ($inv->status_id == Invoice::STATUS_PAID) {
                         $inv->balance = 0;
+                    }
 
                     // if($inv->balance > 0)
                     // $inv->balance = max(0, $inv->balance);
 
                     $inv->save();
                 }
-
             });
         }
 
@@ -210,7 +208,6 @@ class PaymentMigrationRepository extends BaseRepository
             $payment->exchange_rate = $exchange_rate->exchangeRate($client_currency, $company_currency, Carbon::parse($payment->date));
             // $payment->exchange_currency_id = $client_currency;
             $payment->exchange_currency_id = $company_currency;
-
         }
 
         return $payment;

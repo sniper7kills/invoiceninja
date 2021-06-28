@@ -47,7 +47,6 @@ use Faker\Factory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 
 class CreateSingleAccount extends Command
 {
@@ -165,7 +164,7 @@ class CreateSingleAccount extends Command
 
         TaxRate::factory()->create([
             'user_id' => $user->id,
-            'company_id' => $company->id,            
+            'company_id' => $company->id,
             'name' => 'VAT',
             'rate' => 17.5
         ]);
@@ -245,7 +244,7 @@ class CreateSingleAccount extends Command
     private function createSubsData($company, $user)
     {
         $gs = GroupSettingFactory::create($company->id, $user->id);
-        $gs->name = "plans";
+        $gs->name = 'plans';
         $gs->save();
 
         $p1 = Product::factory()->create([
@@ -256,7 +255,7 @@ class CreateSingleAccount extends Command
                 'cost' => 10,
                 'price' => 10,
                 'quantity' => 1,
-            ]);        
+            ]);
 
         $p2 = Product::factory()->create([
                 'user_id' => $user->id,
@@ -266,7 +265,7 @@ class CreateSingleAccount extends Command
                 'cost' => 14,
                 'price' => 14,
                 'quantity' => 1,
-            ]); 
+            ]);
 
         $p3 = Product::factory()->create([
                 'user_id' => $user->id,
@@ -276,7 +275,7 @@ class CreateSingleAccount extends Command
                 'cost' => 0,
                 'price' => 0,
                 'quantity' => 1,
-            ]); 
+            ]);
 
         $webhook_config = [
             'post_purchase_url' => 'http://ninja.test:8000/api/admin/plan',
@@ -285,7 +284,7 @@ class CreateSingleAccount extends Command
         ];
 
         $sub = SubscriptionFactory::create($company->id, $user->id);
-        $sub->name = "Pro Plan";
+        $sub->name = 'Pro Plan';
         $sub->group_id = $gs->id;
         $sub->recurring_product_ids = "{$p1->hashed_id}";
         $sub->webhook_configuration = $webhook_config;
@@ -294,7 +293,7 @@ class CreateSingleAccount extends Command
         $sub->save();
 
         $sub = SubscriptionFactory::create($company->id, $user->id);
-        $sub->name = "Enterprise Plan";
+        $sub->name = 'Enterprise Plan';
         $sub->group_id = $gs->id;
         $sub->recurring_product_ids = "{$p2->hashed_id}";
         $sub->webhook_configuration = $webhook_config;
@@ -303,7 +302,7 @@ class CreateSingleAccount extends Command
         $sub->save();
 
         $sub = SubscriptionFactory::create($company->id, $user->id);
-        $sub->name = "Free Plan";
+        $sub->name = 'Free Plan';
         $sub->group_id = $gs->id;
         $sub->recurring_product_ids = "{$p3->hashed_id}";
         $sub->webhook_configuration = $webhook_config;
@@ -340,7 +339,7 @@ class CreateSingleAccount extends Command
         $client->number = $this->getNextClientNumber($client);
 
         $settings = $client->settings;
-        $settings->currency_id = "1";
+        $settings->currency_id = '1';
 //        $settings->use_credits_payment = "always";
 
         $client->settings = $settings;
@@ -605,7 +604,6 @@ class CreateSingleAccount extends Command
     private function createGateways($company, $user)
     {
         if (config('ninja.testvars.stripe') && ($this->gateway == 'all' || $this->gateway == 'stripe')) {
-
             $cg = new CompanyGateway;
             $cg->company_id = $company->id;
             $cg->user_id = $user->id;
@@ -624,8 +622,6 @@ class CreateSingleAccount extends Command
 
             $cg->fees_and_limits = $fees_and_limits;
             $cg->save();
-
-
         }
 
         if (config('ninja.testvars.paypal') && ($this->gateway == 'all' || $this->gateway == 'paypal')) {

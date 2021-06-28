@@ -10,7 +10,6 @@
  */
 namespace Tests\Unit;
 
-use App\Helpers\Invoice\InvoiceSum;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\MockAccountData;
@@ -29,7 +28,6 @@ class DatesTest extends TestCase
         parent::setUp();
 
         // $this->makeTestData();
-
     }
 
     public function testDaysDiff()
@@ -42,7 +40,6 @@ class DatesTest extends TestCase
         $diff_in_days = $start_date->diffInDays($current_date);
 
         $this->assertEquals(19, $diff_in_days);
-
     }
 
     public function testDiffInDaysRange()

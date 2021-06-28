@@ -18,7 +18,6 @@ use App\Utils\SystemHealth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Artisan;
 
 trait AppSetup
 {
@@ -62,7 +61,6 @@ trait AppSetup
 
         /*Build template cache*/
         $this->buildTemplates();
-        
     }
 
 

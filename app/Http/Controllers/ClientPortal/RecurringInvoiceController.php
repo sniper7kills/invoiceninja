@@ -13,8 +13,8 @@ namespace App\Http\Controllers\ClientPortal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\RecurringInvoices\RequestCancellationRequest;
-use App\Http\Requests\ClientPortal\RecurringInvoices\ShowRecurringInvoicesRequest;
 use App\Http\Requests\ClientPortal\RecurringInvoices\ShowRecurringInvoiceRequest;
+use App\Http\Requests\ClientPortal\RecurringInvoices\ShowRecurringInvoicesRequest;
 use App\Jobs\Mail\NinjaMailer;
 use App\Jobs\Mail\NinjaMailerJob;
 use App\Jobs\Mail\NinjaMailerObject;
@@ -64,26 +64,24 @@ class RecurringInvoiceController extends Controller
     {
         if (is_null($recurring_invoice->subscription_id) || optional($recurring_invoice->subscription)->allow_cancellation) {
             $nmo = new NinjaMailerObject;
-            $nmo->mailable = (new NinjaMailer((new ClientContactRequestCancellationObject($recurring_invoice, auth()->user()))->build()));
+            $nmo->mailable = (new NinjaMailer((new ClientContactRequestCancellationObject($recurring_invoice, $request->user()))->build()));
             $nmo->company = $recurring_invoice->company;
             $nmo->settings = $recurring_invoice->company->settings;
 
             $notifiable_users = $this->filterUsersByPermissions($recurring_invoice->company->company_users, $recurring_invoice, ['recurring_cancellation']);
 
-            $notifiable_users->each(function ($company_user) use($nmo){
-
+            $notifiable_users->each(function ($company_user) use ($nmo) {
                 $nmo->to_user = $company_user->user;
                 NinjaMailerJob::dispatch($nmo);
-
             });
 
-            //$recurring_invoice->user->notify(new ClientContactRequestCancellation($recurring_invoice, auth()->user()));
+            //$recurring_invoice->user->notify(new ClientContactRequestCancellation($recurring_invoice, $request->user()));
 
             return $this->render('recurring_invoices.cancellation.index', [
                 'invoice' => $recurring_invoice,
             ]);
         }
 
-        return back();
+        return redirect()->back();
     }
 }

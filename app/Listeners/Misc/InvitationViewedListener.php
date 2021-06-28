@@ -50,7 +50,7 @@ class InvitationViewedListener implements ShouldQueue
         // $notification = new EntityViewedNotification($invitation, $entity_name);
 
         $nmo = new NinjaMailerObject;
-        $nmo->mailable = new NinjaMailer( (new EntityViewedObject($invitation, $entity_name))->build() );
+        $nmo->mailable = new NinjaMailer((new EntityViewedObject($invitation, $entity_name))->build());
         $nmo->company = $invitation->company;
         $nmo->settings = $invitation->company->settings;
 
@@ -65,7 +65,6 @@ class InvitationViewedListener implements ShouldQueue
 
                 $nmo->to_user = $company_user->user;
                 NinjaMailerJob::dispatch($nmo);
-
             }
 
             // $notification->method = $methods;

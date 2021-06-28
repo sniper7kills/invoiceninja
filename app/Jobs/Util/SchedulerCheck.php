@@ -40,15 +40,12 @@ class SchedulerCheck implements ShouldQueue
 
         Account::whereNotNull('id')->update(['is_scheduler_running' => true]);
 
-        if(config('ninja.app_version') != base_path('VERSION.txt'))
-        {
-
-             try {
+        if (config('ninja.app_version') != base_path('VERSION.txt')) {
+            try {
                 Artisan::call('migrate', ['--force' => true]);
             } catch (\Exception $e) {
                 nlog("I wasn't able to migrate the data.");
                 nlog($e->getMessage());
-
             }
 
             try {
@@ -69,9 +66,7 @@ class SchedulerCheck implements ShouldQueue
             }
 
 
-        VersionCheck::dispatch();
-
+            VersionCheck::dispatch();
         }
-
     }
 }

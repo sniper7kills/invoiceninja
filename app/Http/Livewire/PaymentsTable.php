@@ -34,7 +34,6 @@ class PaymentsTable extends Component
         MultiDB::setDb($this->company->db);
 
         $this->user = auth()->user();
-
     }
 
     public function render()

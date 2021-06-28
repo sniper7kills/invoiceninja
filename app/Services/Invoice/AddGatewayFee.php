@@ -12,10 +12,8 @@
 namespace App\Services\Invoice;
 
 use App\DataMapper\InvoiceItem;
-use App\Models\Client;
 use App\Models\CompanyGateway;
 use App\Models\Invoice;
-use App\Models\Payment;
 use App\Services\AbstractService;
 
 class AddGatewayFee extends AbstractService
@@ -43,17 +41,19 @@ class AddGatewayFee extends AbstractService
     {
         $gateway_fee = round($this->company_gateway->calcGatewayFee($this->amount, $this->gateway_type_id, $this->invoice->uses_inclusive_taxes), $this->invoice->client->currency()->precision);
 
-        if (!$gateway_fee) 
+        if (!$gateway_fee) {
             return $this->invoice;
+        }
 
         // Removes existing stale gateway fees
         $this->cleanPendingGatewayFees();
 
         // If a gateway fee is > 0 insert the line item
-        if ($gateway_fee > 0) 
+        if ($gateway_fee > 0) {
             return $this->processGatewayFee($gateway_fee);
+        }
         
-        // If we have reached this far, then we are apply a gateway discount    
+        // If we have reached this far, then we are apply a gateway discount
         return $this->processGatewayDiscount($gateway_fee);
     }
 

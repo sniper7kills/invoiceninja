@@ -157,11 +157,11 @@ class DocumentController extends BaseController
         return response()->json(['message'=> ctrans('texts.success')]);
     }
 
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $documents = Document::withTrashed()->whereIn('id', $this->transformKeys($ids))->company()->get();
 
@@ -173,7 +173,7 @@ class DocumentController extends BaseController
          * Send the other actions to the switch
          */
         $documents->each(function ($document, $key) use ($action) {
-            if (auth()->user()->can('edit', $document)) {
+            if ($request->user()->can('edit', $document)) {
                 $this->{$action}($document);
             }
         });

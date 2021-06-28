@@ -11,7 +11,6 @@
 
 namespace App\Repositories\Migration;
 
-use App\Jobs\Product\UpdateOrCreateProduct;
 use App\Models\Client;
 use App\Models\ClientContact;
 use App\Models\Credit;
@@ -60,11 +59,13 @@ class InvoiceMigrationRepository extends BaseRepository
 
         $tmp_data = $data;
 
-        if(array_key_exists('tax_rate1', $tmp_data) && is_null($tmp_data['tax_rate1']))
+        if (array_key_exists('tax_rate1', $tmp_data) && is_null($tmp_data['tax_rate1'])) {
             $tmp_data['tax_rate1'] = 0;
+        }
 
-        if(array_key_exists('tax_rate2', $tmp_data) && is_null($tmp_data['tax_rate2']))
+        if (array_key_exists('tax_rate2', $tmp_data) && is_null($tmp_data['tax_rate2'])) {
             $tmp_data['tax_rate2'] = 0;
+        }
 
         /* We need to unset some variable as we sometimes unguard the model */
 
@@ -79,11 +80,13 @@ class InvoiceMigrationRepository extends BaseRepository
         $model->fill($tmp_data);
         $model->status_id = $tmp_data['status_id'];
 
-        if($tmp_data['created_at'])
+        if ($tmp_data['created_at']) {
             $model->created_at = Carbon::parse($tmp_data['created_at']);
+        }
 
-        if($tmp_data['updated_at'])
+        if ($tmp_data['updated_at']) {
             $model->updated_at = Carbon::parse($tmp_data['updated_at']);
+        }
 
         $model->save(['timestamps' => false]);
 
@@ -138,13 +141,11 @@ class InvoiceMigrationRepository extends BaseRepository
 
         if ($class->name == Invoice::class || $class->name == RecurringInvoice::class) {
             if (($state['finished_amount'] != $state['starting_amount']) && ($model->status_id != Invoice::STATUS_DRAFT)) {
-
             }
 
             if (! $model->design_id) {
                 $model->design_id = $this->decodePrimaryKey($client->getSetting('invoice_design_id'));
             }
-
         }
 
         if ($class->name == Credit::class) {
@@ -163,13 +164,14 @@ class InvoiceMigrationRepository extends BaseRepository
             }
         }
 
-        if($data['is_deleted']){
+        if ($data['is_deleted']) {
             $model->is_deleted = true;
             $model->save();
         }
 
-        if($data['deleted_at'])
+        if ($data['deleted_at']) {
             $model->delete();
+        }
 
         $model->save();
 

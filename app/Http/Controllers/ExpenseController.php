@@ -279,7 +279,7 @@ class ExpenseController extends BaseController
 
         $this->uploadLogo($request->file('company_logo'), $expense->company, $expense);
 
-        event(new ExpenseWasUpdated($expense, $expense->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new ExpenseWasUpdated($expense, $expense->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($expense->fresh());
     }
@@ -325,7 +325,7 @@ class ExpenseController extends BaseController
      */
     public function create(CreateExpenseRequest $request)
     {
-        $expense = ExpenseFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $expense = ExpenseFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($expense);
     }
@@ -371,9 +371,9 @@ class ExpenseController extends BaseController
      */
     public function store(StoreExpenseRequest $request)
     {
-        $expense = $this->expense_repo->save($request->all(), ExpenseFactory::create(auth()->user()->company()->id, auth()->user()->id));
+        $expense = $this->expense_repo->save($request->all(), ExpenseFactory::create($request->user()->company()->id, $request->user()->id));
 
-        event(new ExpenseWasCreated($expense, $expense->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new ExpenseWasCreated($expense, $expense->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($expense);
     }
@@ -486,15 +486,15 @@ class ExpenseController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
         $expenses = Expense::withTrashed()->find($this->transformKeys($ids));
 
         $expenses->each(function ($expense, $key) use ($action) {
-            if (auth()->user()->can('edit', $expense)) {
+            if ($request->user()->can('edit', $expense)) {
                 $this->expense_repo->{$action}($expense);
             }
         });
@@ -565,14 +565,14 @@ class ExpenseController extends BaseController
      */
     public function upload(UploadExpenseRequest $request, Expense $expense)
     {
-
-        if(!$this->checkFeature(Account::FEATURE_DOCUMENTS))
+        if (!$this->checkFeature(Account::FEATURE_DOCUMENTS)) {
             return $this->featureFailure();
+        }
         
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->file('documents'), $expense);
+        }
 
         return $this->itemResponse($expense->fresh());
-
-    }    
+    }
 }

@@ -24,9 +24,9 @@ use App\Utils\Ninja;
 use App\Utils\PhantomJS\Phantom;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\MakesInvoiceHtml;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Response;
 
 class PreviewController extends BaseController
@@ -74,22 +74,22 @@ class PreviewController extends BaseController
      */
     public function show()
     {
-        if (request()->has('entity') &&
-            request()->has('entity_id') &&
+        if ($request->has('entity') &&
+            $request->has('entity_id') &&
             ! empty(request()->input('entity')) &&
-            ! empty(request()->input('entity_id')) &&
-            request()->has('body')) {
-            $design_object = json_decode(json_encode(request()->input('design')));
+            ! empty($request->input('entity_id')) &&
+            $request->has('body')) {
+            $design_object = json_decode(json_encode($request->input('design')));
 
             if (! is_object($design_object)) {
                 return response()->json(['message' => ctrans('texts.invalid_design_object')], 400);
             }
 
-            $entity = ucfirst(request()->input('entity'));
+            $entity = ucfirst($request->input('entity'));
 
-            $class = "App\Models\\$entity";
+            $class = "App\\Models\\$entity";
 
-            $pdf_class = "App\Jobs\\$entity\\Create{$entity}Pdf";
+            $pdf_class = "App\\Jobs\\$entity\\Create{$entity}Pdf";
 
             $entity_obj = $class::whereId($this->decodePrimaryKey(request()->input('entity_id')))->company()->first();
 
@@ -136,7 +136,7 @@ class PreviewController extends BaseController
                 return (new Phantom)->convertHtmlToPdf($maker->getCompiledHTML(true));
             }
             
-            if(config('ninja.invoiceninja_hosted_pdf_generation') || config('ninja.pdf_generator') == 'hosted_ninja'){
+            if (config('ninja.invoiceninja_hosted_pdf_generation') || config('ninja.pdf_generator') == 'hosted_ninja') {
                 return (new NinjaPdf())->build($maker->getCompiledHTML(true));
             }
 
@@ -224,7 +224,7 @@ class PreviewController extends BaseController
             return (new Phantom)->convertHtmlToPdf($maker->getCompiledHTML(true));
         }
 
-        if(config('ninja.invoiceninja_hosted_pdf_generation')){
+        if (config('ninja.invoiceninja_hosted_pdf_generation')) {
             return (new NinjaPdf())->build($maker->getCompiledHTML(true));
         }
             
@@ -232,7 +232,7 @@ class PreviewController extends BaseController
 
         DB::connection(config('database.default'))->rollBack();
 
-        $response = Response::make($file_path, 200);
+        $response = response($file_path);
         $response->header('Content-Type', 'application/pdf');
 
         return $response;

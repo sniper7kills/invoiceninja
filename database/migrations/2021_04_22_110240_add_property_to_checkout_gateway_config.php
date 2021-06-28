@@ -4,8 +4,6 @@ use App\Models\CompanyGateway;
 use App\Models\Gateway;
 use App\Utils\Traits\AppSetup;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 class AddPropertyToCheckoutGatewayConfig extends Migration
 {
@@ -17,11 +15,9 @@ class AddPropertyToCheckoutGatewayConfig extends Migration
      */
     public function up()
     {
-
         $gateway = Gateway::where('key', '3758e7f7c6f4cecf0f4f348b9a00f456')->first();
 
-        if($gateway)
-        {
+        if ($gateway) {
             $fields = json_decode($gateway->fields);
 
             $fields->threeds = false;
@@ -29,16 +25,15 @@ class AddPropertyToCheckoutGatewayConfig extends Migration
             $gateway->save();
         }
 
-        CompanyGateway::where('gateway_key', '3758e7f7c6f4cecf0f4f348b9a00f456')->each(function ($checkout){
+        CompanyGateway::where('gateway_key', '3758e7f7c6f4cecf0f4f348b9a00f456')->each(function ($checkout) {
+            $config = json_decode(decrypt($checkout->config));
 
-                $config = json_decode(decrypt($checkout->config));
+            $config->threeds = false;
 
-                $config->threeds = false;
+            $config = encrypt(json_encode($config));
 
-                $config = encrypt(json_encode($config));
-
-                $checkout->config = $config;
-                $checkout->save();
+            $checkout->config = $config;
+            $checkout->save();
         });
 
         // $this->buildCache(true);
@@ -51,6 +46,5 @@ class AddPropertyToCheckoutGatewayConfig extends Migration
      */
     public function down()
     {
-
     }
 }

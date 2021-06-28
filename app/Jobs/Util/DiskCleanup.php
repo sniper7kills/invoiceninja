@@ -11,9 +11,6 @@
 
 namespace App\Jobs\Util;
 
-use App\Jobs\Util\UnlinkFile;
-use App\Models\Account;
-use App\Utils\Ninja;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -44,6 +41,5 @@ class DiskCleanup implements ShouldQueue
 
         $files = Storage::allFiles('public', 'backups/');
         Storage::delete($files);
-
     }
 }

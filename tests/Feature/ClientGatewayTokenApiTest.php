@@ -15,7 +15,6 @@ use App\Models\GatewayType;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\Session;
 use Tests\MockAccountData;
 use Tests\TestCase;
 
@@ -114,13 +113,10 @@ class ClientGatewayTokenApiTest extends TestCase
         $arr = $response->json();
 
         $this->assertNotNull($arr['data']['token']);
-
     }
 
     public function testClientPut()
     {
-
-
         $data = [
             'client_id' => $this->client->hashed_id,
             'company_gateway_id' => $this->cg->hashed_id,
@@ -155,7 +151,6 @@ class ClientGatewayTokenApiTest extends TestCase
 
     public function testClientGet()
     {
-
         $data = [
             'client_id' => $this->client->hashed_id,
             'company_gateway_id' => $this->cg->hashed_id,
@@ -177,5 +172,4 @@ class ClientGatewayTokenApiTest extends TestCase
 
         $response->assertStatus(200);
     }
-
 }

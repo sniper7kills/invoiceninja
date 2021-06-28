@@ -11,17 +11,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Libraries\MultiDB;
 use App\Libraries\OAuth\Providers\Google;
-use App\Models\CompanyUser;
 use App\Models\User;
-use App\Transformers\CompanyUserTransformer;
 use App\Transformers\UserTransformer;
 use App\Utils\Traits\User\LoginCache;
 use Google_Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
 
 class ConnectedAccountController extends BaseController
 {
@@ -96,7 +92,6 @@ class ConnectedAccountController extends BaseController
         $user = $google->getTokenResponse(request()->input('id_token'));
 
         if ($user) {
-            
             $client = new Google_Client();
             $client->setClientId(config('ninja.auth.google.client_id'));
             $client->setClientSecret(config('ninja.auth.google.client_secret'));
@@ -118,7 +113,6 @@ class ConnectedAccountController extends BaseController
             $this->setLoginCache(auth()->user());
             
             return $this->itemResponse(auth()->user());
-
         }
 
         return response()
@@ -131,7 +125,6 @@ class ConnectedAccountController extends BaseController
 
     public function handleGmailOauth(Request $request)
     {
-
         $user = false;
 
         $google = new Google();
@@ -139,7 +132,6 @@ class ConnectedAccountController extends BaseController
         $user = $google->getTokenResponse($request->input('id_token'));
 
         if ($user) {
-            
             $client = new Google_Client();
             $client->setClientId(config('ninja.auth.google.client_id'));
             $client->setClientSecret(config('ninja.auth.google.client_secret'));
@@ -161,8 +153,9 @@ class ConnectedAccountController extends BaseController
                 'email_verified_at' =>now()
             ];
 
-            if(auth()->user()->email != $google->harvestEmail($user))
+            if (auth()->user()->email != $google->harvestEmail($user)) {
                 return response()->json(['message' => 'Primary Email differs to OAuth email. Emails must match.'], 400);
+            }
 
             auth()->user()->update($connected_account);
             auth()->user()->email_verified_at = now();
@@ -171,14 +164,12 @@ class ConnectedAccountController extends BaseController
             $this->activateGmail(auth()->user());
 
             return $this->itemResponse(auth()->user());
-
         }
 
         return response()
         ->json(['message' => ctrans('texts.invalid_credentials')], 401)
         ->header('X-App-Version', config('ninja.app_version'))
         ->header('X-Api-Version', config('ninja.minimum_client_version'));
-
     }
 
     private function activateGmail(User $user)
@@ -186,13 +177,12 @@ class ConnectedAccountController extends BaseController
         $company = $user->company();
         $settings = $company->settings;
 
-        if($settings->email_sending_method == 'default')
-        {
+        if ($settings->email_sending_method == 'default') {
             $settings->email_sending_method = 'gmail';
             $settings->gmail_sending_user_id = (string)$user->hashed_id;
 
             $company->settings = $settings;
             $company->save();
-        }    
+        }
     }
 }

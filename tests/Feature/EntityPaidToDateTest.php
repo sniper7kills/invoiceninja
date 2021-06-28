@@ -10,25 +10,15 @@
  */
 namespace Tests\Feature;
 
-use App\DataMapper\ClientSettings;
-use App\Factory\ClientFactory;
-use App\Factory\CreditFactory;
-use App\Factory\InvoiceFactory;
 use App\Factory\InvoiceItemFactory;
-use App\Factory\PaymentFactory;
-use App\Helpers\Invoice\InvoiceSum;
 use App\Models\Client;
-use App\Models\ClientContact;
-use App\Models\Credit;
 use App\Models\Invoice;
-use App\Models\Payment;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithoutEvents;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Validation\ValidationException;
 use Tests\MockAccountData;
 use Tests\TestCase;
 
@@ -62,7 +52,6 @@ class EntityPaidToDateTest extends TestCase
 
     public function testPaidToDateWithMarkPaidAction()
     {
-
         $invoice = $this->bootNewInvoice();
 
         $this->assertEquals($invoice->balance, 0);
@@ -79,7 +68,6 @@ class EntityPaidToDateTest extends TestCase
 
     public function testPaidToDateWithInvoiceCancellation()
     {
-
         $invoice = $this->bootNewInvoice();
 
         $invoice->service()->markPaid()->save();
@@ -89,13 +77,10 @@ class EntityPaidToDateTest extends TestCase
         $invoice->service()->handleReversal()->save();
 
         $this->assertEquals(0, $invoice->paid_to_date);
-
-
     }
 
     private function bootNewInvoice()
     {
-        
         $data = [
             'name' => 'A Nice Client',
         ];

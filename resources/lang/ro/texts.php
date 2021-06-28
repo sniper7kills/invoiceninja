@@ -1,6 +1,6 @@
 <?php
 
-$LANG = array(
+$LANG = [
     'organization' => 'Organizație',
     'name' => 'Nume',
     'website' => 'Site web',
@@ -4254,8 +4254,6 @@ Atentie: Folosește Legacy API Key, nu Token API',
     'contact_details' => 'Contact Details',
     'download_backup_subject' => 'Your company backup is ready for download',
     'account_passwordless_login' => 'Account passwordless login',
-);
+];
 
 return $LANG;
-
-?>

@@ -60,8 +60,6 @@ class UpdateSubscriptionRequest extends Request
         ];
 
         return $this->globalRules($rules);
-
-
     }
 
     protected function prepareForValidation()

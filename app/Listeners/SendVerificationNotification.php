@@ -11,14 +11,7 @@
 
 namespace App\Listeners;
 
-use App\Jobs\Mail\NinjaMailer;
-use App\Jobs\Mail\NinjaMailerJob;
-use App\Jobs\Mail\NinjaMailerObject;
 use App\Libraries\MultiDB;
-use App\Mail\Admin\VerifyUserObject;
-use App\Notifications\Ninja\VerifyUser;
-use App\Utils\Ninja;
-use Exception;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -46,11 +39,10 @@ class SendVerificationNotification implements ShouldQueue
      */
     public function handle($event)
     {
-        nlog("In Send Verification Notification");
+        nlog('In Send Verification Notification');
         
         MultiDB::setDB($event->company->db);
 
         $event->user->service()->invite($event->company);
-
     }
 }

@@ -13,7 +13,6 @@ namespace App\Listeners\Mail;
 
 use App\Libraries\MultiDB;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Mail\Events\MessageSent;
 
 class MailSentListener implements ShouldQueue
@@ -36,23 +35,17 @@ class MailSentListener implements ShouldQueue
      */
     public function handle(MessageSent $event)
     {
-        
-        if(property_exists($event->message, 'invitation') && $event->message->invitation){
-
+        if (property_exists($event->message, 'invitation') && $event->message->invitation) {
             MultiDB::setDb($event->message->invitation->company->db);
 
-            if($event->message->getHeaders()->get('x-pm-message-id')){
-
+            if ($event->message->getHeaders()->get('x-pm-message-id')) {
                 $postmark_id = $event->message->getHeaders()->get('x-pm-message-id')->getValue();
 
                 // nlog($postmark_id);
                 $invitation = $event->message->invitation;
                 $invitation->message_id = $postmark_id;
                 $invitation->save();
-
             }
-
         }
-
     }
 }

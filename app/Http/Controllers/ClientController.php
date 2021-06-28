@@ -274,7 +274,6 @@ class ClientController extends BaseController
      */
     public function update(UpdateClientRequest $request, Client $client)
     {
-
         if ($request->entityIsDeleted($client)) {
             return $request->disallowUpdate();
         }
@@ -283,7 +282,7 @@ class ClientController extends BaseController
 
         $this->uploadLogo($request->file('company_logo'), $client->company, $client);
 
-        event(new ClientWasUpdated($client, $client->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new ClientWasUpdated($client, $client->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($client->fresh());
     }
@@ -329,7 +328,7 @@ class ClientController extends BaseController
      */
     public function create(CreateClientRequest $request)
     {
-        $client = ClientFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $client = ClientFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($client);
     }
@@ -380,12 +379,10 @@ class ClientController extends BaseController
         $client->load('contacts', 'primary_contact');
 
         /* Set the client country to the company if none is set */
-        if(!$client->country_id && strlen($client->company->settings->country_id) > 1){
-
+        if (!$client->country_id && strlen($client->company->settings->country_id) > 1) {
             $client->country_id = $client->company->settings->country_id;
         
             $client->save();
-        
         }
 
         $this->uploadLogo($request->file('company_logo'), $client->company, $client);
@@ -447,11 +444,9 @@ class ClientController extends BaseController
      */
     public function destroy(DestroyClientRequest $request, Client $client)
     {
+        $this->client_repo->delete($client);
 
-       $this->client_repo->delete($client);
-
-       return $this->itemResponse($client->fresh());
-
+        return $this->itemResponse($client->fresh());
     }
 
     /**
@@ -505,15 +500,15 @@ class ClientController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
         $clients = Client::withTrashed()->find($this->transformKeys($ids));
 
         $clients->each(function ($client, $key) use ($action) {
-            if (auth()->user()->can('edit', $client)) {
+            if ($request->user()->can('edit', $client)) {
                 $this->client_repo->{$action}($client);
             }
         });
@@ -584,69 +579,69 @@ class ClientController extends BaseController
      */
     public function upload(UploadClientRequest $request, Client $client)
     {
-
-        if(!$this->checkFeature(Account::FEATURE_DOCUMENTS))
+        if (!$this->checkFeature(Account::FEATURE_DOCUMENTS)) {
             return $this->featureFailure();
+        }
         
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->file('documents'), $client);
+        }
 
         return $this->itemResponse($client->fresh());
-
     }
 
-/**
-     * Update the specified resource in storage.
-     *
-     * @param UploadClientRequest $request
-     * @param Client $client
-     * @return Response
-     *
-     *
-     *
-     * @OA\Put(
-     *      path="/api/v1/clients/{id}/adjust_ledger",
-     *      operationId="adjustLedger",
-     *      tags={"clients"},
-     *      summary="Adjust the client ledger to rebalance",
-     *      description="Adjust the client ledger to rebalance",
-     *      @OA\Parameter(ref="#/components/parameters/X-Api-Secret"),
-     *      @OA\Parameter(ref="#/components/parameters/X-Api-Token"),
-     *      @OA\Parameter(ref="#/components/parameters/X-Requested-With"),
-     *      @OA\Parameter(ref="#/components/parameters/include"),
-     *      @OA\Parameter(
-     *          name="id",
-     *          in="path",
-     *          description="The Client Hashed ID",
-     *          example="D2J234DFA",
-     *          required=true,
-     *          @OA\Schema(
-     *              type="string",
-     *              format="string",
-     *          ),
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Returns the client object",
-     *          @OA\Header(header="X-MINIMUM-CLIENT-VERSION", ref="#/components/headers/X-MINIMUM-CLIENT-VERSION"),
-     *          @OA\Header(header="X-RateLimit-Remaining", ref="#/components/headers/X-RateLimit-Remaining"),
-     *          @OA\Header(header="X-RateLimit-Limit", ref="#/components/headers/X-RateLimit-Limit"),
-     *          @OA\JsonContent(ref="#/components/schemas/Client"),
-     *       ),
-     *       @OA\Response(
-     *          response=422,
-     *          description="Validation error",
-     *          @OA\JsonContent(ref="#/components/schemas/ValidationError"),
-     *
-     *       ),
-     *       @OA\Response(
-     *           response="default",
-     *           description="Unexpected Error",
-     *           @OA\JsonContent(ref="#/components/schemas/Error"),
-     *       ),
-     *     )
-     */
-    //@deprecated - not available    
+    /**
+         * Update the specified resource in storage.
+         *
+         * @param UploadClientRequest $request
+         * @param Client $client
+         * @return Response
+         *
+         *
+         *
+         * @OA\Put(
+         *      path="/api/v1/clients/{id}/adjust_ledger",
+         *      operationId="adjustLedger",
+         *      tags={"clients"},
+         *      summary="Adjust the client ledger to rebalance",
+         *      description="Adjust the client ledger to rebalance",
+         *      @OA\Parameter(ref="#/components/parameters/X-Api-Secret"),
+         *      @OA\Parameter(ref="#/components/parameters/X-Api-Token"),
+         *      @OA\Parameter(ref="#/components/parameters/X-Requested-With"),
+         *      @OA\Parameter(ref="#/components/parameters/include"),
+         *      @OA\Parameter(
+         *          name="id",
+         *          in="path",
+         *          description="The Client Hashed ID",
+         *          example="D2J234DFA",
+         *          required=true,
+         *          @OA\Schema(
+         *              type="string",
+         *              format="string",
+         *          ),
+         *      ),
+         *      @OA\Response(
+         *          response=200,
+         *          description="Returns the client object",
+         *          @OA\Header(header="X-MINIMUM-CLIENT-VERSION", ref="#/components/headers/X-MINIMUM-CLIENT-VERSION"),
+         *          @OA\Header(header="X-RateLimit-Remaining", ref="#/components/headers/X-RateLimit-Remaining"),
+         *          @OA\Header(header="X-RateLimit-Limit", ref="#/components/headers/X-RateLimit-Limit"),
+         *          @OA\JsonContent(ref="#/components/schemas/Client"),
+         *       ),
+         *       @OA\Response(
+         *          response=422,
+         *          description="Validation error",
+         *          @OA\JsonContent(ref="#/components/schemas/ValidationError"),
+         *
+         *       ),
+         *       @OA\Response(
+         *           response="default",
+         *           description="Unexpected Error",
+         *           @OA\JsonContent(ref="#/components/schemas/Error"),
+         *       ),
+         *     )
+         */
+    //@deprecated - not available
     public function adjustLedger(AdjustClientLedgerRequest $request, Client $client)
     {
         // $adjustment = $request->input('adjustment');
@@ -654,5 +649,4 @@ class ClientController extends BaseController
 
         // $client->service()->updateBalance
     }
-
 }

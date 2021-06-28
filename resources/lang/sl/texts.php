@@ -1,6 +1,6 @@
 <?php
 
-$LANG = array(
+$LANG = [
     'organization' => 'Organizacija',
     'name' => 'Ime',
     'website' => 'Spletišče',
@@ -4249,8 +4249,6 @@ Ko imate zneske, se vrnite na to stran plačilnega sredstva in kliknite na "Comp
     'contact_details' => 'Contact Details',
     'download_backup_subject' => 'Your company backup is ready for download',
     'account_passwordless_login' => 'Account passwordless login',
-);
+];
 
 return $LANG;
-
-?>

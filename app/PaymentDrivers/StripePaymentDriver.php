@@ -13,7 +13,6 @@
 namespace App\PaymentDrivers;
 
 use App\Exceptions\PaymentFailed;
-use App\Factory\PaymentFactory;
 use App\Http\Requests\Payments\PaymentWebhookRequest;
 use App\Http\Requests\Request;
 use App\Jobs\Util\SystemLogger;
@@ -32,7 +31,6 @@ use App\PaymentDrivers\Stripe\UpdatePaymentMethods;
 use App\PaymentDrivers\Stripe\Utilities;
 use App\Utils\Traits\MakesHash;
 use Exception;
-use Illuminate\Support\Carbon;
 use Stripe\Account;
 use Stripe\Customer;
 use Stripe\Exception\ApiErrorException;
@@ -80,20 +78,16 @@ class StripePaymentDriver extends BaseDriver
      */
     public function init(): void
     {
-        if($this->stripe_connect)
-        {
+        if ($this->stripe_connect) {
             Stripe::setApiKey(config('ninja.ninja_stripe_key'));
 
-            $this->stripe_connect_auth = ["stripe_account" => $this->company_gateway->getConfigField('account_id')];
-        }
-        else
-        {
+            $this->stripe_connect_auth = ['stripe_account' => $this->company_gateway->getConfigField('account_id')];
+        } else {
             $this->stripe = new StripeClient(
                 $this->company_gateway->getConfigField('apiKey')
             );
 
             Stripe::setApiKey($this->company_gateway->getConfigField('apiKey'));
-
         }
     }
 
@@ -306,7 +300,6 @@ class StripePaymentDriver extends BaseDriver
         if ($client_gateway_token && $client_gateway_token->gateway_customer_reference) {
             $customer = Customer::retrieve($client_gateway_token->gateway_customer_reference, $this->stripe_connect_auth);
         } else {
-
             $data['name'] = $this->client->present()->name();
             $data['phone'] = $this->client->present()->phone();
 
@@ -398,7 +391,7 @@ class StripePaymentDriver extends BaseDriver
 
         // charge.failed, charge.refunded
 
-        return response([], 200);
+        return response([]);
     }
 
     public function tokenBilling(ClientGatewayToken $cgt, PaymentHash $payment_hash)
@@ -419,23 +412,22 @@ class StripePaymentDriver extends BaseDriver
         $this->init();
 
         try {
-
             $stripe_payment_method = $this->getStripePaymentMethod($payment_method);
             $stripe_payment_method->attach(['customer' => $customer->id], $this->stripe_connect_auth);
-
         } catch (ApiErrorException | Exception $e) {
-
             nlog($e->getMessage());
 
-            SystemLogger::dispatch([
+            SystemLogger::dispatch(
+                [
                 'server_response' => $e->getMessage(),
                 'data' => request()->all(),
             ],
-            SystemLog::CATEGORY_GATEWAY_RESPONSE,
-            SystemLog::EVENT_GATEWAY_FAILURE,
-            SystemLog::TYPE_STRIPE,
-            $this->client, $this->client->company);
-
+                SystemLog::CATEGORY_GATEWAY_RESPONSE,
+                SystemLog::EVENT_GATEWAY_FAILURE,
+                SystemLog::TYPE_STRIPE,
+                $this->client,
+                $this->client->company
+            );
         }
     }
 
@@ -448,27 +440,25 @@ class StripePaymentDriver extends BaseDriver
      */
     public function detach(ClientGatewayToken $token)
     {
-
         $this->init();
 
-        try{
-
+        try {
             $pm = $this->getStripePaymentMethod($token->token);
             $pm->detach([], $this->stripe_connect_auth);
-
         } catch (ApiErrorException | Exception $e) {
-
             nlog($e->getMessage());
 
-            SystemLogger::dispatch([
+            SystemLogger::dispatch(
+                [
                 'server_response' => $e->getMessage(),
                 'data' => request()->all(),
             ],
-            SystemLog::CATEGORY_GATEWAY_RESPONSE,
-            SystemLog::EVENT_GATEWAY_FAILURE,
-            SystemLog::TYPE_STRIPE,
-            $this->client, $this->client->company);
-
+                SystemLog::CATEGORY_GATEWAY_RESPONSE,
+                SystemLog::EVENT_GATEWAY_FAILURE,
+                SystemLog::TYPE_STRIPE,
+                $this->client,
+                $this->client->company
+            );
         }
     }
 
@@ -487,9 +477,7 @@ class StripePaymentDriver extends BaseDriver
     public function getStripePaymentMethod(string $source)
     {
         try {
-
             return PaymentMethod::retrieve($source, $this->stripe_connect_auth);
-
         } catch (ApiErrorException | Exception $e) {
             throw new PaymentFailed($e->getMessage(), $e->getCode());
         }
@@ -522,9 +510,7 @@ class StripePaymentDriver extends BaseDriver
      */
     public function importCustomers()
     {
-
         return (new ImportCustomers($this))->run();
         //match clients based on the gateway_customer_reference column
-
     }
 }

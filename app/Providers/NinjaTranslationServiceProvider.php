@@ -47,7 +47,6 @@ class NinjaTranslationServiceProvider extends TranslationServiceProvider
         // });
         
         $this->app->singleton('translator', function ($app) {
-
             $loader = $app['translation.loader'];
             $locale = $app['config']['app.locale'];
 
@@ -56,8 +55,6 @@ class NinjaTranslationServiceProvider extends TranslationServiceProvider
             $trans->setFallback($app['config']['app.fallback_locale']);
 
             return $trans;
-
         });
     }
-
 }

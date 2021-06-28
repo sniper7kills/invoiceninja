@@ -12,6 +12,7 @@
 namespace App\Http\Controllers;
 
 use App\Libraries\MultiDB;
+use Illuminate\Http\Request;
 
 class SubdomainController extends BaseController
 {
@@ -30,7 +31,6 @@ class SubdomainController extends BaseController
 
     public function __construct()
     {
-
     }
 
     /**
@@ -38,13 +38,12 @@ class SubdomainController extends BaseController
      *
      * @return void
      */
-    public function index()
+    public function index(Request $request)
     {
-
-        if(in_array(request()->input('subdomain'), $this->protected) || MultiDB::findAndSetDbByDomain(['subdomain' => request()->input('subdomain')]))
-            return response()->json(['message' => 'Domain not available'] , 401);
+        if (in_array($request->input('subdomain'), $this->protected) || MultiDB::findAndSetDbByDomain(['subdomain' => $request->input('subdomain')])) {
+            return response()->json(['message' => 'Domain not available'], 401);
+        }
 
         return response()->json(['message' => 'Domain available'], 200);
     }
-
 }

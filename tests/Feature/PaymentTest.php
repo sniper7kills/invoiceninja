@@ -1390,8 +1390,7 @@ class PaymentTest extends TestCase
 
     public function testDeleteRefundedPayment()
     {
-
-       $this->invoice = null;
+        $this->invoice = null;
 
         $client = ClientFactory::create($this->company->id, $this->user->id);
         $client->save();
@@ -1400,17 +1399,17 @@ class PaymentTest extends TestCase
         $this->invoice->client_id = $client->id;
 
 
-            $item = InvoiceItemFactory::create();
-            $item->quantity = 1;
-            $item->cost = 10;
-            $item->product_key = 'test';
-            $item->notes = 'test';
-            $item->custom_value1 = '';
-            $item->custom_value2 = '';
-            $item->custom_value3 = '';
-            $item->custom_value4 = '';
+        $item = InvoiceItemFactory::create();
+        $item->quantity = 1;
+        $item->cost = 10;
+        $item->product_key = 'test';
+        $item->notes = 'test';
+        $item->custom_value1 = '';
+        $item->custom_value2 = '';
+        $item->custom_value3 = '';
+        $item->custom_value4 = '';
 
-            $line_items[] = $item;
+        $line_items[] = $item;
 
         $this->invoice->line_items = $line_items;
         $this->invoice->uses_inclusive_taxes = false;
@@ -1422,7 +1421,7 @@ class PaymentTest extends TestCase
 
         $this->invoice = $this->invoice_calc->getInvoice();
         $this->invoice->save();
-        $this->invoice->service()->markSent()->save(); 
+        $this->invoice->service()->markSent()->save();
 
 
         $this->assertEquals(10, $this->invoice->balance);
@@ -1481,4 +1480,3 @@ class PaymentTest extends TestCase
         $this->assertEquals(10, $this->invoice->fresh()->balance);
     }
 }
-

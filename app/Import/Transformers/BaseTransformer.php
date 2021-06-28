@@ -53,32 +53,34 @@ class BaseTransformer
         return (isset($data[$field]) && $data[$field]) ? $data[$field] : '1';
     }
 
-    public function getCurrencyByCode( $data, $key = 'client.currency_id' ) {
-		$code = array_key_exists( $key, $data ) ? $data[ $key ] : false;
+    public function getCurrencyByCode($data, $key = 'client.currency_id')
+    {
+        $code = array_key_exists($key, $data) ? $data[ $key ] : false;
 
-		return $this->maps['currencies'][ $code ] ?? $this->maps['company']->settings->currency_id;
-	}
+        return $this->maps['currencies'][ $code ] ?? $this->maps['company']->settings->currency_id;
+    }
 
-    public function getClient($client_name, $client_email) {
-		$clients = $this->maps['company']->clients;
+    public function getClient($client_name, $client_email)
+    {
+        $clients = $this->maps['company']->clients;
 
-		$clients = $clients->where( 'name', $client_name );
+        $clients = $clients->where('name', $client_name);
 
-		if ( $clients->count() >= 1 ) {
-			return $clients->first()->id;
-		}
+        if ($clients->count() >= 1) {
+            return $clients->first()->id;
+        }
 
-		if ( ! empty( $client_email ) ) {
-			$contacts = ClientContact::where( 'company_id', $this->maps['company']->id )
-									 ->where( 'email', $client_email );
+        if (! empty($client_email)) {
+            $contacts = ClientContact::where('company_id', $this->maps['company']->id)
+                                     ->where('email', $client_email);
 
-			if ( $contacts->count() >= 1 ) {
-				return $contacts->first()->client_id;
-			}
-		}
+            if ($contacts->count() >= 1) {
+                return $contacts->first()->client_id;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
 
 
@@ -92,7 +94,7 @@ class BaseTransformer
     {
         $name = trim(strtolower($name));
 
-		return isset( $this->maps['client'][ $name ] );
+        return isset($this->maps['client'][ $name ]);
     }
 
     /**
@@ -104,7 +106,7 @@ class BaseTransformer
     {
         $name = trim(strtolower($name));
 
-		return isset( $this->maps['vendor'][ $name ] );
+        return isset($this->maps['vendor'][ $name ]);
     }
 
 
@@ -117,7 +119,7 @@ class BaseTransformer
     {
         $key = trim(strtolower($key));
 
-		return isset( $this->maps['product'][ $key ] );
+        return isset($this->maps['product'][ $key ]);
     }
 
 
@@ -158,7 +160,7 @@ class BaseTransformer
     {
         $name = strtolower(trim($name));
 
-		return isset( $this->maps['client'][ $name ] ) ? $this->maps['client'][ $name ] : null;
+        return isset($this->maps['client'][ $name ]) ? $this->maps['client'][ $name ] : null;
     }
 
     /**
@@ -313,7 +315,7 @@ class BaseTransformer
      */
     public function getInvoiceNumber($number)
     {
-		return $number ? ltrim( trim( $number ), '0' ) : null;
+        return $number ? ltrim(trim($number), '0') : null;
     }
 
     /**
@@ -326,7 +328,7 @@ class BaseTransformer
         $invoiceNumber = $this->getInvoiceNumber($invoiceNumber);
         $invoiceNumber = strtolower($invoiceNumber);
 
-		return isset( $this->maps['invoice'][ $invoiceNumber ] ) ? $this->maps['invoice'][ $invoiceNumber ] : null;
+        return isset($this->maps['invoice'][ $invoiceNumber ]) ? $this->maps['invoice'][ $invoiceNumber ] : null;
     }
 
     /**
@@ -339,7 +341,7 @@ class BaseTransformer
         $invoiceNumber = $this->getInvoiceNumber($invoiceNumber);
         $invoiceNumber = strtolower($invoiceNumber);
 
-		return isset( $this->maps['invoice'][ $invoiceNumber ] ) ? $this->maps['invoices'][ $invoiceNumber ]->public_id : null;
+        return isset($this->maps['invoice'][ $invoiceNumber ]) ? $this->maps['invoices'][ $invoiceNumber ]->public_id : null;
     }
 
     /**
@@ -352,7 +354,7 @@ class BaseTransformer
         $invoiceNumber = $this->getInvoiceNumber($invoiceNumber);
         $invoiceNumber = strtolower($invoiceNumber);
 
-		return $this->maps['invoice'][ $invoiceNumber ] ?? null;
+        return $this->maps['invoice'][ $invoiceNumber ] ?? null;
     }
 
     /**
@@ -365,7 +367,7 @@ class BaseTransformer
         $invoiceNumber = $this->getInvoiceNumber($invoiceNumber);
         $invoiceNumber = strtolower($invoiceNumber);
 
-		return $this->maps['invoice_client'][ $invoiceNumber ] ?? null;
+        return $this->maps['invoice_client'][ $invoiceNumber ] ?? null;
     }
 
     /**
@@ -377,39 +379,42 @@ class BaseTransformer
     {
         $name = strtolower(trim($name));
 
-		return $this->maps['vendor'][ $name ] ?? null;
+        return $this->maps['vendor'][ $name ] ?? null;
     }
 
-	/**
-	 * @param $name
-	 *
-	 * @return null
-	 */
-	public function getExpenseCategoryId( $name ) {
-		$name = strtolower( trim( $name ) );
+    /**
+     * @param $name
+     *
+     * @return null
+     */
+    public function getExpenseCategoryId($name)
+    {
+        $name = strtolower(trim($name));
 
-		return $this->maps['expense_category'][ $name ] ?? null;
-	}
+        return $this->maps['expense_category'][ $name ] ?? null;
+    }
 
-	/**
-	 * @param $name
-	 *
-	 * @return null
-	 */
-	public function getProjectId( $name ) {
-		$name = strtolower( trim( $name ) );
+    /**
+     * @param $name
+     *
+     * @return null
+     */
+    public function getProjectId($name)
+    {
+        $name = strtolower(trim($name));
 
-		return $this->maps['project'][ $name ] ?? null;
-	}
+        return $this->maps['project'][ $name ] ?? null;
+    }
 
-	/**
-	 * @param $name
-	 *
-	 * @return null
-	 */
-	public function getPaymentTypeId( $name ) {
-		$name = strtolower( trim( $name ) );
+    /**
+     * @param $name
+     *
+     * @return null
+     */
+    public function getPaymentTypeId($name)
+    {
+        $name = strtolower(trim($name));
 
-		return $this->maps['payment_type'][ $name ] ?? null;
-	}
+        return $this->maps['payment_type'][ $name ] ?? null;
+    }
 }

@@ -39,6 +39,5 @@ class PaymentEmailedActivity implements ShouldQueue
         MultiDB::setDb($event->company->db);
 
         $payment = $event->payment;
-        
     }
 }

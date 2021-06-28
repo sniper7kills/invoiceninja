@@ -31,7 +31,9 @@ class UpdatePaymentTermRequest extends Request
     public function rules()
     {
         return [
-            'num_days' => 'required',
+            'num_days' => [
+                'required',
+            ],
         ];
     }
 

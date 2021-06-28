@@ -43,6 +43,4 @@ class RecurringInvoiceCancellation extends Component
 
         return redirect()->route('client.recurring_invoices.request_cancellation', ['recurring_invoice' => $this->invoice->hashed_id]);
     }
-
-
 }

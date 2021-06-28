@@ -13,7 +13,6 @@ namespace App\Mail\Admin;
 
 class ResetPasswordObject
 {
-
     public $user;
 
     public $token;
@@ -31,7 +30,6 @@ class ResetPasswordObject
 
     public function build()
     {
-
         $data = [
             'title' => ctrans('texts.your_password_reset_link'),
             'message' => ctrans('texts.reset_password'),

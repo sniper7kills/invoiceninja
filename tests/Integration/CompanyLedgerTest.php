@@ -26,7 +26,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
-use Tests\MockAccountData;
 use Tests\TestCase;
 
 /** @test*/
@@ -269,6 +268,5 @@ class CompanyLedgerTest extends TestCase
         $invoice = Invoice::find($invoice->id);
 
         $this->assertEquals($refund, $invoice->balance);
-
     }
 }

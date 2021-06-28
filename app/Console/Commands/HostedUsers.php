@@ -2,9 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\ClientContact;
 use App\Models\Company;
-use App\Models\User;
 use App\Utils\Ninja;
 use Illuminate\Console\Command;
 
@@ -41,21 +39,16 @@ class HostedUsers extends Command
      */
     public function handle()
     {
-
-        Company::on('db-ninja-01')->each(function ($company){
-
-            if(Ninja::isHosted())
+        Company::on('db-ninja-01')->each(function ($company) {
+            if (Ninja::isHosted()) {
                 \Modules\Admin\Jobs\Account\NinjaUser::dispatchNow([], $company);
-        
+            }
         });
 
-        Company::on('db-ninja-02')->each(function ($company){
-            
-            if(Ninja::isHosted())
+        Company::on('db-ninja-02')->each(function ($company) {
+            if (Ninja::isHosted()) {
                 \Modules\Admin\Jobs\Account\NinjaUser::dispatchNow([], $company);
-
+            }
         });
-
     }
-
 }

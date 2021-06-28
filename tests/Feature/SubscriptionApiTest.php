@@ -12,13 +12,10 @@
 namespace Tests\Feature;
 
 use App\Models\Product;
-use App\Models\RecurringInvoice;
 use App\Models\Subscription;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -104,13 +101,13 @@ class SubscriptionApiTest extends TestCase
             ->json();
 
         // try {
-            $response2 = $this
+        $response2 = $this
             ->withHeaders(['X-API-SECRET' => config('ninja.api_secret'),'X-API-TOKEN' => $this->token])
             ->put('/api/v1/subscriptions/' . $response1['data']['id'], ['allow_cancellation' => true])
             ->assertStatus(200)
             ->json();
-            // }catch(ValidationException $e) {
-            //    nlog($e->validator->getMessageBag());
+        // }catch(ValidationException $e) {
+        //    nlog($e->validator->getMessageBag());
         // }
 
         $this->assertNotEquals($response1['data']['allow_cancellation'], $response2['data']['allow_cancellation']);
@@ -118,7 +115,6 @@ class SubscriptionApiTest extends TestCase
 
     public function testSubscriptionDeleted()
     {
-
         $product = Product::factory()->create([
             'company_id' => $this->company->id,
             'user_id' => $this->user->id,
@@ -135,6 +131,5 @@ class SubscriptionApiTest extends TestCase
             ->delete('/api/v1/subscriptions/' . $this->encodePrimaryKey($billing_subscription->id))
             ->assertStatus(200)
             ->json();
-
     }
 }

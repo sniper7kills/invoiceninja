@@ -77,9 +77,7 @@ class DeletePayment
     private function adjustInvoices()
     {
         if ($this->payment->invoices()->exists()) {
-
             $this->payment->invoices()->each(function ($paymentable_invoice) {
-
                 $net_deletable = $paymentable_invoice->pivot->amount - $paymentable_invoice->pivot->refunded;
                 
                 $paymentable_invoice->service()
@@ -115,7 +113,6 @@ class DeletePayment
     {
         if ($this->payment->credits()->exists()) {
             $this->payment->credits()->each(function ($paymentable_credit) {
-                
                 $paymentable_credit->service()
                                    ->updateBalance($paymentable_credit->pivot->amount)
                                    ->updatePaidToDate($paymentable_credit->pivot->amount*-1)

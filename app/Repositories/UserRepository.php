@@ -75,8 +75,9 @@ class UserRepository extends BaseRepository
 
         $user->account_id = $account->id;
 
-        if(strlen($user->password) >=1)
+        if (strlen($user->password) >=1) {
             $user->has_password = true;
+        }
         
         $user->save();
 
@@ -89,22 +90,16 @@ class UserRepository extends BaseRepository
                 $data['company_user']['notifications'] = CompanySettings::notificationDefaults();
                 $user->companies()->attach($company->id, $data['company_user']);
             } else {
-
-                if(auth()->user()->isAdmin())
-                {
+                if (auth()->user()->isAdmin()) {
                     $cu->fill($data['company_user']);
                     $cu->restore();
                     $cu->tokens()->restore();
                     $cu->save();
-                }
-                else {
-                            
+                } else {
                     $cu->notifications = $data['company_user']['notifications'];
                     $cu->settings = $data['company_user']['settings'];
                     $cu->save();
-
                 }
-                
             }
 
             $user->with(['company_users' => function ($query) use ($company, $user) {
@@ -119,8 +114,9 @@ class UserRepository extends BaseRepository
 
     public function destroy(array $data, User $user)
     {
-        if($user->isOwner())
+        if ($user->isOwner()) {
             return $user;
+        }
 
         if (array_key_exists('company_user', $data)) {
             $this->forced_includes = 'company_users';
@@ -160,9 +156,9 @@ class UserRepository extends BaseRepository
 
         event(new UserWasDeleted($user, auth()->user(), $company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
 
-         $user->is_deleted = true;
-         $user->save();
-         $user->delete();
+        $user->is_deleted = true;
+        $user->save();
+        $user->delete();
 
 
         return $user->fresh();
@@ -177,10 +173,9 @@ class UserRepository extends BaseRepository
         $user->delete();
 
         event(new UserWasArchived($user, auth()->user(), auth()->user()->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
-
     }
 
-        /**
+    /**
      * @param $entity
      */
     public function restore($user)
@@ -202,6 +197,5 @@ class UserRepository extends BaseRepository
         $cu->restore();
 
         event(new UserWasRestored($user, auth()->user(), auth()->user()->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
-
     }
 }

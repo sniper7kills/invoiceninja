@@ -15,20 +15,21 @@ namespace App\Http\Controllers\ClientPortal;
 use App\Http\Controllers\Controller;
 use App\Models\ClientContact;
 use App\Utils\Traits\MakesHash;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SwitchCompanyController extends Controller
 {
     use MakesHash;
 
-    public function __invoke(string $contact)
+    public function __invoke(Request $request, string $contact)
     {
-        $client_contact = ClientContact::where('email', auth()->user()->email)
+        $client_contact = ClientContact::where('email', $request->user()->email)
             ->where('id', $this->transformKeys($contact))
             ->first();
 
         Auth::guard('contact')->login($client_contact, true);
 
-        return redirect('/client/dashboard');
+        return redirect()->to('/client/dashboard');
     }
 }

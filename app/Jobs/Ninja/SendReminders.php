@@ -50,7 +50,7 @@ class SendReminders implements ShouldQueue
      */
     public function handle()
     {
-        nlog("Sending reminders ".Carbon::now()->format('Y-m-d h:i:s'));
+        nlog('Sending reminders '.Carbon::now()->format('Y-m-d h:i:s'));
 
         if (! config('ninja.db.multi_db_enabled')) {
             $this->sendReminderEmails();
@@ -211,10 +211,9 @@ class SendReminders implements ShouldQueue
 
             //only send if enable_reminder setting is toggled to yes
             if ($this->checkSendSetting($invoice, $template) && $invoice->company->account->hasFeature(Account::FEATURE_EMAIL_TEMPLATES_REMINDERS)) {
-                nlog("firing email");
+                nlog('firing email');
 
                 EmailEntity::dispatchNow($invitation, $invitation->company, $template);
-                
             }
         });
 
@@ -227,7 +226,7 @@ class SendReminders implements ShouldQueue
         $invoice->next_send_date = $this->calculateNextSendDate($invoice);
 
         if (in_array($template, ['reminder1', 'reminder2', 'reminder3'])) {
-            $invoice->{$template."_sent"} = now();
+            $invoice->{$template.'_sent'} = now();
         }
         $invoice->service()->touchReminder($template)->save();
 

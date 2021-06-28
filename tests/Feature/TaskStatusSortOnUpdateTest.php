@@ -62,7 +62,7 @@ class TaskStatusSortOnUpdateTest extends TestCase
 
 
     //     $this->assertTrue($task->project()->exists());
-    //     $this->assertEquals($task->project->tasks->count(), 10);    
+    //     $this->assertEquals($task->project->tasks->count(), 10);
 
     //     $task->status_order = 1;
 
@@ -90,5 +90,4 @@ class TaskStatusSortOnUpdateTest extends TestCase
     //     $this->assertEquals($task->fresh()->status_order, 9);
 
     // }
-
 }

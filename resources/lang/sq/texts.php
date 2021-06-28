@@ -1,6 +1,6 @@
 <?php
 
-$LANG = array(
+$LANG = [
     'organization' => 'Organizata',
     'name' => 'Emri',
     'website' => 'Website',
@@ -4250,8 +4250,6 @@ Pasi të keni pranuar shumat, kthehuni në faqen e metodave të pagesës dhe kli
     'contact_details' => 'Contact Details',
     'download_backup_subject' => 'Your company backup is ready for download',
     'account_passwordless_login' => 'Account passwordless login',
-);
+];
 
 return $LANG;
-
-?>

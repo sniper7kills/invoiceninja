@@ -23,9 +23,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
-use Turbo124\Beacon\Jobs\Database\MySQL\DbStatus;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class CheckCompanyData implements ShouldQueue
 {
@@ -66,10 +65,11 @@ class CheckCompanyData implements ShouldQueue
         $this->checkCompanyData();
 
 
-        if(Cache::has($this->hash))
+        if (Cache::has($this->hash)) {
             $cache_instance = Cache::get($this->hash);
-        else
+        } else {
             $cache_instance = Cache::add($this->hash, '');
+        }
 
         $this->company_data['company_hash'] = $this->company->company_hash;
 
@@ -78,13 +78,13 @@ class CheckCompanyData implements ShouldQueue
         nlog(Cache::get($this->hash));
         nlog($this->company_data);
 
-        if(!$this->is_valid)
+        if (!$this->is_valid) {
             $this->company_data['status'] = 'errors';
-        else
+        } else {
             $this->company_data['status'] = 'success';
+        }
 
         return $this->company_data;
-        
     }
 
     public function middleware()
@@ -105,10 +105,9 @@ class CheckCompanyData implements ShouldQueue
             // if($client->balance != $invoice_balance)
             //     $invoice_balance -= $credit_balance;//doesn't make sense to remove the credit amount
 
-            $ledger = CompanyLedger::where('client_id', $client->id)->orderBy('id', 'DESC')->first();
+            $ledger = CompanyLedger::where('client_id', $client->id)->orderByDesc('id')->first();
 
             if ($ledger && number_format($invoice_balance, 4) != number_format($client->balance, 4)) {
-
                 $wrong_balances++;
 
                 $this->company_data[] = "# {$client->id} " . $client->present()->name.' - '.$client->number." - Balance Failure - Invoice Balances = {$invoice_balance} Client Balance = {$client->balance} Ledger Balance = {$ledger->balance} ";
@@ -156,8 +155,6 @@ class CheckCompanyData implements ShouldQueue
             $total_invoice_payments = 0;
 
             foreach ($client->invoices->where('is_deleted', false)->where('status_id', '>', 1) as $invoice) {
-
-
                 $total_amount = $invoice->payments->where('is_deleted', false)->whereIn('status_id', [Payment::STATUS_COMPLETED, Payment:: STATUS_PENDING, Payment::STATUS_PARTIALLY_REFUNDED, Payment::STATUS_REFUNDED])->sum('pivot.amount');
                 $total_refund = $invoice->payments->where('is_deleted', false)->whereIn('status_id', [Payment::STATUS_COMPLETED, Payment:: STATUS_PENDING, Payment::STATUS_PARTIALLY_REFUNDED, Payment::STATUS_REFUNDED])->sum('pivot.refunded');
 
@@ -203,12 +200,12 @@ class CheckCompanyData implements ShouldQueue
             // if($client->balance != $invoice_balance)
             //     $invoice_balance -= $credit_balance;
 
-            $ledger = CompanyLedger::where('client_id', $client->id)->orderBy('id', 'DESC')->first();
+            $ledger = CompanyLedger::where('client_id', $client->id)->orderByDesc('id')->first();
 
             if ($ledger && (string) $invoice_balance != (string) $client->balance) {
                 $wrong_paid_to_dates++;
                 
-                $this->company_data[] = $client->present()->name.' - '.$client->id." - calculated client balances do not match {$invoice_balance} - ".rtrim($client->balance, '0')."";
+                $this->company_data[] = $client->present()->name.' - '.$client->id." - calculated client balances do not match {$invoice_balance} - ".rtrim($client->balance, '0').'';
 
                 $this->is_valid = false;
             }
@@ -342,7 +339,6 @@ class CheckCompanyData implements ShouldQueue
                 }
             }
         }
-
     }
 
     public function pluralizeEntityType($type)

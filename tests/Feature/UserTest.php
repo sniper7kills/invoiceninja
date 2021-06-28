@@ -11,7 +11,6 @@
 namespace Tests\Feature;
 
 use App\Factory\CompanyUserFactory;
-use App\Factory\UserFactory;
 use App\Http\Middleware\PasswordProtection;
 use App\Models\Company;
 use App\Models\CompanyToken;
@@ -101,7 +100,6 @@ class UserTest extends TestCase
 
     public function testUserAttachAndDetach()
     {
-
         $this->withoutMiddleware(PasswordProtection::class);
 
         $data = [
@@ -113,12 +111,11 @@ class UserTest extends TestCase
         $response = false;
 
         try {
-        $response = $this->withHeaders([
+            $response = $this->withHeaders([
                 'X-API-SECRET' => config('ninja.api_secret'),
                 'X-API-TOKEN' => $this->token,
                 'X-API-PASSWORD' => 'ALongAndBriliantPassword',
         ])->post('/api/v1/users?include=company_user', $data);
-
         } catch (ValidationException $e) {
             $message = json_decode($e->validator->getMessageBag(), 1);
             nlog($message);

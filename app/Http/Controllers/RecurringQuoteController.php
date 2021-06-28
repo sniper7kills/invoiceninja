@@ -150,7 +150,7 @@ class RecurringQuoteController extends BaseController
      */
     public function create(CreateRecurringQuoteRequest $request)
     {
-        $recurring_quote = RecurringQuoteFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $recurring_quote = RecurringQuoteFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($recurring_quote);
     }
@@ -196,7 +196,7 @@ class RecurringQuoteController extends BaseController
      */
     public function store(StoreRecurringQuoteRequest $request)
     {
-        $recurring_quote = $this->recurring_quote_repo->save($request, RecurringQuoteFactory::create(auth()->user()->company()->id, auth()->user()->id));
+        $recurring_quote = $this->recurring_quote_repo->save($request, RecurringQuoteFactory::create($request->user()->company()->id, $request->user()->id));
 
         return $this->itemResponse($recurring_quote);
     }
@@ -485,16 +485,16 @@ class RecurringQuoteController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $recurring_quotes = RecurringQuote::withTrashed()->find($this->transformKeys($ids));
 
         $recurring_quotes->each(function ($recurring_quote, $key) use ($action) {
-            if (auth()->user()->can('edit', $recurring_quote)) {
+            if ($request->user()->can('edit', $recurring_quote)) {
                 $this->recurring_quote_repo->{$action}($recurring_quote);
             }
         });
@@ -578,11 +578,11 @@ class RecurringQuoteController extends BaseController
     {
         switch ($action) {
             case 'clone_to_RecurringQuote':
-          //      $recurring_invoice = CloneRecurringQuoteFactory::create($recurring_invoice, auth()->user()->id);
+          //      $recurring_invoice = CloneRecurringQuoteFactory::create($recurring_invoice, $request->user()->id);
           //      return $this->itemResponse($recurring_invoice);
                 break;
             case 'clone_to_quote':
-                $quote = CloneRecurringQuoteToQuoteFactory::create($recurring_invoice, auth()->user()->id);
+                $quote = CloneRecurringQuoteToQuoteFactory::create($recurring_invoice, $request->user()->id);
                 $this->entity_transformer = QuoteTransformer::class;
                 $this->entity_type = Quote::class;
 

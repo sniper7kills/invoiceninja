@@ -11,25 +11,10 @@
 
 namespace App\Console\Commands;
 
-use App;
 use App\Jobs\Ninja\CheckCompanyData;
-use App\Models\Account;
-use App\Models\Client;
-use App\Models\ClientContact;
 use App\Models\Company;
-use App\Models\CompanyLedger;
-use App\Models\Contact;
-use App\Models\Credit;
-use App\Models\Invoice;
-use App\Models\InvoiceInvitation;
-use App\Models\Payment;
-use App\Utils\Ninja;
-use DB;
-use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use Mail;
-use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Class CheckData.
@@ -52,15 +37,10 @@ class ParallelCheckData extends Command
 
     public function handle()
     {
-    
-    	$hash = Str::random(32);
+        $hash = Str::random(32);
 
-    	Company::cursor()->each(function ($company) use ($hash){
-
-    		CheckCompanyData::dispatch($company, $hash)->onQueue('checkdata');
-    		
-    	});
-
+        Company::cursor()->each(function ($company) use ($hash) {
+            CheckCompanyData::dispatch($company, $hash)->onQueue('checkdata');
+        });
     }
-
 }

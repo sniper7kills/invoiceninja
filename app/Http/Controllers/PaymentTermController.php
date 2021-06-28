@@ -73,9 +73,9 @@ class PaymentTermController extends BaseController
      *       ),
      *     )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $payment_terms = PaymentTerm::whereCompanyId(auth()->user()->company()->id)->orWhere('company_id', null);
+        $payment_terms = PaymentTerm::whereCompanyId($request->user()->company()->id)->orWhere('company_id', null);
 
         return $this->listResponse($payment_terms);
     }
@@ -122,7 +122,7 @@ class PaymentTermController extends BaseController
      */
     public function create(CreatePaymentTermRequest $request)
     {
-        $payment_term = PaymentTermFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $payment_term = PaymentTermFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($payment_term);
     }
@@ -174,7 +174,7 @@ class PaymentTermController extends BaseController
      */
     public function store(StorePaymentTermRequest $request)
     {
-        $payment_term = PaymentTermFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $payment_term = PaymentTermFactory::create($request->user()->company()->id, $request->user()->id);
         $payment_term->fill($request->all());
         $payment_term->save();
 
@@ -452,16 +452,16 @@ class PaymentTermController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $payment_terms = PaymentTerm::withTrashed()->company()->find($this->transformKeys($ids));
 
         $payment_terms->each(function ($payment_term, $key) use ($action) {
-            if (auth()->user()->can('edit', $payment_term)) {
+            if ($request->user()->can('edit', $payment_term)) {
                 $this->payment_term_repo->{$action}($payment_term);
             }
         });

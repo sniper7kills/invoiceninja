@@ -278,7 +278,7 @@ class VendorController extends BaseController
 
         $this->uploadLogo($request->file('company_logo'), $vendor->company, $vendor);
 
-        event(new VendorWasUpdated($vendor, $vendor->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new VendorWasUpdated($vendor, $vendor->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($vendor->fresh());
     }
@@ -324,7 +324,7 @@ class VendorController extends BaseController
      */
     public function create(CreateVendorRequest $request)
     {
-        $vendor = VendorFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $vendor = VendorFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($vendor);
     }
@@ -370,13 +370,13 @@ class VendorController extends BaseController
      */
     public function store(StoreVendorRequest $request)
     {
-        $vendor = $this->vendor_repo->save($request->all(), VendorFactory::create(auth()->user()->company()->id, auth()->user()->id));
+        $vendor = $this->vendor_repo->save($request->all(), VendorFactory::create($request->user()->company()->id, $request->user()->id));
 
         $vendor->load('contacts', 'primary_contact');
 
         $this->uploadLogo($request->file('company_logo'), $vendor->company, $vendor);
 
-        event(new VendorWasCreated($vendor, $vendor->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new VendorWasCreated($vendor, $vendor->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($vendor);
     }
@@ -490,15 +490,15 @@ class VendorController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
         $vendors = Vendor::withTrashed()->find($this->transformKeys($ids));
 
         $vendors->each(function ($vendor, $key) use ($action) {
-            if (auth()->user()->can('edit', $vendor)) {
+            if ($request->user()->can('edit', $vendor)) {
                 $this->vendor_repo->{$action}($vendor);
             }
         });
@@ -569,14 +569,14 @@ class VendorController extends BaseController
      */
     public function upload(UploadVendorRequest $request, Vendor $vendor)
     {
-
-        if(!$this->checkFeature(Account::FEATURE_DOCUMENTS))
+        if (!$this->checkFeature(Account::FEATURE_DOCUMENTS)) {
             return $this->featureFailure();
+        }
         
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->file('documents'), $vendor);
+        }
 
         return $this->itemResponse($vendor->fresh());
-
-    }  
+    }
 }

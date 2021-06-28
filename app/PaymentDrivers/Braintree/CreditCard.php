@@ -12,10 +12,8 @@
 
 namespace App\PaymentDrivers\Braintree;
 
-
 use App\Exceptions\PaymentFailed;
 use App\Http\Requests\ClientPortal\Payments\PaymentResponseRequest;
-use App\Http\Requests\Request;
 use App\Jobs\Mail\PaymentFailureMailer;
 use App\Jobs\Util\SystemLogger;
 use App\Models\GatewayType;
@@ -47,7 +45,7 @@ class CreditCard
 
     public function authorizeResponse($data): \Illuminate\Http\RedirectResponse
     {
-        return back();
+        return redirect()->back();
     }
 
     /**

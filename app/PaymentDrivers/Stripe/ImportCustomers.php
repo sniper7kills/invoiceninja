@@ -14,17 +14,12 @@ namespace App\PaymentDrivers\Stripe;
 
 use App\Factory\ClientContactFactory;
 use App\Factory\ClientFactory;
-use App\Factory\ClientGatewayTokenFactory;
 use App\Models\Client;
-use App\Models\ClientGatewayToken;
 use App\Models\Country;
 use App\Models\Currency;
-use App\Models\GatewayType;
 use App\PaymentDrivers\StripePaymentDriver;
-use App\PaymentDrivers\Stripe\UpdatePaymentMethods;
 use App\Utils\Traits\MakesHash;
 use Stripe\Customer;
-use Stripe\PaymentMethod;
 
 class ImportCustomers
 {
@@ -38,35 +33,31 @@ class ImportCustomers
     public function __construct(StripePaymentDriver $stripe)
     {
         $this->stripe = $stripe;
-
     }
 
     public function run()
     {
-
         $this->stripe->init();
 
         $this->update_payment_methods = new UpdatePaymentMethods($this->stripe);
 
         $customers = Customer::all([], $this->stripe->stripe_connect_auth);
 
-        foreach($customers as $customer)
-        {
+        foreach ($customers as $customer) {
             $this->addCustomer($customer);
-        }   
+        }
 
         /* Now call the update payment methods handler*/
         // $this->stripe->updateAllPaymentMethods();
-
     }
 
     private function addCustomer(Customer $customer)
     {
-
-    $account = $this->stripe->company_gateway->company->account;
+        $account = $this->stripe->company_gateway->company->account;
         
-    if(!$account->isPaidHostedClient() && Client::where('company_id', $this->stripe->company_gateway->company_id)->count() > config('ninja.quotas.free.clients'))
-        return;
+        if (!$account->isPaidHostedClient() && Client::where('company_id', $this->stripe->company_gateway->company_id)->count() > config('ninja.quotas.free.clients')) {
+            return;
+        }
 
         nlog("search Stripe for {$customer->id}");
 
@@ -76,46 +67,40 @@ class ImportCustomers
                                   ->where('gateway_customer_reference', $customer->id)
                                   ->exists();
 
-        if($existing_customer){
+        if ($existing_customer) {
             nlog("Skipping - Customer exists: {$customer->email}");
             return;
         }
 
-        nlog("inserting a customer");
+        nlog('inserting a customer');
         //nlog($customer);
         
         $client = ClientFactory::create($this->stripe->company_gateway->company_id, $this->stripe->company_gateway->user_id);
 
-        if(property_exists($customer, 'address'))
-        {
+        if (property_exists($customer, 'address')) {
             $client->address1 = property_exists($customer->address, 'line1') ? $customer->address->line1 : '';
             $client->address2 = property_exists($customer->address, 'line2') ? $customer->address->line2 : '';
             $client->city = property_exists($customer->address, 'city') ? $customer->address->city : '';
             $client->state = property_exists($customer->address, 'state') ? $customer->address->state : '';
             $client->phone =  property_exists($customer->address, 'phone') ? $customer->phone : '';
 
-            if(property_exists($customer->address, 'country')){
-
+            if (property_exists($customer->address, 'country')) {
                 $country = Country::where('iso_3166_2', $customer->address->country)->first();
 
-                if($country)
+                if ($country) {
                     $client->country_id = $country->id;
-
+                }
             }
         }
 
-        if($customer->currency) {
-
+        if ($customer->currency) {
             $currency = Currency::where('code', $customer->currency)->first();
 
-            if($currency){
-
+            if ($currency) {
                 $settings = $client->settings;
                 $settings->currency_id = (string)$currency->id;
                 $client->settings = $settings;
-
             }
-
         }
 
         $client->name = property_exists($customer, 'name') ? $customer->name : $customer->email;
@@ -127,7 +112,7 @@ class ImportCustomers
         $contact->first_name = $client->name ?: '';
         $contact->phone = $client->phone ?: '';
         $contact->email = $customer->email ?: '';
-        $contact->save();            
+        $contact->save();
 
         $this->update_payment_methods->updateMethods($customer, $client);
     }

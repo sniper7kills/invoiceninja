@@ -148,7 +148,7 @@ class AccountController extends BaseController
             return $account;
         }
 
-        $ct = CompanyUser::whereUserId(auth()->user()->id);
+        $ct = CompanyUser::whereUserId($request->user()->id);
 
         config(['ninja.company_id' => $ct->first()->company->id]);
 

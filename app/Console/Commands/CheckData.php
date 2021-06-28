@@ -11,7 +11,6 @@
 
 namespace App\Console\Commands;
 
-use App;
 use App\Factory\ClientContactFactory;
 use App\Models\Account;
 use App\Models\Client;
@@ -23,12 +22,13 @@ use App\Models\Invoice;
 use App\Models\InvoiceInvitation;
 use App\Models\Payment;
 use App\Utils\Ninja;
-use DB;
 use Exception;
 use Illuminate\Console\Command;
-use Mail;
-use Symfony\Component\Console\Input\InputOption;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Input\InputOption;
 
 /*
 
@@ -85,7 +85,7 @@ class CheckData extends Command
     public function handle()
     {
         $database_connection = $this->option('database') ? $this->option('database') : 'Connected to Default DB';
-        $fix_status = $this->option('fix') ? "Fixing Issues" : "Just checking issues ";
+        $fix_status = $this->option('fix') ? 'Fixing Issues' : 'Just checking issues ';
 
         $this->logMessage(date('Y-m-d h:i:s').' Running CheckData... on ' . $database_connection . " Fix Status = {$fix_status}");
 
@@ -190,7 +190,7 @@ class CheckData extends Command
                     ->where('id', '=', $contact->id)
                     ->whereNull('contact_key')
                     ->update([
-                        'contact_key' => str_random(config('ninja.key_length')),
+                        'contact_key' => Str::random(config('ninja.key_length')),
                     ]);
             }
         }
@@ -301,7 +301,7 @@ class CheckData extends Command
                 $invitation->user_id = $invoice->user_id;
                 $invitation->invoice_id = $invoice->id;
                 $invitation->contact_id = ClientContact::whereClientId($invoice->client_id)->whereIsPrimary(true)->first()->id;
-                $invitation->invitation_key = str_random(config('ninja.key_length'));
+                $invitation->invitation_key = Str::random(config('ninja.key_length'));
                 $invitation->save();
             }
         }
@@ -316,7 +316,6 @@ class CheckData extends Command
             $total_invoice_payments = 0;
 
             foreach ($client->invoices()->where('is_deleted', false)->where('status_id', '>', 1)->get() as $invoice) {
-
                 $total_amount = $invoice->payments()->where('is_deleted', false)->whereIn('status_id', [Payment::STATUS_COMPLETED, Payment:: STATUS_PENDING, Payment::STATUS_PARTIALLY_REFUNDED, Payment::STATUS_REFUNDED])->get()->sum('pivot.amount');
                 $total_refund = $invoice->payments()->where('is_deleted', false)->whereIn('status_id', [Payment::STATUS_COMPLETED, Payment:: STATUS_PENDING, Payment::STATUS_PARTIALLY_REFUNDED, Payment::STATUS_REFUNDED])->get()->sum('pivot.refunded');
 
@@ -330,7 +329,7 @@ class CheckData extends Command
 
             if ($credit_total_applied < 0) {
                 $total_invoice_payments += $credit_total_applied;
-            } 
+            }
 
 
             if (round($total_invoice_payments, 2) != round($client->paid_to_date, 2)) {
@@ -340,7 +339,7 @@ class CheckData extends Command
 
                 $this->isValid = false;
 
-                if($this->option('paid_to_date')){
+                if ($this->option('paid_to_date')) {
                     $this->logMessage("# {$client->id} " . $client->present()->name.' - '.$client->number." Fixing {$client->paid_to_date} to {$total_invoice_payments}");
                     $client->paid_to_date = $total_invoice_payments;
                     $client->save();
@@ -356,7 +355,6 @@ class CheckData extends Command
         $this->wrong_balances = 0;
 
         Client::cursor()->where('is_deleted', 0)->each(function ($client) {
-            
             $client->invoices->where('is_deleted', false)->whereIn('status_id', '!=', Invoice::STATUS_DRAFT)->each(function ($invoice) use ($client) {
                 $total_amount = $invoice->payments()->whereIn('status_id', [Payment::STATUS_COMPLETED, Payment:: STATUS_PENDING, Payment::STATUS_PARTIALLY_REFUNDED])->get()->sum('pivot.amount');
                 $total_refund = $invoice->payments()->get()->whereIn('status_id', [Payment::STATUS_COMPLETED, Payment:: STATUS_PENDING, Payment::STATUS_PARTIALLY_REFUNDED])->sum('pivot.refunded');
@@ -373,7 +371,6 @@ class CheckData extends Command
                     $this->isValid = false;
                 }
             });
-            
         });
 
         $this->logMessage("{$this->wrong_balances} clients with incorrect invoice balances");
@@ -390,10 +387,11 @@ class CheckData extends Command
             $credit_balance = Credit::where('client_id', $client->id)->where('is_deleted', false)->withTrashed()->sum('balance');
 
             /*Legacy - V4 will add credits to the balance - we may need to reverse engineer this and remove the credits from the client balance otherwise we need this hack here and in the invoice balance check.*/
-            if($client->balance != $invoice_balance)
+            if ($client->balance != $invoice_balance) {
                 $invoice_balance -= $credit_balance;
+            }
 
-            $ledger = CompanyLedger::where('client_id', $client->id)->orderBy('id', 'DESC')->first();
+            $ledger = CompanyLedger::where('client_id', $client->id)->orderByDesc('id')->first();
 
             if ($ledger && (string) $invoice_balance != (string) $client->balance) {
                 $this->wrong_paid_to_dates++;
@@ -406,7 +404,7 @@ class CheckData extends Command
         $this->logMessage("{$this->wrong_paid_to_dates} clients with incorrect client balances");
     }
 
-    //fix for client balances = 
+    //fix for client balances =
     //$adjustment = ($invoice_balance-$client->balance)
     //$client->balance += $adjustment;
 
@@ -425,7 +423,7 @@ class CheckData extends Command
             // if($client->balance != $invoice_balance)
             //     $invoice_balance -= $credit_balance;//doesn't make sense to remove the credit amount
 
-            $ledger = CompanyLedger::where('client_id', $client->id)->orderBy('id', 'DESC')->first();
+            $ledger = CompanyLedger::where('client_id', $client->id)->orderByDesc('id')->first();
 
             if ($ledger && number_format($invoice_balance, 4) != number_format($client->balance, 4)) {
                 $this->wrong_balances++;

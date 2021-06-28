@@ -70,19 +70,16 @@ class ActivityRepository extends BaseRepository
      */
     public function createBackup($entity, $activity)
     {
-        
-        if($entity instanceof User){
-            
-        }
-        else if ($entity->company->is_disabled) {
+        if ($entity instanceof User) {
+        } elseif ($entity->company->is_disabled) {
             return;
         }
 
         $backup = new Backup();
 
-        if (get_class($entity) == Invoice::class 
-            || get_class($entity) == Quote::class 
-            || get_class($entity) == Credit::class 
+        if (get_class($entity) == Invoice::class
+            || get_class($entity) == Quote::class
+            || get_class($entity) == Credit::class
             || get_class($entity) == RecurringInvoice::class
         ) {
             $contact = $entity->client->primary_contact()->first();
@@ -125,7 +122,7 @@ class ActivityRepository extends BaseRepository
 
         $design = Design::find($entity_design_id);
 
-        if(!$entity->invitations()->exists()){
+        if (!$entity->invitations()->exists()) {
             nlog("No invitations for entity {$entity->id} - {$entity->number}");
             return;
         }

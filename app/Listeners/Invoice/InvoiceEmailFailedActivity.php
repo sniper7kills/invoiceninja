@@ -39,12 +39,13 @@ class InvoiceEmailFailedActivity implements ShouldQueue
      */
     public function handle($event)
     {
-        nlog("inside activity_repo");
+        nlog('inside activity_repo');
         
         MultiDB::setDb($event->company->db);
 
-        if(strpos($event->message, 'shared/public') !== false)
-            $event->message = "Unable to open attachment file for reading"; 
+        if (strpos($event->message, 'shared/public') !== false) {
+            $event->message = 'Unable to open attachment file for reading';
+        }
 
         $fields = new stdClass;
 

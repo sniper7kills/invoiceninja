@@ -153,7 +153,7 @@ class ValidRefundableRequest implements Rule
                 if ($request_credit['amount'] > $refundable_amount) {
                     $credit = $paymentable;
 
-                    $this->error_msg = ctrans('texts.max_refundable_credit',['credit' => $credit->hashed_id, 'amount' => $refundable_amount]);
+                    $this->error_msg = ctrans('texts.max_refundable_credit', ['credit' => $credit->hashed_id, 'amount' => $refundable_amount]);
 
                     return false;
                 }

@@ -49,7 +49,7 @@ class DeletedUserActivity implements ShouldQueue
         $fields = new stdClass;
 
         $fields->user_id = $event->creating_user->id;
-        $fields->notes = $event->creating_user->present()->name() . " Deleted the user " . $event->user->present()->name();
+        $fields->notes = $event->creating_user->present()->name() . ' Deleted the user ' . $event->user->present()->name();
         $fields->company_id = $event->company->id;
         $fields->activity_type_id = Activity::DELETE_USER;
 

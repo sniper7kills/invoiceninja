@@ -47,10 +47,11 @@ trait Inviteable
     {
         $entity_type = Str::snake(class_basename($this->entityType()));
 
-        if(Ninja::isHosted())
+        if (Ninja::isHosted()) {
             $domain = isset($this->company->portal_domain) ? $this->company->portal_domain : $this->company->domain();
-        else
+        } else {
             $domain = config('ninja.app_url');
+        }
 
         switch ($this->company->portal_mode) {
             case 'subdomain':
@@ -72,11 +73,11 @@ trait Inviteable
 
     public function getPortalLink() :string
     {
-
-        if(Ninja::isHosted())
+        if (Ninja::isHosted()) {
             $domain = isset($this->company->portal_domain) ? $this->company->portal_domain : $this->company->domain();
-        else
+        } else {
             $domain = config('ninja.app_url');
+        }
 
         switch ($this->company->portal_mode) {
             case 'subdomain':
@@ -94,7 +95,6 @@ trait Inviteable
                 return '';
                 break;
         }
-
     }
 
     public function getAdminLink() :string

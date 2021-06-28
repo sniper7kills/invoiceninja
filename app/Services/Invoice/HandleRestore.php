@@ -57,7 +57,7 @@ class HandleRestore extends AbstractService
                                      ->where('paymentable_type', '=', 'invoices')
                                      ->sum(\DB::raw('amount'));
 
-            info($payment->amount . " == " . $payment_amount);
+            info($payment->amount . ' == ' . $payment_amount);
 
             if ($payment->amount == $payment_amount) {
                 $payment->is_deleted = false;
@@ -104,20 +104,20 @@ class HandleRestore extends AbstractService
         }
         
         try {
-
             $exists = Invoice::where(['company_id' => $this->invoice->company_id, 'number' => $new_invoice_number])->exists();
 
-            if($exists)
+            if ($exists) {
                 $this->invoice->number = $this->getNextInvoiceNumber($this->invoice->client, $this->invoice, $this->invoice->recurring_id);
-            else
-            $this->invoice->number = $new_invoice_number;
+            } else {
+                $this->invoice->number = $new_invoice_number;
+            }
             
             $this->invoice->save();
         } catch (\Exception $e) {
-            nlog("I could not wind back the invoice number");
+            nlog('I could not wind back the invoice number');
 
-            if(Ninja::isHosted()){
-                \Sentry\captureMessage("I could not wind back the invoice number");
+            if (Ninja::isHosted()) {
+                \Sentry\captureMessage('I could not wind back the invoice number');
                 app('sentry')->captureException($e);
             }
         }

@@ -162,7 +162,6 @@ class EventTest extends TestCase
 
     public function testVendorEvents()
     {
-        
         $this->expectsEvents([
             VendorWasCreated::class,
             VendorWasUpdated::class,
@@ -807,5 +806,4 @@ class EventTest extends TestCase
         ])->post('/api/v1/subscriptions/bulk?action=delete', $data)
         ->assertStatus(200);
     }
-
 }

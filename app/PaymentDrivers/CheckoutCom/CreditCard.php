@@ -155,7 +155,6 @@ class CreditCard
             $response = $this->checkout->gateway->payments()->request($payment);
 
             if ($response->status == 'Authorized') {
-
                 return $this->processSuccessfulPayment($response);
             }
 
@@ -173,7 +172,6 @@ class CreditCard
                 return $this->processUnsuccessfulPayment($response);
             }
         } catch (CheckoutHttpException $e) {
-
             $this->checkout->unWindGatewayFees($this->checkout->payment_hash);
             return $this->checkout->processInternallyFailedPayment($this->checkout, $e);
         }

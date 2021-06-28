@@ -11,14 +11,12 @@
 
 namespace App\Http\Controllers;
 
-use App\DataMapper\CompanySettings;
 use App\Events\User\UserWasCreated;
 use App\Events\User\UserWasDeleted;
 use App\Events\User\UserWasUpdated;
 use App\Factory\UserFactory;
 use App\Filters\UserFilters;
 use App\Http\Controllers\Traits\VerifiesUserEmail;
-use App\Http\Requests\User\AttachCompanyUserRequest;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\DestroyUserRequest;
 use App\Http\Requests\User\DetachCompanyUserRequest;
@@ -28,11 +26,7 @@ use App\Http\Requests\User\ShowUserRequest;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Jobs\Company\CreateCompanyToken;
-use App\Jobs\Mail\NinjaMailer;
-use App\Jobs\Mail\NinjaMailerJob;
-use App\Jobs\Mail\NinjaMailerObject;
 use App\Jobs\User\UserEmailChanged;
-use App\Mail\Admin\VerifyUserObject;
 use App\Models\CompanyUser;
 use App\Models\User;
 use App\Repositories\UserRepository;
@@ -63,11 +57,9 @@ class UserController extends BaseController
      */
     public function __construct(UserRepository $user_repo)
     {
-
         parent::__construct();
 
         $this->user_repo = $user_repo;
-
     }
 
     /**
@@ -157,7 +149,7 @@ class UserController extends BaseController
      */
     public function create(CreateUserRequest $request)
     {
-        $user = UserFactory::create(auth()->user()->account->id);
+        $user = UserFactory::create($request->user()->account->id);
 
         return $this->itemResponse($user);
     }
@@ -396,11 +388,11 @@ class UserController extends BaseController
         }
         
         
-        if(
+        if (
             strcasecmp($old_company_user->permissions, $user->company_user->permissions) != 0 ||
             $old_company_user->is_admin != $user->company_user->is_admin
-          ){
-            $user->company_user()->update(["permissions_updated_at" => now()]);
+          ) {
+            $user->company_user()->update(['permissions_updated_at' => now()]);
         }
 
         event(new UserWasUpdated($user, auth()->user(), auth()->user()->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
@@ -470,13 +462,14 @@ class UserController extends BaseController
      */
     public function destroy(DestroyUserRequest $request, User $user)
     {
-        if($user->isOwner())
-            return response()->json(['message', 'Cannot detach owner.'],400);
+        if ($user->isOwner()) {
+            return response()->json(['message', 'Cannot detach owner.'], 400);
+        }
 
         /* If the user passes the company user we archive the company user */
         $user = $this->user_repo->delete($request->all(), $user);
 
-        event(new UserWasDeleted($user, auth()->user(), auth()->user()->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new UserWasDeleted($user, $request->user(), $request->user()->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($user->fresh());
     }
@@ -534,11 +527,11 @@ class UserController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $users = User::withTrashed()->find($this->transformKeys($ids));
 
@@ -551,7 +544,7 @@ class UserController extends BaseController
         $return_user_collection = collect();
 
         $users->each(function ($user, $key) use ($action, $return_user_collection) {
-            if (auth()->user()->can('edit', $user)) {
+            if ($request->user()->can('edit', $user)) {
                 $this->user_repo->{$action}($user);
 
                 $return_user_collection->push($user->id);
@@ -610,18 +603,18 @@ class UserController extends BaseController
      */
     public function detach(DetachCompanyUserRequest $request, User $user)
     {
-        
         if ($request->entityIsDeleted($user)) {
             return $request->disallowUpdate();
         }
 
         $company_user = CompanyUser::whereUserId($user->id)
-                                    ->whereCompanyId(auth()->user()->companyId())
+                                    ->whereCompanyId($request->user()->companyId())
                                     ->withTrashed()
                                     ->first();
 
-        if($company_user->is_owner)
+        if ($company_user->is_owner) {
             return response()->json(['message', 'Cannot detach owner.'], 401);
+        }
 
         $token = $company_user->token->where('company_id', $company_user->company_id)->where('user_id', $company_user->user_id)->first();
 
@@ -685,11 +678,9 @@ class UserController extends BaseController
      */
     public function invite(ReconfirmUserRequest $request, User $user)
     {
-
         $user->service()->invite($user->company());
 
         return response()->json(['message' => ctrans('texts.confirmation_resent')], 200);
-
     }
 
 
@@ -742,10 +733,8 @@ class UserController extends BaseController
      */
     public function reconfirm(ReconfirmUserRequest $request, User $user)
     {
-
         $user->service()->invite($user->company());
 
         return response()->json(['message' => ctrans('texts.confirmation_resent')], 200);
-
     }
 }

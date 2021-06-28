@@ -70,5 +70,4 @@ class SubscriptionTransformer extends EntityTransformer
             'plan_map' => '', //@deprecated 03/04/2021
         ];
     }
-
 }

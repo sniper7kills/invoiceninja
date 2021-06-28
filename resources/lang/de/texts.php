@@ -1,6 +1,6 @@
 <?php
 
-$LANG = array(
+$LANG = [
     'organization' => 'Organisation',
     'name' => 'Name',
     'website' => 'Webseite',
@@ -4254,8 +4254,6 @@ https://invoiceninja.github.io/docs/migration/#troubleshooting',
     'contact_details' => 'Contact Details',
     'download_backup_subject' => 'Your company backup is ready for download',
     'account_passwordless_login' => 'Account passwordless login',
-);
+];
 
 return $LANG;
-
-?>

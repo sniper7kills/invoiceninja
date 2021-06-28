@@ -22,10 +22,8 @@ use App\Models\Invoice;
 use App\Models\Subscription;
 use App\Repositories\ClientContactRepository;
 use App\Repositories\ClientRepository;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class BillingPortalPurchase extends Component
@@ -290,10 +288,11 @@ class BillingPortalPurchase extends Component
             return $this;
         }
 
-        if ((int)$this->subscription->price == 0)
+        if ((int)$this->subscription->price == 0) {
             $this->steps['payment_required'] = false;
-        else
+        } else {
             $this->steps['fetched_payment_methods'] = true;
+        }
 
         $this->methods = $contact->client->service()->getPaymentMethods($this->price);
 
@@ -386,7 +385,6 @@ class BillingPortalPurchase extends Component
 
     public function handlePaymentNotRequired()
     {
-
         $is_eligible = $this->subscription->service()->isEligible($this->contact);
         
         if ($is_eligible['status_code'] != 200) {

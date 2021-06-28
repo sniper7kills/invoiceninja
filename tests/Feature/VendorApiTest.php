@@ -83,19 +83,14 @@ class VendorApiTest extends TestCase
         $response->assertStatus(200);
 
 
-        try{
+        try {
             $response = $this->withHeaders([
                 'X-API-SECRET' => config('ninja.api_secret'),
                 'X-API-TOKEN' => $this->token,
             ])->post('/api/v1/vendors/', $data);
-
-
-        }catch(ValidationException $e){
-
+        } catch (ValidationException $e) {
             $response->assertStatus(302);
-
         }
-
     }
 
     public function testVendorGet()

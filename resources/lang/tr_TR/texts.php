@@ -1,6 +1,6 @@
 <?php
 
-$LANG = array(
+$LANG = [
     'organization' => 'Şirket',
     'name' => 'Ünvan',
     'website' => 'Web adresi',
@@ -4251,8 +4251,6 @@ adresine gönderildi. Müthiş tüm özelliklerin kilidini açmak için lütfen 
     'contact_details' => 'Contact Details',
     'download_backup_subject' => 'Your company backup is ready for download',
     'account_passwordless_login' => 'Account passwordless login',
-);
+];
 
 return $LANG;
-
-?>

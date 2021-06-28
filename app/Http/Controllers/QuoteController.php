@@ -34,7 +34,6 @@ use App\Repositories\QuoteRepository;
 use App\Transformers\InvoiceTransformer;
 use App\Transformers\QuoteTransformer;
 use App\Utils\Ninja;
-use App\Utils\TempFile;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\SavesDocuments;
 use Illuminate\Http\Request;
@@ -158,7 +157,7 @@ class QuoteController extends BaseController
      */
     public function create(CreateQuoteRequest $request)
     {
-        $quote = QuoteFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $quote = QuoteFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($quote);
     }
@@ -207,11 +206,11 @@ class QuoteController extends BaseController
     {
         $client = Client::find($request->input('client_id'));
 
-        $quote = $this->quote_repo->save($request->all(), QuoteFactory::create(auth()->user()->company()->id, auth()->user()->id));
+        $quote = $this->quote_repo->save($request->all(), QuoteFactory::create($request->user()->company()->id, $request->user()->id));
 
         $quote = $quote->service()->fillDefaults()->save();
 
-        event(new QuoteWasCreated($quote, $quote->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new QuoteWasCreated($quote, $quote->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($quote);
     }
@@ -504,11 +503,11 @@ class QuoteController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $quotes = Quote::withTrashed()->whereIn('id', $this->transformKeys($ids))->company()->get();
 
@@ -522,12 +521,12 @@ class QuoteController extends BaseController
 
         if ($action == 'download' && $quotes->count() >= 1) {
             $quotes->each(function ($quote) {
-                if (auth()->user()->cannot('view', $quote)) {
+                if ($request->user()->cannot('view', $quote)) {
                     return response()->json(['message'=> ctrans('texts.access_denied')]);
                 }
             });
 
-            ZipInvoices::dispatch($quotes, $quotes->first()->company, auth()->user());
+            ZipInvoices::dispatch($quotes, $quotes->first()->company, $request->user());
 
             return response()->json(['message' => ctrans('texts.sent_message')], 200);
         }
@@ -537,7 +536,7 @@ class QuoteController extends BaseController
             $this->entity_transformer = QuoteTransformer::class;
 
             $quotes->each(function ($quote, $key) use ($action) {
-                if (auth()->user()->can('edit', $quote) && $quote->service()->isConvertable()) {
+                if ($request->user()->can('edit', $quote) && $quote->service()->isConvertable()) {
                     $quote->service()->convertToInvoice();
                 }
             });
@@ -549,7 +548,7 @@ class QuoteController extends BaseController
          * Send the other actions to the switch
          */
         $quotes->each(function ($quote, $key) use ($action) {
-            if (auth()->user()->can('edit', $quote)) {
+            if ($request->user()->can('edit', $quote)) {
                 $this->performAction($quote, $action, true);
             }
         });
@@ -717,7 +716,7 @@ class QuoteController extends BaseController
                 }
                 break;
             default:
-                return response()->json(['message' => ctrans('texts.action_unavailable',['action' => $action])], 400);
+                return response()->json(['message' => ctrans('texts.action_unavailable', ['action' => $action])], 400);
                 break;
         }
     }
@@ -786,14 +785,14 @@ class QuoteController extends BaseController
      */
     public function upload(UploadQuoteRequest $request, Quote $quote)
     {
-
-        if(!$this->checkFeature(Account::FEATURE_DOCUMENTS))
+        if (!$this->checkFeature(Account::FEATURE_DOCUMENTS)) {
             return $this->featureFailure();
+        }
 
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->file('documents'), $quote);
+        }
 
         return $this->itemResponse($quote->fresh());
-
-    }  
+    }
 }

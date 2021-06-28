@@ -281,8 +281,9 @@ class TaskController extends BaseController
         
         $task = $this->task_repo->save($request->all(), $task);
 
-        if($task->status_order != $old_task->status_order)
+        if ($task->status_order != $old_task->status_order) {
             $this->task_repo->sortStatuses($old_task, $task);
+        }
 
         event(new TaskWasUpdated($task, $task->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
 
@@ -330,7 +331,7 @@ class TaskController extends BaseController
      */
     public function create(CreateTaskRequest $request)
     {
-        $task = TaskFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $task = TaskFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($task);
     }
@@ -376,9 +377,9 @@ class TaskController extends BaseController
      */
     public function store(StoreTaskRequest $request)
     {
-        $task = $this->task_repo->save($request->all(), TaskFactory::create(auth()->user()->company()->id, auth()->user()->id));
+        $task = $this->task_repo->save($request->all(), TaskFactory::create($request->user()->company()->id, $request->user()->id));
 
-        event(new TaskWasCreated($task, $task->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new TaskWasCreated($task, $task->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($task);
     }
@@ -492,15 +493,15 @@ class TaskController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
         $tasks = Task::withTrashed()->find($this->transformKeys($ids));
 
         $tasks->each(function ($task, $key) use ($action) {
-            if (auth()->user()->can('edit', $task)) {
+            if ($request->user()->can('edit', $task)) {
                 $this->task_repo->{$action}($task);
             }
         });
@@ -518,69 +519,69 @@ class TaskController extends BaseController
         //todo
     }
 
-/**
-     * Update the specified resource in storage.
-     *
-     * @param UploadTaskRequest $request
-     * @param Task $task
-     * @return Response
-     *
-     *
-     *
-     * @OA\Put(
-     *      path="/api/v1/tasks/{id}/upload",
-     *      operationId="uploadTask",
-     *      tags={"tasks"},
-     *      summary="Uploads a document to a task",
-     *      description="Handles the uploading of a document to a task",
-     *      @OA\Parameter(ref="#/components/parameters/X-Api-Secret"),
-     *      @OA\Parameter(ref="#/components/parameters/X-Api-Token"),
-     *      @OA\Parameter(ref="#/components/parameters/X-Requested-With"),
-     *      @OA\Parameter(ref="#/components/parameters/include"),
-     *      @OA\Parameter(
-     *          name="id",
-     *          in="path",
-     *          description="The Task Hashed ID",
-     *          example="D2J234DFA",
-     *          required=true,
-     *          @OA\Schema(
-     *              type="string",
-     *              format="string",
-     *          ),
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Returns the Task object",
-     *          @OA\Header(header="X-MINIMUM-CLIENT-VERSION", ref="#/components/headers/X-MINIMUM-CLIENT-VERSION"),
-     *          @OA\Header(header="X-RateLimit-Remaining", ref="#/components/headers/X-RateLimit-Remaining"),
-     *          @OA\Header(header="X-RateLimit-Limit", ref="#/components/headers/X-RateLimit-Limit"),
-     *          @OA\JsonContent(ref="#/components/schemas/Task"),
-     *       ),
-     *       @OA\Response(
-     *          response=422,
-     *          description="Validation error",
-     *          @OA\JsonContent(ref="#/components/schemas/ValidationError"),
-     *
-     *       ),
-     *       @OA\Response(
-     *           response="default",
-     *           description="Unexpected Error",
-     *           @OA\JsonContent(ref="#/components/schemas/Error"),
-     *       ),
-     *     )
-     */
+    /**
+         * Update the specified resource in storage.
+         *
+         * @param UploadTaskRequest $request
+         * @param Task $task
+         * @return Response
+         *
+         *
+         *
+         * @OA\Put(
+         *      path="/api/v1/tasks/{id}/upload",
+         *      operationId="uploadTask",
+         *      tags={"tasks"},
+         *      summary="Uploads a document to a task",
+         *      description="Handles the uploading of a document to a task",
+         *      @OA\Parameter(ref="#/components/parameters/X-Api-Secret"),
+         *      @OA\Parameter(ref="#/components/parameters/X-Api-Token"),
+         *      @OA\Parameter(ref="#/components/parameters/X-Requested-With"),
+         *      @OA\Parameter(ref="#/components/parameters/include"),
+         *      @OA\Parameter(
+         *          name="id",
+         *          in="path",
+         *          description="The Task Hashed ID",
+         *          example="D2J234DFA",
+         *          required=true,
+         *          @OA\Schema(
+         *              type="string",
+         *              format="string",
+         *          ),
+         *      ),
+         *      @OA\Response(
+         *          response=200,
+         *          description="Returns the Task object",
+         *          @OA\Header(header="X-MINIMUM-CLIENT-VERSION", ref="#/components/headers/X-MINIMUM-CLIENT-VERSION"),
+         *          @OA\Header(header="X-RateLimit-Remaining", ref="#/components/headers/X-RateLimit-Remaining"),
+         *          @OA\Header(header="X-RateLimit-Limit", ref="#/components/headers/X-RateLimit-Limit"),
+         *          @OA\JsonContent(ref="#/components/schemas/Task"),
+         *       ),
+         *       @OA\Response(
+         *          response=422,
+         *          description="Validation error",
+         *          @OA\JsonContent(ref="#/components/schemas/ValidationError"),
+         *
+         *       ),
+         *       @OA\Response(
+         *           response="default",
+         *           description="Unexpected Error",
+         *           @OA\JsonContent(ref="#/components/schemas/Error"),
+         *       ),
+         *     )
+         */
     public function upload(UploadTaskRequest $request, Task $task)
     {
-
-        if(!$this->checkFeature(Account::FEATURE_DOCUMENTS))
+        if (!$this->checkFeature(Account::FEATURE_DOCUMENTS)) {
             return $this->featureFailure();
+        }
         
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->file('documents'), $task);
+        }
 
         return $this->itemResponse($task->fresh());
-
-    }  
+    }
 
 
     /**
@@ -623,12 +624,10 @@ class TaskController extends BaseController
      */
     public function sort(SortTaskRequest $request)
     {
-    
         $task_statuses = $request->input('status_ids');
         $tasks = $request->input('task_ids');
 
-        collect($task_statuses)->each(function ($task_status_hashed_id, $key){
-
+        collect($task_statuses)->each(function ($task_status_hashed_id, $key) {
             $task_status = TaskStatus::where('id', $this->decodePrimaryKey($task_status_hashed_id))
                                      ->where('company_id', auth()->user()->company()->id)
                                      ->withTrashed()
@@ -636,17 +635,12 @@ class TaskController extends BaseController
 
             $task_status->status_order = $key;
             $task_status->save();
-
         });
 
-        foreach($tasks as $key => $task_list)
-        {
-
+        foreach ($tasks as $key => $task_list) {
             $sort_status_id = $this->decodePrimaryKey($key);
             
-            foreach ($task_list as $key => $task)
-            {
-                
+            foreach ($task_list as $key => $task) {
                 $task_record = Task::where('id', $this->decodePrimaryKey($task))
                              ->where('company_id', auth()->user()->company()->id)
                              ->withTrashed()
@@ -656,7 +650,6 @@ class TaskController extends BaseController
                 $task_record->status_id = $sort_status_id;
                 $task_record->save();
             }
-
         }
 
         return response()->json(['message' => 'Ok'], 200);

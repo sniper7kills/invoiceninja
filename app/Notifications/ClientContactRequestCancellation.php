@@ -13,7 +13,6 @@ namespace App\Notifications;
 
 use Closure;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\SlackMessage;
@@ -23,9 +22,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 
 //@deprecated for mail
-class ClientContactRequestCancellation extends Notification 
+class ClientContactRequestCancellation extends Notification
 {
-  //  use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    //  use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new notification instance.

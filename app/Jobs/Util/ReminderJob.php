@@ -22,7 +22,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Carbon;
 
 class ReminderJob implements ShouldQueue
 {
@@ -39,7 +38,6 @@ class ReminderJob implements ShouldQueue
      */
     public function handle()
     {
-
         if (! config('ninja.db.multi_db_enabled')) {
             $this->processReminders();
         } else {
@@ -53,7 +51,7 @@ class ReminderJob implements ShouldQueue
 
     private function processReminders()
     {
-        nlog("Sending invoice reminders " . now()->format('Y-m-d h:i:s'));
+        nlog('Sending invoice reminders ' . now()->format('Y-m-d h:i:s'));
 
         Invoice::where('next_send_date', '<=', now()->toDateTimeString())
                  ->whereNull('deleted_at')
@@ -61,27 +59,24 @@ class ReminderJob implements ShouldQueue
                  ->whereIn('status_id', [Invoice::STATUS_SENT, Invoice::STATUS_PARTIAL])
                  ->where('balance', '>', 0)
                  ->with('invitations')->cursor()->each(function ($invoice) {
+                     if ($invoice->isPayable()) {
+                         $reminder_template = $invoice->calculateTemplate('invoice');
+                         $invoice->service()->touchReminder($reminder_template)->save();
 
-            if ($invoice->isPayable()) {
-                $reminder_template = $invoice->calculateTemplate('invoice');
-                $invoice->service()->touchReminder($reminder_template)->save();
+                         $invoice->invitations->each(function ($invitation) use ($invoice, $reminder_template) {
+                             EmailEntity::dispatch($invitation, $invitation->company, $reminder_template);
+                             nlog("Firing reminder email for invoice {$invoice->number}");
+                         });
 
-                $invoice->invitations->each(function ($invitation) use ($invoice, $reminder_template) {
-                    EmailEntity::dispatch($invitation, $invitation->company, $reminder_template);
-                    nlog("Firing reminder email for invoice {$invoice->number}");
-                });
+                         if ($invoice->invitations->count() > 0) {
+                             event(new InvoiceWasEmailed($invoice->invitations->first(), $invoice->company, Ninja::eventVars(), $reminder_template));
+                         }
 
-                if ($invoice->invitations->count() > 0) {
-                    event(new InvoiceWasEmailed($invoice->invitations->first(), $invoice->company, Ninja::eventVars(), $reminder_template));
-                }
-
-                $invoice->service()->setReminder()->save();
-                
-            } else {
-                $invoice->next_send_date = null;
-                $invoice->save();
-            }
-
-        });
+                         $invoice->service()->setReminder()->save();
+                     } else {
+                         $invoice->next_send_date = null;
+                         $invoice->save();
+                     }
+                 });
     }
 }

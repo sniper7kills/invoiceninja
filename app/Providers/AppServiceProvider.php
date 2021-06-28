@@ -98,8 +98,7 @@ class AppServiceProvider extends ServiceProvider
 
 
         /* Handles setting the correct database with livewire classes */
-        if(Ninja::isHosted())
-        {
+        if (Ninja::isHosted()) {
             Livewire::addPersistentMiddleware([
                 SetDomainNameDb::class,
             ]);

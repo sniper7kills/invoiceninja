@@ -13,7 +13,6 @@
 namespace App\Http\Livewire;
 
 use App\Libraries\MultiDB;
-use App\Models\Client;
 use App\Utils\Traits\WithSorting;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -30,7 +29,6 @@ class DocumentsTable extends Component
 
     public function mount($client)
     {
-
         MultiDB::setDb($this->company->db);
 
         $this->client = $client;

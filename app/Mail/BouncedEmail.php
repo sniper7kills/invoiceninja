@@ -11,15 +11,10 @@
 
 namespace App\Mail;
 
-use App\Models\User;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
 
-class BouncedEmail extends Mailable 
+class BouncedEmail extends Mailable
 {
-
     public $invitation;
 
     public function __construct($invitation)
@@ -42,7 +37,5 @@ class BouncedEmail extends Mailable
             $this->from(config('mail.from.address'), config('mail.from.name'))
                 ->text()
                 ->subject($subject);
-
     }
-    
 }

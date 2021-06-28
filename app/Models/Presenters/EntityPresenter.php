@@ -12,8 +12,8 @@
 namespace App\Models\Presenters;
 
 use App\Utils\Traits\MakesHash;
+use Illuminate\Support\Facades\URL;
 use Laracasts\Presenter\Presenter;
-use URL;
 
 /**
  * Class EntityPresenter.

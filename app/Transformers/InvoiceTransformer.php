@@ -18,7 +18,6 @@ use App\Models\Document;
 use App\Models\Invoice;
 use App\Models\InvoiceInvitation;
 use App\Models\Payment;
-use App\Transformers\ActivityTransformer;
 use App\Utils\Traits\MakesHash;
 
 class InvoiceTransformer extends EntityTransformer
@@ -63,7 +62,7 @@ class InvoiceTransformer extends EntityTransformer
 
     public function includePayments(Invoice $invoice)
     {
-        $transformer = new PaymentTransformer( $this->serializer);
+        $transformer = new PaymentTransformer($this->serializer);
 
         return $this->includeCollection($invoice->payments, $transformer, Payment::class);
     }

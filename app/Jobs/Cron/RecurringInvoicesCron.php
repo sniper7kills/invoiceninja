@@ -40,7 +40,7 @@ class RecurringInvoicesCron
     public function handle() : void
     {
         /* Get all invoices where the send date is less than NOW + 30 minutes() */
-        nlog("Sending recurring invoices ".Carbon::now()->format('Y-m-d h:i:s'));
+        nlog('Sending recurring invoices '.Carbon::now()->format('Y-m-d h:i:s'));
 
         if (! config('ninja.db.multi_db_enabled')) {
             $recurring_invoices = RecurringInvoice::where('next_send_date', '<=', now()->toDateTimeString())
@@ -54,7 +54,7 @@ class RecurringInvoicesCron
             nlog(now()->format('Y-m-d') . ' Sending Recurring Invoices. Count = '.$recurring_invoices->count());
 
             $recurring_invoices->each(function ($recurring_invoice, $key) {
-                nlog("Current date = " . now()->format("Y-m-d") . " Recurring date = " .$recurring_invoice->next_send_date);
+                nlog('Current date = ' . now()->format('Y-m-d') . ' Recurring date = ' .$recurring_invoice->next_send_date);
 
                 if (!$recurring_invoice->company->is_disabled) {
                     SendRecurring::dispatchNow($recurring_invoice, $recurring_invoice->company->db);
@@ -76,7 +76,7 @@ class RecurringInvoicesCron
                 nlog(now()->format('Y-m-d') . ' Sending Recurring Invoices. Count = '.$recurring_invoices->count().' On Database # '.$db);
 
                 $recurring_invoices->each(function ($recurring_invoice, $key) {
-                    nlog("Current date = " . now()->format("Y-m-d") . " Recurring date = " .$recurring_invoice->next_send_date ." Recurring #id = ". $recurring_invoice->id);
+                    nlog('Current date = ' . now()->format('Y-m-d') . ' Recurring date = ' .$recurring_invoice->next_send_date .' Recurring #id = '. $recurring_invoice->id);
 
                     if (!$recurring_invoice->company->is_disabled) {
                         SendRecurring::dispatchNow($recurring_invoice, $recurring_invoice->company->db);

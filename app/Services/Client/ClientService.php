@@ -12,7 +12,6 @@
 namespace App\Services\Client;
 
 use App\Models\Client;
-use App\Services\Client\PaymentMethod;
 use App\Utils\Number;
 use Illuminate\Database\Eloquent\Collection;
 

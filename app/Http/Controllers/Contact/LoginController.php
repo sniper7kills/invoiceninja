@@ -95,7 +95,7 @@ class LoginController extends BaseController
         //'https://www.googleapis.com/auth/gmail.send','email','profile','openid'
         $scopes = [];
         
-        if($provider == 'google'){
+        if ($provider == 'google') {
             $scopes = ['https://www.googleapis.com/auth/gmail.send','email','profile','openid'];
         }
 
@@ -106,11 +106,11 @@ class LoginController extends BaseController
         }
     }
 
-    public function redirectToProviderAndCreate(string $provider)
+    public function redirectToProviderAndCreate(Request $request, string $provider)
     {
         $redirect_url = config('services.'.$provider.'.redirect').'/create';
 
-        if (request()->has('code')) {
+        if ($request->has('code')) {
             return $this->handleProviderCallbackAndCreate($provider);
         } else {
             return Socialite::driver($provider)->redirectUrl($redirect_url)->redirect();
@@ -221,13 +221,13 @@ class LoginController extends BaseController
      *
      * return   User $user
      */
-    public function oauthApiLogin()
+    public function oauthApiLogin(Request $request)
     {
         $user = false;
 
         $oauth = new OAuth();
 
-        $user = $oauth->getProvider(request()->input('provider'))->getTokenResponse(request()->input('token'));
+        $user = $oauth->getProvider($request->input('provider'))->getTokenResponse($request->input('token'));
 
         if ($user) {
             return $this->itemResponse($user);
@@ -235,6 +235,4 @@ class LoginController extends BaseController
             return $this->errorResponse(['message' => 'Invalid credentials'], 401);
         }
     }
-
-
 }

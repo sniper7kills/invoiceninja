@@ -15,7 +15,7 @@ namespace App\Utils\Traits\Notifications;
  * Class UserNotifies.
  *
  * I think the term $required_permissions is confusing here, what
- * we are actually defining is the notifications available on the 
+ * we are actually defining is the notifications available on the
  * user itself.
  */
 trait UserNotifies
@@ -34,7 +34,7 @@ trait UserNotifies
             array_push($required_permissions, 'all_user_notifications');
         }
 
-        if (count(array_intersect($required_permissions, $notifications->email)) >= 1 || count(array_intersect(['all_user_notifications'], $notifications->email)) >= 1 || count(array_intersect(['all_notifications'],$notifications->email)) >= 1) {
+        if (count(array_intersect($required_permissions, $notifications->email)) >= 1 || count(array_intersect(['all_user_notifications'], $notifications->email)) >= 1 || count(array_intersect(['all_notifications'], $notifications->email)) >= 1) {
             array_push($notifiable_methods, 'mail');
         }
 
@@ -61,7 +61,7 @@ trait UserNotifies
             array_push($required_permissions, 'all_user_notifications');
         }
 
-        if (count(array_intersect($required_permissions, $notifications->email)) >= 1 || count(array_intersect(['all_user_notifications'], $notifications->email)) >= 1 || count(array_intersect(['all_notifications'],$notifications->email)) >= 1) {
+        if (count(array_intersect($required_permissions, $notifications->email)) >= 1 || count(array_intersect(['all_user_notifications'], $notifications->email)) >= 1 || count(array_intersect(['all_notifications'], $notifications->email)) >= 1) {
             array_push($notifiable_methods, 'mail');
         }
 
@@ -71,7 +71,6 @@ trait UserNotifies
 
     public function findCompanyUserNotificationType($company_user, $required_permissions) :array
     {
-
         if ($company_user->company->is_disabled) {
             return [];
         }
@@ -89,19 +88,15 @@ trait UserNotifies
 
     /*
      * Returns a filtered collection of users with the
-     * required notification - NOTE this is only implemented for 
+     * required notification - NOTE this is only implemented for
      * EMAIL notification types - we'll need to chain
      * additional types at a later stage.
      */
     public function filterUsersByPermissions($company_users, $entity, array $required_notification)
     {
-
-        return $company_users->filter(function($company_user) use($required_notification, $entity){
-
+        return $company_users->filter(function ($company_user) use ($required_notification, $entity) {
             return $this->checkNotificationExists($company_user, $entity, $required_notification);
-
         });
-
     }
 
     private function checkNotificationExists($company_user, $entity, $required_notification)
@@ -110,8 +105,9 @@ trait UserNotifies
         array_push($required_notification, 'all_notifications');
 
         /* Selectively add the all_user if the user is associated with the entity */
-        if ($entity->user_id == $company_user->_user_id || $entity->assigned_user_id == $company_user->user_id) 
+        if ($entity->user_id == $company_user->_user_id || $entity->assigned_user_id == $company_user->user_id) {
             array_push($required_notification, 'all_user_notifications');
+        }
         
 
         return count(array_intersect($required_notification, $company_user->notifications->email)) >= 1;

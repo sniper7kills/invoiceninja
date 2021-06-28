@@ -190,6 +190,5 @@ class CompanyGatewayTest extends TestCase
 
         /*simple pro rata*/
         $fees_and_limits = $cg->getFeesAndLimits(GatewayType::CREDIT_CARD);
-
     }
 }

@@ -17,15 +17,9 @@ use App\Jobs\Company\CreateCompany;
 use App\Jobs\Company\CreateCompanyPaymentTerms;
 use App\Jobs\Company\CreateCompanyTaskStatuses;
 use App\Jobs\Company\CreateCompanyToken;
-use App\Jobs\Mail\NinjaMailer;
-use App\Jobs\Mail\NinjaMailerJob;
-use App\Jobs\Mail\NinjaMailerObject;
 use App\Jobs\User\CreateUser;
 use App\Jobs\Util\VersionCheck;
-use App\Mail\Admin\AccountCreatedObject;
-use App\Mail\Admin\VerifyUserObject;
 use App\Models\Account;
-use App\Models\Timezone;
 use App\Notifications\Ninja\NewAccountCreated;
 use App\Utils\Ninja;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -104,8 +98,9 @@ class CreateAccount
         //todo implement SLACK notifications
         //$sp035a66->notification(new NewAccountCreated($spaa9f78, $sp035a66))->ninja();
 
-        if(Ninja::isHosted())
+        if (Ninja::isHosted()) {
             \Modules\Admin\Jobs\Account\NinjaUser::dispatch([], $sp035a66);
+        }
 
         VersionCheck::dispatch();
 
@@ -118,9 +113,7 @@ class CreateAccount
 
     private function processSettings($settings)
     {
-        if(Ninja::isHosted() && Cache::get('currencies'))
-        {
-
+        if (Ninja::isHosted() && Cache::get('currencies')) {
             $currency = Cache::get('currencies')->filter(function ($item) use ($currency_code) {
                 return strtolower($item->code) == $currency_code;
             })->first();
@@ -145,7 +138,7 @@ class CreateAccount
                 $settings->language_id = (string)$language->id;
             }
 
-            if($timezone) {
+            if ($timezone) {
                 $settings->timezone_id = (string)$timezone->id;
             }
 
@@ -156,7 +149,3 @@ class CreateAccount
         return $settings;
     }
 }
-
-
-
-

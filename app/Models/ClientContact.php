@@ -52,9 +52,6 @@ class ClientContact extends Authenticatable implements HasLocalePreference
 
     protected $presenter = ClientContactPresenter::class;
 
-    protected $dates = [
-        'deleted_at',
-    ];
 
     protected $appends = [
         'hashed_id',
@@ -111,25 +108,25 @@ class ClientContact extends Authenticatable implements HasLocalePreference
         'email',
     ];
 
-	/*
-	V2 type of scope
-	 */
-	public function scopeCompany($query)
-	{
-		$query->where('company_id', auth()->user()->companyId());
+    /*
+    V2 type of scope
+     */
+    public function scopeCompany($query)
+    {
+        $query->where('company_id', auth()->user()->companyId());
 
-		return $query;
-	}
+        return $query;
+    }
 
-	/*
-	 V1 type of scope
-	 */
-	public function scopeScope($query)
-	{
-		$query->where($this->getTable().'.company_id', '=', auth()->user()->company()->id);
+    /*
+     V1 type of scope
+     */
+    public function scopeScope($query)
+    {
+        $query->where($this->getTable().'.company_id', '=', auth()->user()->company()->id);
 
-		return $query;
-	}
+        return $query;
+    }
 
     public function getEntityType()
     {

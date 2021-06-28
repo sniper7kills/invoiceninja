@@ -98,7 +98,7 @@ class LedgerService
     {
         return CompanyLedger::whereClientId($this->entity->client_id)
                         ->whereCompanyId($this->entity->company_id)
-                        ->orderBy('id', 'DESC')
+                        ->orderByDesc('id')
                         ->first();
     }
 

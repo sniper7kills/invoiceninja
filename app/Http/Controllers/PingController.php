@@ -13,6 +13,7 @@ namespace App\Http\Controllers;
 
 use App\Utils\Ninja;
 use App\Utils\SystemHealth;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class PingController extends BaseController
@@ -39,11 +40,11 @@ class PingController extends BaseController
      *       )
      *     )
      */
-    public function index()
+    public function index(Request $request)
     {
         return response()->json(
-            ['company_name' => auth()->user()->getCompany()->present()->name(),
-             'user_name' => auth()->user()->present()->name(),
+            ['company_name' => $request->user()->getCompany()->present()->name(),
+             'user_name' => $request->user()->present()->name(),
             ],
             200
         );

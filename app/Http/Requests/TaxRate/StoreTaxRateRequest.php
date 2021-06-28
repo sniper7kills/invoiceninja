@@ -29,8 +29,14 @@ class StoreTaxRateRequest extends Request
     {
         return [
             //'name' => 'required',
-            'name' => 'required|unique:tax_rates,name,null,null,company_id,'.auth()->user()->companyId(),
-            'rate' => 'required|numeric',
+            'name' => [
+                'required',
+                'unique:tax_rates,name,null,null,company_id,'.auth()->user()->companyId(),
+            ],
+            'rate' => [
+                'required',
+                'numeric',
+            ],
         ];
     }
 }

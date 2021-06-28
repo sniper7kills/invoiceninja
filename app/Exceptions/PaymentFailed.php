@@ -20,9 +20,6 @@ class PaymentFailed extends Exception
             ]);
         }
 
-        return response([
-            'message' => $this->getMessage(),
-            'code' => $this->getCode(),
-        ]);
+        return response(['message' => $this->getMessage(), 'code' => $this->getCode()]);
     }
 }

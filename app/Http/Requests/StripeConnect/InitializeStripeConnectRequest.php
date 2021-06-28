@@ -12,7 +12,6 @@
 
 namespace App\Http\Requests\StripeConnect;
 
-use App\Models\ClientContact;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
@@ -49,8 +48,9 @@ class InitializeStripeConnectRequest extends FormRequest
      */
     public function getTokenContent()
     {
-        if($this->state)
+        if ($this->state) {
             $this->token = $this->state;
+        }
         
         $data = Cache::get($this->token);
 

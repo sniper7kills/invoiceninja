@@ -50,14 +50,14 @@ class PostUpdate extends Command
             info("I wasn't able to migrate the data.");
         }
 
-        nlog("finished migrating");
+        nlog('finished migrating');
 
         $output = [];
 
         exec('vendor/bin/composer install --no-dev -o', $output);
 
-        info(print_r($output,1));        
-        info("finished running composer install ");
+        info(print_r($output, 1));
+        info('finished running composer install ');
 
         try {
             Artisan::call('optimize');
@@ -65,7 +65,7 @@ class PostUpdate extends Command
             info("I wasn't able to optimize.");
         }
 
-        info("optimized");
+        info('optimized');
 
         try {
             Artisan::call('view:clear');
@@ -73,11 +73,10 @@ class PostUpdate extends Command
             info("I wasn't able to clear the views.");
         }
 
-        info("view cleared");
+        info('view cleared');
 
         VersionCheck::dispatch();
 
-        info("Sent for version check");
-        
+        info('Sent for version check');
     }
 }

@@ -50,9 +50,9 @@ class ProfileController extends Controller
 
         $client_contact->save();
 
-        // auth()->user()->fresh();
+        // $request->user()->fresh();
 
-        return back()->withSuccess(
+        return redirect()->back()->withSuccess(
             ctrans('texts.profile_updated_successfully')
         );
     }
@@ -63,7 +63,7 @@ class ProfileController extends Controller
 
         //update avatar if needed
         if ($request->file('logo')) {
-            $path = UploadAvatar::dispatchNow($request->file('logo'), auth()->user()->client->client_hash);
+            $path = UploadAvatar::dispatchNow($request->file('logo'), $request->user()->client->client_hash);
 
             if ($path) {
                 $client->logo = $path;
@@ -73,7 +73,7 @@ class ProfileController extends Controller
         $client->fill($request->all());
         $client->save();
 
-        return back()->withSuccess(
+        return redirect()->back()->withSuccess(
             ctrans('texts.profile_updated_successfully')
         );
     }

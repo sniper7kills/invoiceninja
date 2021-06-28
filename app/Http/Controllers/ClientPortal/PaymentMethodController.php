@@ -23,7 +23,7 @@ use App\Utils\Traits\MakesDates;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PaymentMethodController extends Controller
@@ -71,7 +71,7 @@ class PaymentMethodController extends Controller
         $gateway = $this->getClientGateway();
 
         return $gateway
-            ->driver(auth()->user()->client)
+            ->driver($request->user()->client)
             ->setPaymentMethod($request->query('method'))
             ->checkRequirements()
             ->authorizeResponse($request);
@@ -105,8 +105,8 @@ class PaymentMethodController extends Controller
         // $gateway = $this->getClientGateway();
 
         return $payment_method->gateway
-            ->driver(auth()->user()->client)
-            ->setPaymentMethod(request()->query('method'))
+            ->driver($request->user()->client)
+            ->setPaymentMethod($request->query('method'))
             ->processVerification($request, $payment_method);
     }
 
@@ -116,23 +116,22 @@ class PaymentMethodController extends Controller
      * @param ClientGatewayToken $payment_method
      * @return RedirectResponse
      */
-    public function destroy(ClientGatewayToken $payment_method)
+    public function destroy(Request $request, ClientGatewayToken $payment_method)
     {
         // $gateway = $this->getClientGateway();
 
         $payment_method->gateway
-            ->driver(auth()->user()->client)
-            ->setPaymentMethod(request()->query('method'))
+            ->driver($request->user()->client)
+            ->setPaymentMethod($request->query('method'))
             ->detach($payment_method);
 
         try {
             event(new MethodDeleted($payment_method, auth('contact')->user()->company, Ninja::eventVars(auth('contact')->user()->id)));
             $payment_method->delete();
         } catch (Exception $e) {
-
             nlog($e->getMessage());
 
-            return back();
+            return redirect()->back();
         }
 
         return redirect()

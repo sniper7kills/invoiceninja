@@ -17,10 +17,9 @@ use App\Models\Account;
 use App\Models\ClientContact;
 use App\Models\Company;
 use App\Utils\Ninja;
-use Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Route;
+use Illuminate\Support\Facades\Auth;
 
 class ContactLoginController extends Controller
 {
@@ -47,7 +46,6 @@ class ContactLoginController extends Controller
         $account = Account::find($account_id);
 
         return $this->render('auth.login', ['account' => $account, 'company' => $company]);
-
     }
 
     public function login(Request $request)
@@ -81,17 +79,17 @@ class ContactLoginController extends Controller
 
         event(new ContactLoggedIn($client, $client->company, Ninja::eventVars()));
 
-        if (session()->get('url.intended')) {
-            return redirect(session()->get('url.intended'));
+        if ($request->session()->get('url.intended')) {
+            return redirect()->to($request->session()->get('url.intended'));
         }
 
-        return redirect(route('client.dashboard'));
+        return redirect()->route('client.dashboard');
     }
 
     public function logout()
     {
         Auth::guard('contact')->logout();
 
-        return redirect('/client/login');
+        return redirect()->to('/client/login');
     }
 }

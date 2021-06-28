@@ -134,7 +134,7 @@ class ProductController extends BaseController
      */
     public function create(CreateProductRequest $request)
     {
-        $product = ProductFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $product = ProductFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($product);
     }
@@ -180,7 +180,7 @@ class ProductController extends BaseController
      */
     public function store(StoreProductRequest $request)
     {
-        $product = $this->product_repo->save($request->all(), ProductFactory::create(auth()->user()->company()->id, auth()->user()->id));
+        $product = $this->product_repo->save($request->all(), ProductFactory::create($request->user()->company()->id, $request->user()->id));
 
         return $this->itemResponse($product);
     }
@@ -464,16 +464,16 @@ class ProductController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $products = Product::withTrashed()->find($this->transformKeys($ids));
 
         $products->each(function ($product, $key) use ($action) {
-            if (auth()->user()->can('edit', $product)) {
+            if ($request->user()->can('edit', $product)) {
                 $this->product_repo->{$action}($product);
             }
         });
@@ -481,67 +481,67 @@ class ProductController extends BaseController
         return $this->listResponse(Product::withTrashed()->whereIn('id', $this->transformKeys($ids)));
     }
 
-/**
-     * Update the specified resource in storage.
-     *
-     * @param UploadProductRequest $request
-     * @param Product $product
-     * @return Response
-     *
-     *
-     *
-     * @OA\Put(
-     *      path="/api/v1/products/{id}/upload",
-     *      operationId="uploadProduct",
-     *      tags={"products"},
-     *      summary="Uploads a document to a product",
-     *      description="Handles the uploading of a document to a product",
-     *      @OA\Parameter(ref="#/components/parameters/X-Api-Secret"),
-     *      @OA\Parameter(ref="#/components/parameters/X-Api-Token"),
-     *      @OA\Parameter(ref="#/components/parameters/X-Requested-With"),
-     *      @OA\Parameter(ref="#/components/parameters/include"),
-     *      @OA\Parameter(
-     *          name="id",
-     *          in="path",
-     *          description="The Product Hashed ID",
-     *          example="D2J234DFA",
-     *          required=true,
-     *          @OA\Schema(
-     *              type="string",
-     *              format="string",
-     *          ),
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Returns the Product object",
-     *          @OA\Header(header="X-MINIMUM-CLIENT-VERSION", ref="#/components/headers/X-MINIMUM-CLIENT-VERSION"),
-     *          @OA\Header(header="X-RateLimit-Remaining", ref="#/components/headers/X-RateLimit-Remaining"),
-     *          @OA\Header(header="X-RateLimit-Limit", ref="#/components/headers/X-RateLimit-Limit"),
-     *          @OA\JsonContent(ref="#/components/schemas/Product"),
-     *       ),
-     *       @OA\Response(
-     *          response=422,
-     *          description="Validation error",
-     *          @OA\JsonContent(ref="#/components/schemas/ValidationError"),
-     *
-     *       ),
-     *       @OA\Response(
-     *           response="default",
-     *           description="Unexpected Error",
-     *           @OA\JsonContent(ref="#/components/schemas/Error"),
-     *       ),
-     *     )
-     */
+    /**
+         * Update the specified resource in storage.
+         *
+         * @param UploadProductRequest $request
+         * @param Product $product
+         * @return Response
+         *
+         *
+         *
+         * @OA\Put(
+         *      path="/api/v1/products/{id}/upload",
+         *      operationId="uploadProduct",
+         *      tags={"products"},
+         *      summary="Uploads a document to a product",
+         *      description="Handles the uploading of a document to a product",
+         *      @OA\Parameter(ref="#/components/parameters/X-Api-Secret"),
+         *      @OA\Parameter(ref="#/components/parameters/X-Api-Token"),
+         *      @OA\Parameter(ref="#/components/parameters/X-Requested-With"),
+         *      @OA\Parameter(ref="#/components/parameters/include"),
+         *      @OA\Parameter(
+         *          name="id",
+         *          in="path",
+         *          description="The Product Hashed ID",
+         *          example="D2J234DFA",
+         *          required=true,
+         *          @OA\Schema(
+         *              type="string",
+         *              format="string",
+         *          ),
+         *      ),
+         *      @OA\Response(
+         *          response=200,
+         *          description="Returns the Product object",
+         *          @OA\Header(header="X-MINIMUM-CLIENT-VERSION", ref="#/components/headers/X-MINIMUM-CLIENT-VERSION"),
+         *          @OA\Header(header="X-RateLimit-Remaining", ref="#/components/headers/X-RateLimit-Remaining"),
+         *          @OA\Header(header="X-RateLimit-Limit", ref="#/components/headers/X-RateLimit-Limit"),
+         *          @OA\JsonContent(ref="#/components/schemas/Product"),
+         *       ),
+         *       @OA\Response(
+         *          response=422,
+         *          description="Validation error",
+         *          @OA\JsonContent(ref="#/components/schemas/ValidationError"),
+         *
+         *       ),
+         *       @OA\Response(
+         *           response="default",
+         *           description="Unexpected Error",
+         *           @OA\JsonContent(ref="#/components/schemas/Error"),
+         *       ),
+         *     )
+         */
     public function upload(UploadProductRequest $request, Product $product)
     {
-
-        if(!$this->checkFeature(Account::FEATURE_DOCUMENTS))
+        if (!$this->checkFeature(Account::FEATURE_DOCUMENTS)) {
             return $this->featureFailure();
+        }
         
-        if ($request->has('documents')) 
+        if ($request->has('documents')) {
             $this->saveDocuments($request->file('documents'), $product);
+        }
 
         return $this->itemResponse($product->fresh());
-
-    }  
+    }
 }

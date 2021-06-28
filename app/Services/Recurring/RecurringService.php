@@ -13,7 +13,6 @@ namespace App\Services\Recurring;
 
 use App\Jobs\Util\UnlinkFile;
 use App\Models\RecurringInvoice;
-use App\Services\Recurring\GetInvoicePdf;
 use Illuminate\Support\Carbon;
 
 class RecurringService
@@ -34,8 +33,9 @@ class RecurringService
      */
     public function stop()
     {
-        if($this->recurring_entity->status_id < RecurringInvoice::STATUS_PAUSED)
+        if ($this->recurring_entity->status_id < RecurringInvoice::STATUS_PAUSED) {
             $this->recurring_entity->status_id = RecurringInvoice::STATUS_PAUSED;
+        }
 
         return $this;
     }
@@ -87,11 +87,8 @@ class RecurringService
 
     public function deletePdf()
     {
-
-        $this->recurring_entity->invitations->each(function ($invitation){
-
-        UnlinkFile::dispatchNow(config('filesystems.default'), $this->recurring_entity->client->recurring_invoice_filepath($invitation) . $this->recurring_entity->numberFormatter().'.pdf');
-        
+        $this->recurring_entity->invitations->each(function ($invitation) {
+            UnlinkFile::dispatchNow(config('filesystems.default'), $this->recurring_entity->client->recurring_invoice_filepath($invitation) . $this->recurring_entity->numberFormatter().'.pdf');
         });
 
 

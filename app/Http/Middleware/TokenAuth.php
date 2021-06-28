@@ -11,10 +11,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Events\User\UserLoggedIn;
 use App\Models\CompanyToken;
 use App\Models\User;
-use App\Utils\Ninja;
 use Closure;
 use Illuminate\Http\Request;
 use stdClass;
@@ -66,8 +64,7 @@ class TokenAuth
 
             //stateless, don't remember the user.
             auth()->login($user, false);
-            auth()->user()->setCompany($company_token->company);
-
+            $request->user()->setCompany($company_token->company);
         } else {
             $error = [
                 'message' => 'Invalid token',

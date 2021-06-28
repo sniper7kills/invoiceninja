@@ -1,6 +1,6 @@
 <?php
 
-$LANG = array(
+$LANG = [
     'organization' => 'Organisation',
     'name' => 'Namn',
     'website' => 'Hemsida',
@@ -4259,8 +4259,6 @@ Den här funktionen kräver att en produkt skapas och en betalningsgateway är k
     'contact_details' => 'Contact Details',
     'download_backup_subject' => 'Your company backup is ready for download',
     'account_passwordless_login' => 'Account passwordless login',
-);
+];
 
 return $LANG;
-
-?>

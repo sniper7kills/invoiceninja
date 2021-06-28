@@ -1,6 +1,6 @@
 <?php
 
-$LANG = array(
+$LANG = [
     'organization' => 'Entreprise',
     'name' => 'Nom',
     'website' => 'Site web',
@@ -4246,8 +4246,6 @@ Lorsque les montant apparaîtront sur votre relevé, veuillez revenir sur cette 
     'account_passwordless_login' => 'Compte de connexion sans mot de passe',
     'user_duplicate_error' => 'Il n\'est pas possible d\'ajouter le même utilisateur pour la même entreprise',
     'user_cross_linked_error' => 'Cet utilisateur existe, mais ne peut pas être associé à plusieurs comptes',
-);
+];
 
 return $LANG;
-
-?>

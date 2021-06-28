@@ -14,7 +14,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\OneTimeToken\OneTimeRouterRequest;
 use App\Http\Requests\OneTimeToken\OneTimeTokenRequest;
 use App\Models\Company;
-use App\Models\CompanyUser;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +22,6 @@ use Illuminate\Support\Str;
 
 class OneTimeTokenController extends BaseController
 {
-
     private $contexts = [
     ];
 
@@ -70,15 +68,14 @@ class OneTimeTokenController extends BaseController
         $hash = Str::random(64);
 
         $data = [
-            'user_id' => auth()->user()->id,
-            'company_key'=> auth()->user()->company()->company_key,
+            'user_id' => $request->user()->id,
+            'company_key'=> $request->user()->company()->company_key,
             'context' => $request->input('context'),
         ];
 
-        Cache::put( $hash, $data, 3600);
+        Cache::put($hash, $data, 3600);
 
         return response()->json(['hash' => $hash], 200);
-
     }
 
     public function router(OneTimeRouterRequest $request)
@@ -92,13 +89,11 @@ class OneTimeTokenController extends BaseController
         // Cache::forget($request->input('hash'));
 
         $this->sendTo($data['context']);
-
     }
 
     /* We need to merge all contexts here and redirect to the correct location */
     private function sendTo($context)
     {
-
         return redirect();
     }
 }

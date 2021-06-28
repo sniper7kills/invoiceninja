@@ -34,8 +34,9 @@ class ValidSubdomain implements Rule
 
     public function passes($attribute, $value)
     {
-        if(empty($input['subdomain']))
+        if (empty($input['subdomain'])) {
             return true;
+        }
 
         return MultiDB::checkDomainAvailable($input['subdomain']);
     }

@@ -27,12 +27,11 @@ class TaskStatus extends BaseModel
     /**
      * @var array
      */
-    protected $dates = ['deleted_at'];
+
 
     protected $fillable = [
         'name',
         'color',
         'status_order',
     ];
-
 }

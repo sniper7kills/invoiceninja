@@ -64,37 +64,37 @@ class EntitySentObject
 
         switch ($this->template) {
             case 'invoice':
-                $this->template_subject = "texts.notification_invoice_sent_subject";
-                $this->template_body = "texts.notification_invoice_sent";
+                $this->template_subject = 'texts.notification_invoice_sent_subject';
+                $this->template_body = 'texts.notification_invoice_sent';
                 break;
             case 'reminder1':
-                $this->template_subject = "texts.notification_invoice_reminder1_sent_subject";
-                $this->template_body = "texts.notification_invoice_sent";
+                $this->template_subject = 'texts.notification_invoice_reminder1_sent_subject';
+                $this->template_body = 'texts.notification_invoice_sent';
                 break;
             case 'reminder2':
-                $this->template_subject = "texts.notification_invoice_reminder2_sent_subject";
-                $this->template_body = "texts.notification_invoice_sent";
+                $this->template_subject = 'texts.notification_invoice_reminder2_sent_subject';
+                $this->template_body = 'texts.notification_invoice_sent';
                 break;
             case 'reminder3':
-                $this->template_subject = "texts.notification_invoice_reminder3_sent_subject";
-                $this->template_body = "texts.notification_invoice_sent";
+                $this->template_subject = 'texts.notification_invoice_reminder3_sent_subject';
+                $this->template_body = 'texts.notification_invoice_sent';
                 break;
             case 'reminder_endless':
-                $this->template_subject = "texts.notification_invoice_reminder_endless_sent_subject";
-                $this->template_body = "texts.notification_invoice_sent";
+                $this->template_subject = 'texts.notification_invoice_reminder_endless_sent_subject';
+                $this->template_body = 'texts.notification_invoice_sent';
                 break;
             case 'quote':
-                $this->template_subject = "texts.notification_quote_sent_subject";
-                $this->template_body = "texts.notification_quote_sent";
+                $this->template_subject = 'texts.notification_quote_sent_subject';
+                $this->template_body = 'texts.notification_quote_sent';
                 break;
             case 'credit':
-                $this->template_subject = "texts.notification_credit_sent_subject";
-                $this->template_body = "texts.notification_credit_sent";
+                $this->template_subject = 'texts.notification_credit_sent_subject';
+                $this->template_body = 'texts.notification_credit_sent';
                 break;
 
             default:
-                $this->template_subject = "texts.notification_invoice_sent_subject";
-                $this->template_body = "texts.notification_invoice_sent";
+                $this->template_subject = 'texts.notification_invoice_sent_subject';
+                $this->template_body = 'texts.notification_invoice_sent';
                 break;
         }
     }
@@ -119,13 +119,13 @@ class EntitySentObject
     private function getMessage()
     {
         return ctrans(
-                $this->template_body,
-                [
+            $this->template_body,
+            [
                     'amount' => $this->getAmount(),
                     'client' => $this->contact->present()->name(),
                     'invoice' => $this->entity->number,
                 ]
-            );
+        );
     }
 
     private function getData()

@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Response;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class Cors
 {
@@ -19,7 +18,7 @@ class Cors
                 'Access-Control-Allow-Headers'=> 'X-API-COMPANY-KEY,X-CLIENT-VERSION,X-API-SECRET,X-API-TOKEN,X-API-PASSWORD,DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,X-CSRF-TOKEN,X-XSRF-TOKEN,X-LIVEWIRE',
             ];
 
-            return Response::make('OK', 200, $headers);
+            return response('OK')->withHeaders($headers);
         }
 
         $response = $next($request);

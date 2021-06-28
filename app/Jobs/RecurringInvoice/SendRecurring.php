@@ -12,12 +12,10 @@
 namespace App\Jobs\RecurringInvoice;
 
 use App\DataMapper\Analytics\SendRecurringFailure;
-use App\Events\Invoice\InvoiceWasEmailed;
 use App\Factory\RecurringInvoiceToInvoiceFactory;
 use App\Jobs\Entity\EmailEntity;
 use App\Models\Invoice;
 use App\Models\RecurringInvoice;
-use App\Utils\Ninja;
 use App\Utils\Traits\GeneratesCounter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -68,7 +66,7 @@ class SendRecurring implements ShouldQueue
                            ->fillDefaults()
                            ->save();
 
-        nlog("updating recurring invoice dates");
+        nlog('updating recurring invoice dates');
         /* Set next date here to prevent a recurring loop forming */
         $this->recurring_invoice->next_send_date = $this->recurring_invoice->nextSendDate();
         $this->recurring_invoice->remaining_cycles = $this->recurring_invoice->remainingCycles();
@@ -79,13 +77,13 @@ class SendRecurring implements ShouldQueue
             $this->recurring_invoice->setCompleted();
         }
 
-        nlog("next send date = " . $this->recurring_invoice->next_send_date);
-        nlog("remaining cycles = " . $this->recurring_invoice->remaining_cycles);
-        nlog("last send date = " . $this->recurring_invoice->last_sent_date);
+        nlog('next send date = ' . $this->recurring_invoice->next_send_date);
+        nlog('remaining cycles = ' . $this->recurring_invoice->remaining_cycles);
+        nlog('last send date = ' . $this->recurring_invoice->last_sent_date);
 
         $this->recurring_invoice->save();
         
-        //Admin notification for recurring invoice sent. 
+        //Admin notification for recurring invoice sent.
         if ($invoice->invitations->count() >= 1) {
             $invoice->entityEmailEvent($invoice->invitations->first(), 'invoice', 'email_template_invoice');
         }
@@ -94,11 +92,9 @@ class SendRecurring implements ShouldQueue
 
         $invoice->invitations->each(function ($invitation) use ($invoice) {
             if ($invitation->contact && strlen($invitation->contact->email) >=1) {
-
-                try{
+                try {
                     EmailEntity::dispatch($invitation, $invoice->company);
-                }
-                catch(\Exception $e) {
+                } catch (\Exception $e) {
                     nlog($e->getMessage());
                 }
 
@@ -110,8 +106,6 @@ class SendRecurring implements ShouldQueue
             nlog("attempting to autobill {$invoice->number}");
             $invoice->service()->autoBill()->save();
         }
-
-
     }
 
     public function failed($exception = null)

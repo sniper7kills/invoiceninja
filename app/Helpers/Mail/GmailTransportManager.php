@@ -10,11 +10,8 @@
  */
 namespace App\Helpers\Mail;
 
-use Illuminate\Mail\MailManager;
-use App\CustomMailDriver\CustomTransport;
 use Dacastro4\LaravelGmail\Services\Message\Mail;
-use Illuminate\Support\Facades\Config;
-
+use Illuminate\Mail\MailManager;
 
 class GmailTransportManager extends MailManager
 {

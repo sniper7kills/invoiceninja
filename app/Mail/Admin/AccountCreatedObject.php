@@ -13,7 +13,6 @@ namespace App\Mail\Admin;
 
 class AccountCreatedObject
 {
-
     public $user;
 
     public $company;
@@ -24,12 +23,11 @@ class AccountCreatedObject
     public function __construct($user, $company)
     {
         $this->user = $user;
-    	$this->company = $company;
+        $this->company = $company;
     }
 
     public function build()
     {
-
         $data = [
             'title' => ctrans('texts.new_signup'),
             'message' => ctrans('texts.new_signup_text', ['user' => $this->user->present()->name(), 'email' => $this->user->email, 'ip' => $this->user->ip]),

@@ -35,12 +35,12 @@ class SetDomainNameDb
          * Use the host name to set the active DB
          **/
 
-        if(!config('ninja.db.multi_db_enabled'))
+        if (!config('ninja.db.multi_db_enabled')) {
             return $next($request);
+        }
 
 
-        if (strpos($request->getHost(), 'invoicing.co') !== false) 
-        {
+        if (strpos($request->getHost(), 'invoicing.co') !== false) {
             $subdomain = explode('.', $request->getHost())[0];
             
             $query = [
@@ -48,42 +48,34 @@ class SetDomainNameDb
                 'portal_mode' => 'subdomain',
             ];
 
-            if($company = MultiDB::findAndSetDbByDomain($query)){
+            if ($company = MultiDB::findAndSetDbByDomain($query)) {
                 $request->attributes->add(['account_id' => $company->account_id]);
-            }
-            else 
-            {
+            } else {
                 if ($request->json) {
-                        return response()->json($error, 403);
+                    return response()->json($error, 403);
                 } else {
                     MultiDB::setDb('db-ninja-01');
-                    nlog("I could not set the DB - defaulting to DB1");
+                    nlog('I could not set the DB - defaulting to DB1');
                     //abort(400, 'Domain not found');
                 }
             }
-
-        }
-        else {
-
-           $query = [
+        } else {
+            $query = [
                 'portal_domain' => $request->getSchemeAndHttpHost(),
                 'portal_mode' => 'domain',
             ];
 
-            if($company = MultiDB::findAndSetDbByDomain($query)){
+            if ($company = MultiDB::findAndSetDbByDomain($query)) {
                 $request->attributes->add(['account_id' => $company->account_id]);
-            }
-            else
-            {
+            } else {
                 if ($request->json) {
-                        return response()->json($error, 403);
+                    return response()->json($error, 403);
                 } else {
                     MultiDB::setDb('db-ninja-01');
-                    nlog("I could not set the DB - defaulting to DB1");
+                    nlog('I could not set the DB - defaulting to DB1');
                     //abort(400, 'Domain not found');
                 }
             }
-
         }
 
         // config(['app.url' => $request->getSchemeAndHttpHost()]);

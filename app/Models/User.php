@@ -45,7 +45,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $guard = 'user';
 
-    protected $dates = ['deleted_at'];
 
     protected $presenter = UserPresenter::class;
 
@@ -138,7 +137,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function tokens()
     {
-        return $this->hasMany(CompanyToken::class)->orderBy('id', 'ASC');
+        return $this->hasMany(CompanyToken::class)->orderBy('id');
     }
 
     /**
@@ -167,13 +166,9 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getCompany()
     {
-
-        if ($this->company){
-
+        if ($this->company) {
             return $this->company;
-        
-        }
-        elseif (request()->header('X-API-TOKEN')) {
+        } elseif (request()->header('X-API-TOKEN')) {
             $company_token = CompanyToken::with(['company'])->whereRaw('BINARY `token`= ?', [request()->header('X-API-TOKEN')])->first();
 
             return $company_token->company;
@@ -187,8 +182,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function companyIsSet()
     {
-        if($this->company)
+        if ($this->company) {
             return true;
+        }
 
         return false;
     }
@@ -400,9 +396,8 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function sendPasswordResetNotification($token)
     {
-
         $nmo = new NinjaMailerObject;
-        $nmo->mailable = new NinjaMailer( (new ResetPasswordObject($token, $this, $this->account->default_company))->build());
+        $nmo->mailable = new NinjaMailer((new ResetPasswordObject($token, $this, $this->account->default_company))->build());
         $nmo->to_user = $this;
         $nmo->settings = $this->account->default_company->settings;
         $nmo->company = $this->account->default_company;

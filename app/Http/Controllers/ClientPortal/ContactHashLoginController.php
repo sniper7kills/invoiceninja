@@ -12,7 +12,8 @@
 namespace App\Http\Controllers\ClientPortal;
 
 use App\Http\Controllers\Controller;
-use Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ContactHashLoginController extends Controller
 {
@@ -24,16 +25,16 @@ class ContactHashLoginController extends Controller
      */
     public function login(string $contact_key)
     {
-        return redirect('/client/invoices');
+        return redirect()->to('/client/invoices');
     }
 
     public function magicLink(string $magic_link)
     {
-        return redirect('/client/invoices');
+        return redirect()->to('/client/invoices');
     }
 
-    public function errorPage()
+    public function errorPage(Request $request)
     {
-        return render('generic.error', ['title' => session()->get('title'), 'notification' => session()->get('notification')]);
+        return render('generic.error', ['title' => $request->session()->get('title'), 'notification' => $request->session()->get('notification')]);
     }
 }

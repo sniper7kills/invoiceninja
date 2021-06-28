@@ -39,7 +39,7 @@ class CheckClientExistence
             ->whereHas('client', function ($query) {
                 return $query->whereNull('deleted_at');
             })
-            ->whereHas('client.company', function ($query){
+            ->whereHas('client.company', function ($query) {
                 return $query->where('account_id', auth('contact')->user()->client->company->account->id);
             })
             ->get();
@@ -54,7 +54,7 @@ class CheckClientExistence
             Auth::guard('contact')->login($multiple_contacts[0], true);
         }
 
-        session()->put('multiple_contacts', $multiple_contacts);
+        $request->session()->put('multiple_contacts', $multiple_contacts);
 
         return $next($request);
     }

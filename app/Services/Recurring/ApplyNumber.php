@@ -33,8 +33,9 @@ class ApplyNumber extends AbstractService
     /* Recurring numbers are set when saved */
     public function run()
     {
-        if ($this->recurring_entity->number != '')
+        if ($this->recurring_entity->number != '') {
             return $this->recurring_entity;
+        }
 
         $this->recurring_entity->number = $this->getNextRecurringInvoiceNumber($this->client);
 

@@ -12,7 +12,6 @@
 namespace App\Helpers\Invoice;
 
 use App\Models\Invoice;
-use App\Models\TaxRate;
 use App\Utils\Traits\NumberFormatter;
 use Illuminate\Support\Collection;
 
@@ -110,7 +109,6 @@ class InvoiceSum
 
     private function calculateInvoiceTaxes()
     {
-
         if (strlen($this->invoice->tax_name1) > 1) {
             $tax = $this->taxer($this->total, $this->invoice->tax_rate1);
             $tax += $this->getSurchargeTaxTotalForKey($this->invoice->tax_name1, $this->invoice->tax_rate1);
@@ -319,37 +317,31 @@ class InvoiceSum
 
     private function getSurchargeTaxTotalForKey($key, $rate)
     {
-
         $tax_component = 0;
 
-        if($this->invoice->custom_surcharge_tax1)
-        {
+        if ($this->invoice->custom_surcharge_tax1) {
             $tax_component += round($this->invoice->custom_surcharge1 * ($rate / 100), 2);
         }
 
-        if($this->invoice->custom_surcharge_tax2)
-        {
+        if ($this->invoice->custom_surcharge_tax2) {
             $tax_component += round($this->invoice->custom_surcharge2 * ($rate / 100), 2);
         }
 
-        if($this->invoice->custom_surcharge_tax3)
-        {
+        if ($this->invoice->custom_surcharge_tax3) {
             $tax_component += round($this->invoice->custom_surcharge3 * ($rate / 100), 2);
         }
 
-        if($this->invoice->custom_surcharge_tax4)
-        {
+        if ($this->invoice->custom_surcharge_tax4) {
             $tax_component += round($this->invoice->custom_surcharge4 * ($rate / 100), 2);
         }
         
         return $tax_component;
-     
     }
 
 
 
     public function getTaxMap()
-    {        
+    {
         return $this->tax_map;
     }
 

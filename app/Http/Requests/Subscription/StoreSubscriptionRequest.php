@@ -58,7 +58,6 @@ class StoreSubscriptionRequest extends Request
         ];
 
         return $this->globalRules($rules);
-
     }
 
     protected function prepareForValidation()

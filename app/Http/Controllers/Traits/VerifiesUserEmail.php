@@ -12,10 +12,12 @@
 
 namespace App\Http\Controllers\Traits;
 
+use App\Http\Requests\Traits\ConfirmWithPasswordVerifiesUserEmailRequest;
 use App\Models\User;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\UserSessionAttributes;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -29,11 +31,11 @@ trait VerifiesUserEmail
     /**
      * @return RedirectResponse
      */
-    public function confirm()
+    public function confirm(Request $request)
     {
-        $user = User::where('confirmation_code', request()->confirmation_code)->first();
+        $user = User::where('confirmation_code', $request->confirmation_code)->first();
 
-        // if ($user = User::whereRaw("BINARY `confirmation_code`= ?", request()->input('confirmation_code'))->first()) {
+        // if ($user = User::whereRaw("BINARY `confirmation_code`= ?", $request->input('confirmation_code'))->first()) {
 
         if (! $user) {
             return $this->render('auth.confirmed', ['root' => 'themes', 'message' => ctrans('texts.wrong_confirmation')]);
@@ -43,13 +45,11 @@ trait VerifiesUserEmail
         $user->confirmation_code = null;
         $user->save();
 
-        if(isset($user->oauth_user_id)){
-
+        if (isset($user->oauth_user_id)) {
             return $this->render('auth.confirmed', [
                 'root' => 'themes',
                 'message' => ctrans('texts.security_confirmation'),
             ]);
-            
         }
 
         if (is_null($user->password) || empty($user->password) || Hash::check('', $user->password)) {
@@ -62,16 +62,13 @@ trait VerifiesUserEmail
         ]);
     }
 
-    public function confirmWithPassword()
+    public function confirmWithPassword(ConfirmWithPasswordVerifiesUserEmailRequest $request)
     {
-        $user = User::where('id', $this->decodePrimaryKey(request()->user_id))->firstOrFail();
-
-        request()->validate([
-            'password' => ['required', 'min:6'],
-        ]);
+        $user = User::where('id', $this->decodePrimaryKey($request->user_id))->firstOrFail();
 
 
-        $user->password = Hash::make(request()->password);
+
+        $user->password = Hash::make($request->password);
 
         $user->email_verified_at = now();
         $user->confirmation_code = null;

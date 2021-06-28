@@ -75,7 +75,7 @@ class StartMigration implements ShouldQueue
      */
     public function handle()
     {
-        nlog("Inside Migration Job");
+        nlog('Inside Migration Job');
         
         set_time_limit(0);
 
@@ -92,15 +92,15 @@ class StartMigration implements ShouldQueue
         $archive = $zip->open(public_path("storage/{$this->filepath}"));
         $filename = pathinfo($this->filepath, PATHINFO_FILENAME);
 
-            // if($this->company->id == $this->company->account->default_company_id)
-            // {
-            //     $new_default_company = $this->company->account->companies->first();
+        // if($this->company->id == $this->company->account->default_company_id)
+        // {
+        //     $new_default_company = $this->company->account->companies->first();
 
-            //     if ($new_default_company) {
-            //         $this->company->account->default_company_id = $new_default_company->id;
-            //         $this->company->account->save();
-            //     }
-            // }
+        //     if ($new_default_company) {
+        //         $this->company->account->default_company_id = $new_default_company->id;
+        //         $this->company->account->save();
+        //     }
+        // }
 
         $update_product_flag = $this->company->update_products;
 
@@ -134,22 +134,20 @@ class StartMigration implements ShouldQueue
 
             $this->company->update_products = $update_product_flag;
             $this->company->save();
-
         } catch (NonExistingMigrationFile | ProcessingMigrationArchiveFailed | ResourceNotAvailableForMigration | MigrationValidatorFailed | ResourceDependencyMissing | \Exception $e) {
-
             $this->company->update_products = $update_product_flag;
             $this->company->save();
 
 
-            if(Ninja::isHosted())
+            if (Ninja::isHosted()) {
                 app('sentry')->captureException($e);
+            }
             
             Mail::to($this->user->email, $this->user->name())->send(new MigrationFailed($e, $this->company, $e->getMessage()));
 
             if (app()->environment() !== 'production') {
                 info($e->getMessage());
             }
-            
         }
 
         //always make sure we unset the migration as running

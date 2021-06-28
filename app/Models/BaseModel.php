@@ -13,15 +13,12 @@ namespace App\Models;
 
 use App\DataMapper\ClientSettings;
 use App\DataMapper\CompanySettings;
-use App\Jobs\Entity\CreateEntityPdf;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\UserSessionAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException as ModelNotFoundException;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
-
 
 /**
  * Class BaseModel
@@ -191,11 +188,10 @@ class BaseModel extends Model
     {
         $number = strlen($this->number) > 1 ? $this->number : class_basename($this);
 
-        $formatted_number =  mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $number);
+        $formatted_number =  mb_ereg_replace('([^\\w\\s\\d\\-_~,;\\[\\]\\(\\).])', '', $number);
         // Remove any runs of periods (thanks falstro!)
-        $formatted_number = mb_ereg_replace("([\.]{2,})", '', $formatted_number);
+        $formatted_number = mb_ereg_replace('([\\.]{2,})', '', $formatted_number);
 
         return $formatted_number;
     }
-
 }

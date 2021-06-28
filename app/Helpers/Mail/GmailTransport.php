@@ -12,7 +12,6 @@
 namespace App\Helpers\Mail;
 
 use App\Utils\TempFile;
-use Dacastro4\LaravelGmail\Facade\LaravelGmail;
 use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Illuminate\Mail\Transport\Transport;
 use Swift_Mime_SimpleMessage;
@@ -61,20 +60,15 @@ class GmailTransport extends Transport
 
         $this->gmail->cc($message->getCc());
 
-        if(is_array($message->getBcc()))
+        if (is_array($message->getBcc())) {
             $this->gmail->bcc(array_keys($message->getBcc()));
+        }
 
-        foreach ($message->getChildren() as $child) 
-        {
-
-            if($child->getContentType() != 'text/plain')
-            {
-
-            $this->gmail->attach(TempFile::filePath($child->getBody(), $child->getHeaders()->get('Content-Type')->getParameter('name') ));
-            
+        foreach ($message->getChildren() as $child) {
+            if ($child->getContentType() != 'text/plain') {
+                $this->gmail->attach(TempFile::filePath($child->getBody(), $child->getHeaders()->get('Content-Type')->getParameter('name')));
             }
-
-        } 
+        }
 
         $this->gmail->send();
 

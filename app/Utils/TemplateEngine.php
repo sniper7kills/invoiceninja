@@ -17,15 +17,12 @@ use App\Models\ClientContact;
 use App\Models\Invoice;
 use App\Models\InvoiceInvitation;
 use App\Services\PdfMaker\Designs\Utilities\DesignHelpers;
-use App\Utils\Ninja;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\MakesInvoiceHtml;
 use App\Utils\Traits\MakesTemplateData;
-use DB;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\DB;
 use League\CommonMark\CommonMarkConverter;
-use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
 
 class TemplateEngine
 {
@@ -212,13 +209,11 @@ class TemplateEngine
             } else {
                 $wrapper = '';
             }
-        }
-        elseif ($email_style == 'plain') {
+        } elseif ($email_style == 'plain') {
             $wrapper = view($this->getTemplatePath($email_style), $data)->render();
             $injection = '';
             $wrapper = str_replace('<head>', $injection, $wrapper);
-        }
-        else {
+        } else {
             $wrapper = view($this->getTemplatePath('client'), $data)->render();
             $injection = '';
             $wrapper = str_replace('<head>', $injection, $wrapper);

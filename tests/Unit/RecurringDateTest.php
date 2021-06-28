@@ -10,7 +10,6 @@
  */
 namespace Tests\Unit;
 
-use App\Models\Invoice;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Carbon;
 use Tests\MockAccountData;
@@ -33,12 +32,12 @@ class RecurringDateTest extends TestCase
 
     public function testNextDay()
     {
-    	$trial = 60*60*24;
+        $trial = 60*60*24;
 
-    	$now = Carbon::parse('2021-12-01');
+        $now = Carbon::parse('2021-12-01');
 
-    	$trial_ends = $now->addSeconds($trial)->addDays(1);
+        $trial_ends = $now->addSeconds($trial)->addDays(1);
 
-    	$this->assertequals($trial_ends->format('Y-m-d'), '2021-12-03');
+        $this->assertequals($trial_ends->format('Y-m-d'), '2021-12-03');
     }
 }

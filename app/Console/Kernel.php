@@ -45,7 +45,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-
         $schedule->job(new VersionCheck)->daily();
 
         $schedule->job(new DiskCleanup)->daily()->withoutOverlapping();
@@ -62,26 +61,21 @@ class Kernel extends ConsoleKernel
 
         $schedule->job(new RecurringInvoicesCron)->hourly()->withoutOverlapping();
         
-        $schedule->job(new AutoBillCron)->dailyAt('00:30')->withoutOverlapping();        
+        $schedule->job(new AutoBillCron)->dailyAt('00:30')->withoutOverlapping();
 
         $schedule->job(new SchedulerCheck)->everyFiveMinutes();
 
         /* Run hosted specific jobs */
         if (Ninja::isHosted()) {
-
             $schedule->job(new AdjustEmailQuota)->daily()->withoutOverlapping();
             $schedule->job(new SendFailedEmails)->daily()->withoutOverlapping();
             $schedule->command('ninja:check-data --database=db-ninja-02')->daily()->withoutOverlapping();
-
         }
 
-        if(config('queue.default') == 'database' && Ninja::isSelfHost() && config('ninja.internal_queue_enabled') && !config('ninja.is_docker')) {
-
+        if (config('queue.default') == 'database' && Ninja::isSelfHost() && config('ninja.internal_queue_enabled') && !config('ninja.is_docker')) {
             $schedule->command('queue:work')->everyMinute()->withoutOverlapping();
-            $schedule->command('queue:restart')->everyFiveMinutes()->withoutOverlapping(); 
-            
+            $schedule->command('queue:restart')->everyFiveMinutes()->withoutOverlapping();
         }
-
     }
 
     /**

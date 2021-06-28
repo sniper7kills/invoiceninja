@@ -11,10 +11,10 @@
 
 namespace App\Models;
 
-use Crypt;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Crypt;
 
 /**
  * Class BankAccount.
@@ -26,7 +26,7 @@ class BankAccount extends BaseModel
     /**
      * @var array
      */
-    protected $dates = ['deleted_at'];
+
 
     /**
      * @var array

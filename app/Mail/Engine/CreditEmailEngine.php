@@ -15,7 +15,6 @@ use App\Utils\HtmlEngine;
 use App\Utils\Ninja;
 use App\Utils\Number;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Lang;
 
 class CreditEmailEngine extends BaseEmailEngine
 {
@@ -47,8 +46,9 @@ class CreditEmailEngine extends BaseEmailEngine
         $t = app('translator');
         $t->replace(Ninja::transformTranslations($this->client->getMergedSettings()));
         
-        if($this->reminder_template == 'endless_reminder')
+        if ($this->reminder_template == 'endless_reminder') {
             $this->reminder_template = 'reminder_endless';
+        }
         
         if (is_array($this->template_data) &&  array_key_exists('body', $this->template_data) && strlen($this->template_data['body']) > 0) {
             $body_template = $this->template_data['body'];
@@ -99,26 +99,24 @@ class CreditEmailEngine extends BaseEmailEngine
             ->setInvitation($this->invitation);
 
         if ($this->client->getSetting('pdf_email_attachment') !== false && $this->credit->company->account->hasFeature(Account::FEATURE_PDF_ATTACHMENT)) {
-
-            if(Ninja::isHosted())
+            if (Ninja::isHosted()) {
                 $this->setAttachments([$this->credit->pdf_file_path($this->invitation, 'url', true)]);
-            else
+            } else {
                 $this->setAttachments([$this->credit->pdf_file_path($this->invitation)]);
-            
+            }
         }
 
         //attach third party documents
-        if($this->client->getSetting('document_email_attachment') !== false && $this->credit->company->account->hasFeature(Account::FEATURE_DOCUMENTS)){
+        if ($this->client->getSetting('document_email_attachment') !== false && $this->credit->company->account->hasFeature(Account::FEATURE_DOCUMENTS)) {
 
             // Storage::url
-            foreach($this->credit->documents as $document){
+            foreach ($this->credit->documents as $document) {
                 $this->setAttachments([['path' => $document->filePath(), 'name' => $document->name, 'mime' => $document->type]]);
             }
 
-            foreach($this->credit->company->documents as $document){
+            foreach ($this->credit->company->documents as $document) {
                 $this->setAttachments([['path' => $document->filePath(), 'name' => $document->name, 'mime' => $document->type]]);
             }
-
         }
 
         return $this;

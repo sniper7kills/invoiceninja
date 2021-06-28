@@ -28,20 +28,22 @@ use Illuminate\Support\Carbon;
 /**
  * PaymentRepository.
  */
-class PaymentRepository extends BaseRepository {
-	use MakesHash;
-	use SavesDocuments;
+class PaymentRepository extends BaseRepository
+{
+    use MakesHash;
+    use SavesDocuments;
 
-	protected $credit_repo;
+    protected $credit_repo;
 
-	public function __construct( CreditRepository $credit_repo ) {
-		$this->credit_repo = $credit_repo;
-	}
+    public function __construct(CreditRepository $credit_repo)
+    {
+        $this->credit_repo = $credit_repo;
+    }
 
-	/**
-	 * Saves and updates a payment. //todo refactor to handle refunds and payments.
-	 *
-	 * @param array   $data the request object
+    /**
+     * Saves and updates a payment. //todo refactor to handle refunds and payments.
+     *
+     * @param array   $data the request object
      * @param Payment $payment The Payment object
      * @return Payment|null Payment $payment
      */
@@ -62,7 +64,6 @@ class PaymentRepository extends BaseRepository {
      */
     private function applyPayment(array $data, Payment $payment): ?Payment
     {
-
         $is_existing_payment = true;
 
         //check currencies here and fill the exchange rate data if necessary
@@ -90,7 +91,6 @@ class PaymentRepository extends BaseRepository {
                     $client->service()->updatePaidToDate($_credit_totals)->save();
                 }
             }
-
         }
 
         /*Fill the payment*/
@@ -115,7 +115,6 @@ class PaymentRepository extends BaseRepository {
 
         /*Iterate through invoices and apply payments*/
         if (array_key_exists('invoices', $data) && is_array($data['invoices']) && count($data['invoices']) > 0) {
-
             $invoice_totals = array_sum(array_column($data['invoices'], 'amount'));
 
             $invoices = Invoice::whereIn('id', array_column($data['invoices'], 'invoice_id'))->get();
@@ -155,13 +154,13 @@ class PaymentRepository extends BaseRepository {
             }
         }
 
-		if ( ! $is_existing_payment && ! $this->import_mode ) {
-
-            if ($payment->client->getSetting('client_manual_payment_notification')) 
+        if (! $is_existing_payment && ! $this->import_mode) {
+            if ($payment->client->getSetting('client_manual_payment_notification')) {
                 $payment->service()->sendEmail();
-			
-            event( new PaymentWasCreated( $payment, $payment->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null) ) );
-		}
+            }
+            
+            event(new PaymentWasCreated($payment, $payment->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        }
 
         nlog("payment amount = {$payment->amount}");
         nlog("payment applied = {$payment->applied}");
@@ -185,9 +184,9 @@ class PaymentRepository extends BaseRepository {
      */
     private function processExchangeRates($data, $payment)
     {
-
-        if(array_key_exists('exchange_rate', $data) && isset($data['exchange_rate']))
+        if (array_key_exists('exchange_rate', $data) && isset($data['exchange_rate'])) {
             return $payment;
+        }
 
         $client = Client::find($data['client_id']);
 
@@ -195,13 +194,11 @@ class PaymentRepository extends BaseRepository {
         $company_currency = $client->company->settings->currency_id;
 
         if ($company_currency != $client_currency) {
-
             $exchange_rate = new CurrencyApi();
 
             $payment->exchange_rate = $exchange_rate->exchangeRate($client_currency, $company_currency, Carbon::parse($payment->date));
             // $payment->exchange_currency_id = $client_currency;
             $payment->exchange_currency_id = $company_currency;
-
         }
 
         return $payment;

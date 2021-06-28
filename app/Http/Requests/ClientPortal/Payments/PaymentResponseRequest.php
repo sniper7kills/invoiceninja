@@ -25,8 +25,12 @@ class PaymentResponseRequest extends FormRequest
     public function rules()
     {
         return [
-            'company_gateway_id' => 'required',
-            'payment_hash' => 'required',
+            'company_gateway_id' => [
+                'required',
+            ],
+            'payment_hash' => [
+                'required',
+            ],
         ];
     }
 
@@ -41,13 +45,13 @@ class PaymentResponseRequest extends FormRequest
     {
         if ($this->has('store_card')) {
             $this->merge([
-                'store_card' => ($this->store_card === "true" || $this->store_card === true) ? true : false,
+                'store_card' => ($this->store_card === 'true' || $this->store_card === true) ? true : false,
             ]);
         }
 
         if ($this->has('pay_with_token')) {
             $this->merge([
-                'pay_with_token' => ($this->pay_with_token === "true" || $this->pay_with_token === true) ? true : false,
+                'pay_with_token' => ($this->pay_with_token === 'true' || $this->pay_with_token === true) ? true : false,
             ]);
         }
     }

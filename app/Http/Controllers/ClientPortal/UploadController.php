@@ -30,8 +30,8 @@ class UploadController extends Controller
      */
     public function __invoke(StoreUploadRequest $request)
     {
-        $this->saveDocuments($request->getFile(), auth()->user()->client, true);
+        $this->saveDocuments($request->getFile(), $request->user()->client, true);
 
-        return response([], 200);
+        return response([]);
     }
 }
