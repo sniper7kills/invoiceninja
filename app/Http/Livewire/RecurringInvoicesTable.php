@@ -37,7 +37,7 @@ class RecurringInvoicesTable extends Component
         $query = $query
             ->where('client_id', auth('contact')->user()->client->id)
             ->whereIn('status_id', [RecurringInvoice::STATUS_PENDING, RecurringInvoice::STATUS_ACTIVE, RecurringInvoice::STATUS_PAUSED,RecurringInvoice::STATUS_COMPLETED])
-            ->orderBy('status_id', 'asc')
+            ->orderBy('status_id')
             ->with('client')
             ->orderBy($this->sort_field, $this->sort_asc ? 'asc' : 'desc')
             ->paginate($this->per_page);

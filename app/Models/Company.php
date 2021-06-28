@@ -221,7 +221,7 @@ class Company extends BaseModel
 
     public function activities()
     {
-        return $this->hasMany(Activity::class)->orderBy('id', 'DESC')->take(300);
+        return $this->hasMany(Activity::class)->orderByDesc('id')->take(300);
     }
 
     /**
@@ -417,12 +417,12 @@ class Company extends BaseModel
 
     public function system_logs()
     {
-        return $this->hasMany(SystemLog::class)->orderBy('id', 'DESC')->take(100);
+        return $this->hasMany(SystemLog::class)->orderByDesc('id')->take(100);
     }
 
     public function system_log_relation()
     {
-        return $this->hasMany(SystemLog::class)->orderBy('id', 'DESC');
+        return $this->hasMany(SystemLog::class)->orderByDesc('id');
     }
 
     public function tokens_hashed()

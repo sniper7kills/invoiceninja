@@ -138,7 +138,7 @@ class Client extends BaseModel implements HasLocalePreference
 
     public function ledger()
     {
-        return $this->hasMany(CompanyLedger::class)->orderBy('id', 'desc');
+        return $this->hasMany(CompanyLedger::class)->orderByDesc('id');
     }
 
     public function company_ledger()
@@ -177,12 +177,12 @@ class Client extends BaseModel implements HasLocalePreference
 
     public function activities()
     {
-        return $this->hasMany(Activity::class)->orderBy('id', 'desc');
+        return $this->hasMany(Activity::class)->orderByDesc('id');
     }
 
     public function contacts()
     {
-        return $this->hasMany(ClientContact::class)->orderBy('is_primary', 'desc');
+        return $this->hasMany(ClientContact::class)->orderByDesc('is_primary');
     }
 
     public function primary_contact()

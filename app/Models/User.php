@@ -138,7 +138,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function tokens()
     {
-        return $this->hasMany(CompanyToken::class)->orderBy('id', 'ASC');
+        return $this->hasMany(CompanyToken::class)->orderBy('id');
     }
 
     /**

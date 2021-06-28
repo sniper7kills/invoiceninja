@@ -105,7 +105,7 @@ class CheckCompanyData implements ShouldQueue
             // if($client->balance != $invoice_balance)
             //     $invoice_balance -= $credit_balance;//doesn't make sense to remove the credit amount
 
-            $ledger = CompanyLedger::where('client_id', $client->id)->orderBy('id', 'DESC')->first();
+            $ledger = CompanyLedger::where('client_id', $client->id)->orderByDesc('id')->first();
 
             if ($ledger && number_format($invoice_balance, 4) != number_format($client->balance, 4)) {
                 $wrong_balances++;
@@ -200,7 +200,7 @@ class CheckCompanyData implements ShouldQueue
             // if($client->balance != $invoice_balance)
             //     $invoice_balance -= $credit_balance;
 
-            $ledger = CompanyLedger::where('client_id', $client->id)->orderBy('id', 'DESC')->first();
+            $ledger = CompanyLedger::where('client_id', $client->id)->orderByDesc('id')->first();
 
             if ($ledger && (string) $invoice_balance != (string) $client->balance) {
                 $wrong_paid_to_dates++;

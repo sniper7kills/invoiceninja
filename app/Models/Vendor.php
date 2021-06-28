@@ -87,7 +87,7 @@ class Vendor extends BaseModel
 
     public function contacts()
     {
-        return $this->hasMany(VendorContact::class)->orderBy('is_primary', 'desc');
+        return $this->hasMany(VendorContact::class)->orderByDesc('is_primary');
     }
 
     public function activities()

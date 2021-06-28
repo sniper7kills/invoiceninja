@@ -391,7 +391,7 @@ class CheckData extends Command
                 $invoice_balance -= $credit_balance;
             }
 
-            $ledger = CompanyLedger::where('client_id', $client->id)->orderBy('id', 'DESC')->first();
+            $ledger = CompanyLedger::where('client_id', $client->id)->orderByDesc('id')->first();
 
             if ($ledger && (string) $invoice_balance != (string) $client->balance) {
                 $this->wrong_paid_to_dates++;
@@ -423,7 +423,7 @@ class CheckData extends Command
             // if($client->balance != $invoice_balance)
             //     $invoice_balance -= $credit_balance;//doesn't make sense to remove the credit amount
 
-            $ledger = CompanyLedger::where('client_id', $client->id)->orderBy('id', 'DESC')->first();
+            $ledger = CompanyLedger::where('client_id', $client->id)->orderByDesc('id')->first();
 
             if ($ledger && number_format($invoice_balance, 4) != number_format($client->balance, 4)) {
                 $this->wrong_balances++;

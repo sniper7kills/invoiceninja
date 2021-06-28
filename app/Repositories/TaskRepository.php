@@ -114,7 +114,7 @@ class TaskRepository extends BaseRepository
     {
         $first_status = $task->company->task_statuses()
                               ->whereNull('deleted_at')
-                              ->orderBy('id', 'asc')
+                              ->orderBy('id')
                               ->first();
 
         if ($first_status) {

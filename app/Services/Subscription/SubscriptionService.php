@@ -197,7 +197,7 @@ class SubscriptionService
         $outstanding_invoice = Invoice::where('subscription_id', $this->subscription->id)
                                          ->where('client_id', $recurring_invoice->client_id)
                                          ->where('is_deleted', 0)
-                                         ->orderBy('id', 'desc')
+                                         ->orderByDesc('id')
                                          ->first();
 
         if ($outstanding->count() == 0) {
@@ -323,7 +323,7 @@ class SubscriptionService
                                          ->where('client_id', $recurring_invoice->client_id)
                                          ->where('is_deleted', 0)
                                          ->withTrashed()
-                                         ->orderBy('id', 'desc')
+                                         ->orderByDesc('id')
                                          ->first();
 
         if ($last_invoice->balance > 0) {
@@ -377,7 +377,7 @@ class SubscriptionService
                                          ->where('client_id', $recurring_invoice->client_id)
                                          ->where('is_deleted', 0)
                                          ->withTrashed()
-                                         ->orderBy('id', 'desc')
+                                         ->orderByDesc('id')
                                          ->first();
 
         if ($last_invoice->balance > 0) {
@@ -656,7 +656,7 @@ class SubscriptionService
         $outstanding_invoice = Invoice::where('subscription_id', $this->subscription->id)
                                      ->where('client_id', $recurring_invoice->client_id)
                                      ->where('is_deleted', 0)
-                                     ->orderBy('id', 'desc')
+                                     ->orderByDesc('id')
                                      ->first();
 
         $invoice_start_date = Carbon::parse($outstanding_invoice->date);
