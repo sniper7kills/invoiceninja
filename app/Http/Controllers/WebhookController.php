@@ -301,7 +301,7 @@ class WebhookController extends BaseController
      */
     public function create(CreateWebhookRequest $request)
     {
-        $webhook = WebhookFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $webhook = WebhookFactory::create($request->user()->company()->id, $request->user()->id);
         $webhook->fill($request->all());
         $webhook->save();
 
@@ -357,8 +357,8 @@ class WebhookController extends BaseController
         }
 
         $webhook = new Webhook;
-        $webhook->company_id = auth()->user()->company()->id;
-        $webhook->user_id = auth()->user()->id;
+        $webhook->company_id = $request->user()->company()->id;
+        $webhook->user_id = $request->user()->id;
         $webhook->event_id = $event_id;
         $webhook->target_url = $target_url;
         $webhook->fill($request->all());
@@ -480,16 +480,16 @@ class WebhookController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $webhooks = Webhook::withTrashed()->find($this->transformKeys($ids));
 
         $webhooks->each(function ($webhook, $key) use ($action) {
-            if (auth()->user()->can('edit', $webhook)) {
+            if ($request->user()->can('edit', $webhook)) {
                 $this->base_repo->{$action}($webhook);
             }
         });

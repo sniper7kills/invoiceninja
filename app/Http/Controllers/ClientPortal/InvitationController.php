@@ -61,7 +61,7 @@ class InvitationController extends Controller
         }
         $client_contact->save();
 
-        if (request()->has('client_hash') && request()->input('client_hash') == $invitation->contact->client->client_hash) {
+        if ($request->has('client_hash') && $request->input('client_hash') == $invitation->contact->client->client_hash) {
             auth()->guard('contact')->login($client_contact, true);
         } elseif ((bool) $invitation->contact->client->getSetting('enable_client_portal_password') !== false) {
             $this->middleware('auth:contact');
@@ -72,7 +72,7 @@ class InvitationController extends Controller
         }
 
 
-        if (auth()->guard('contact') && ! request()->has('silent') && ! $invitation->viewed_date) {
+        if (auth()->guard('contact') && ! $request->has('silent') && ! $invitation->viewed_date) {
             $invitation->markViewed();
 
             event(new InvitationWasViewed($invitation->{$entity}, $invitation, $invitation->{$entity}->company, Ninja::eventVars()));

@@ -11,6 +11,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Events\Credit\CreditWasCreated;
 use App\Events\Credit\CreditWasUpdated;
 use App\Factory\CloneCreditFactory;
@@ -146,7 +147,7 @@ class CreditController extends BaseController
      */
     public function create(CreateCreditRequest $request)
     {
-        $credit = CreditFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $credit = CreditFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($credit);
     }
@@ -194,13 +195,13 @@ class CreditController extends BaseController
     {
         $client = Client::find($request->input('client_id'));
 
-        $credit = $this->credit_repository->save($request->all(), CreditFactory::create(auth()->user()->company()->id, auth()->user()->id));
+        $credit = $this->credit_repository->save($request->all(), CreditFactory::create($request->user()->company()->id, $request->user()->id));
 
         $credit = $credit->service()
                          ->fillDefaults()
                          ->save();
 
-        event(new CreditWasCreated($credit, $credit->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new CreditWasCreated($credit, $credit->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($credit);
     }
@@ -489,11 +490,11 @@ class CreditController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $credits = Credit::withTrashed()->whereIn('id', $this->transformKeys($ids));
 
@@ -502,7 +503,7 @@ class CreditController extends BaseController
         }
 
         $credits->each(function ($credit, $key) use ($action) {
-            if (auth()->user()->can('edit', $credit)) {
+            if ($request->user()->can('edit', $credit)) {
                 $this->performAction($credit, $action, true);
             }
         });

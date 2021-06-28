@@ -316,7 +316,7 @@ class ProjectController extends BaseController
      */
     public function create(CreateProjectRequest $request)
     {
-        $project = ProjectFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $project = ProjectFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($project);
     }
@@ -362,7 +362,7 @@ class ProjectController extends BaseController
      */
     public function store(StoreProjectRequest $request)
     {
-        $project = ProjectFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $project = ProjectFactory::create($request->user()->company()->id, $request->user()->id);
         $project->fill($request->all());
         $project->save();
 
@@ -489,16 +489,16 @@ class ProjectController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $projects = Project::withTrashed()->find($this->transformKeys($ids));
 
         $projects->each(function ($project, $key) use ($action) {
-            if (auth()->user()->can('edit', $project)) {
+            if ($request->user()->can('edit', $project)) {
                 $this->project_repo->{$action}($project);
             }
         });

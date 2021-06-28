@@ -79,13 +79,13 @@ class LicenseController extends BaseController
      *       ),
      *     )
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->checkLicense();
 
         /* Catch claim license requests */
-        if (config('ninja.environment') == 'selfhost' && request()->has('license_key')) {
-            $license_key = request()->input('license_key');
+        if (config('ninja.environment') == 'selfhost' && $request->has('license_key')) {
+            $license_key = $request->input('license_key');
             $product_id = 3;
 
             $url = config('ninja.license_url')."/claim_license?license_key={$license_key}&product_id={$product_id}&get_date=true";
@@ -115,7 +115,7 @@ class LicenseController extends BaseController
 
                     return response()->json($error, 400);
                 } else {
-                    $account = auth()->user()->company()->account;
+                    $account = $request->user()->company()->account;
 
                     $account->plan_term = Account::PLAN_TERM_YEARLY;
                     $account->plan_paid = $data;

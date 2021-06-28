@@ -57,11 +57,11 @@ class SystemLogController extends BaseController
      *       ),
      *     )
      */
-    public function index(SystemLogFilters $filters)
+    public function index(Request $request, SystemLogFilters $filters)
     {
         $system_logs = SystemLog::filter($filters);
 
-        if (auth()->user()->isAdmin()) {
+        if ($request->user()->isAdmin()) {
             return $this->listResponse($system_logs);
         }
 

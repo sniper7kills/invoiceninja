@@ -11,6 +11,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\User;
 use App\Transformers\UserTransformer;
 use PragmaRX\Google2FA\Google2FA;
@@ -71,9 +72,9 @@ class TwoFactorController extends BaseController
         return response()->json(['message' => 'No phone record or user is not confirmed'], 400);
     }
     
-    public function disableTwoFactor()
+    public function disableTwoFactor(Request $request)
     {
-        $user = auth()->user();
+        $user = $request->user();
         $user->google_2fa_secret = null;
         $user->save();
 

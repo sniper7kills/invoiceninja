@@ -107,9 +107,9 @@ class CompanyController extends BaseController
      *       ),
      *     )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $companies = Company::whereAccountId(auth()->user()->company()->account->id);
+        $companies = Company::whereAccountId($request->user()->company()->account->id);
 
         return $this->listResponse($companies);
     }
@@ -155,7 +155,7 @@ class CompanyController extends BaseController
      */
     public function create(CreateCompanyRequest $request)
     {
-        $company = CompanyFactory::create(auth()->user()->company()->account->id);
+        $company = CompanyFactory::create($request->user()->company()->account->id);
 
         return $this->itemResponse($company);
     }
@@ -202,16 +202,16 @@ class CompanyController extends BaseController
     {
         $this->forced_includes = ['company_user'];
 
-        $company = CreateCompany::dispatchNow($request->all(), auth()->user()->company()->account);
+        $company = CreateCompany::dispatchNow($request->all(), $request->user()->company()->account);
 
-        CreateCompanyPaymentTerms::dispatchNow($company, auth()->user());
-        CreateCompanyTaskStatuses::dispatchNow($company, auth()->user());
+        CreateCompanyPaymentTerms::dispatchNow($company, $request->user());
+        CreateCompanyTaskStatuses::dispatchNow($company, $request->user());
 
         $company = $this->company_repo->save($request->all(), $company);
 
         $this->uploadLogo($request->file('company_logo'), $company, $company);
 
-        auth()->user()->companies()->attach($company->id, [
+        $request->user()->companies()->attach($company->id, [
             'account_id' => $company->account->id,
             'is_owner' => 1,
             'is_admin' => 1,
@@ -225,19 +225,19 @@ class CompanyController extends BaseController
         /*
          * Required dependencies
          */
-        auth()->user()->setCompany($company);
+        $request->user()->setCompany($company);
 
         /*
          * Create token
          */
-        $user_agent = request()->input('token_name') ?: request()->server('HTTP_USER_AGENT');
+        $user_agent = $request->input('token_name') ?: $request->server('HTTP_USER_AGENT');
 
-        $company_token = CreateCompanyToken::dispatchNow($company, auth()->user(), $user_agent);
+        $company_token = CreateCompanyToken::dispatchNow($company, $request->user(), $user_agent);
 
         $this->entity_transformer = CompanyUserTransformer::class;
         $this->entity_type = CompanyUser::class;
 
-        $ct = CompanyUser::whereUserId(auth()->user()->id)->whereCompanyId($company->id);
+        $ct = CompanyUser::whereUserId($request->user()->id)->whereCompanyId($company->id);
 
         return $this->listResponse($ct);
     }

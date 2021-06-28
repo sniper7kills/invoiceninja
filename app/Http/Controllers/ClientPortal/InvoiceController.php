@@ -11,6 +11,7 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\Invoices\ProcessInvoicesInBulkRequest;
 use App\Http\Requests\ClientPortal\Invoices\ShowInvoiceRequest;
@@ -88,7 +89,7 @@ class InvoiceController extends Controller
     private function makePayment(array $ids)
     {
         $invoices = Invoice::whereIn('id', $ids)
-                            ->whereClientId(auth()->user()->client->id)
+                            ->whereClientId($request->user()->client->id)
                             ->withTrashed()
                             ->get();
 

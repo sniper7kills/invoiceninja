@@ -11,6 +11,7 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,8 +33,8 @@ class ContactHashLoginController extends Controller
         return redirect('/client/invoices');
     }
 
-    public function errorPage()
+    public function errorPage(Request $request)
     {
-        return render('generic.error', ['title' => session()->get('title'), 'notification' => session()->get('notification')]);
+        return render('generic.error', ['title' => $request->session()->get('title'), 'notification' => $request->session()->get('notification')]);
     }
 }

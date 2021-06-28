@@ -12,6 +12,7 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
+use Illuminate\Http\Request;
 use App\Events\Payment\Methods\MethodDeleted;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\CreatePaymentMethodRequest;
@@ -70,7 +71,7 @@ class PaymentMethodController extends Controller
         $gateway = $this->getClientGateway();
 
         return $gateway
-            ->driver(auth()->user()->client)
+            ->driver($request->user()->client)
             ->setPaymentMethod($request->query('method'))
             ->checkRequirements()
             ->authorizeResponse($request);
@@ -104,8 +105,8 @@ class PaymentMethodController extends Controller
         // $gateway = $this->getClientGateway();
 
         return $payment_method->gateway
-            ->driver(auth()->user()->client)
-            ->setPaymentMethod(request()->query('method'))
+            ->driver($request->user()->client)
+            ->setPaymentMethod($request->query('method'))
             ->processVerification($request, $payment_method);
     }
 
@@ -115,13 +116,13 @@ class PaymentMethodController extends Controller
      * @param ClientGatewayToken $payment_method
      * @return RedirectResponse
      */
-    public function destroy(ClientGatewayToken $payment_method)
+    public function destroy(Request $request, ClientGatewayToken $payment_method)
     {
         // $gateway = $this->getClientGateway();
 
         $payment_method->gateway
-            ->driver(auth()->user()->client)
-            ->setPaymentMethod(request()->query('method'))
+            ->driver($request->user()->client)
+            ->setPaymentMethod($request->query('method'))
             ->detach($payment_method);
 
         try {

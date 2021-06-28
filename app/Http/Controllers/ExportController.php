@@ -11,6 +11,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\Export\StoreExportRequest;
 use App\Jobs\Company\CompanyExport;
 use App\Utils\Traits\MakesHash;
@@ -55,7 +56,7 @@ class ExportController extends BaseController
      */
     public function index(StoreExportRequest $request)
     {
-        CompanyExport::dispatch(auth()->user()->getCompany(), auth()->user());
+        CompanyExport::dispatch($request->user()->getCompany(), $request->user());
 
         return response()->json(['message' => 'Processing'], 200);
     }

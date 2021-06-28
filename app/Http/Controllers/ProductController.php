@@ -134,7 +134,7 @@ class ProductController extends BaseController
      */
     public function create(CreateProductRequest $request)
     {
-        $product = ProductFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $product = ProductFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($product);
     }
@@ -180,7 +180,7 @@ class ProductController extends BaseController
      */
     public function store(StoreProductRequest $request)
     {
-        $product = $this->product_repo->save($request->all(), ProductFactory::create(auth()->user()->company()->id, auth()->user()->id));
+        $product = $this->product_repo->save($request->all(), ProductFactory::create($request->user()->company()->id, $request->user()->id));
 
         return $this->itemResponse($product);
     }
@@ -464,16 +464,16 @@ class ProductController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $products = Product::withTrashed()->find($this->transformKeys($ids));
 
         $products->each(function ($product, $key) use ($action) {
-            if (auth()->user()->can('edit', $product)) {
+            if ($request->user()->can('edit', $product)) {
                 $this->product_repo->{$action}($product);
             }
         });

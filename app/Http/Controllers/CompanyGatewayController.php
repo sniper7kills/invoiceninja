@@ -95,9 +95,9 @@ class CompanyGatewayController extends BaseController
      *       ),
      *     )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $company_gateways = CompanyGateway::whereCompanyId(auth()->user()->company()->id);
+        $company_gateways = CompanyGateway::whereCompanyId($request->user()->company()->id);
 
         return $this->listResponse($company_gateways);
     }
@@ -143,7 +143,7 @@ class CompanyGatewayController extends BaseController
      */
     public function create(CreateCompanyGatewayRequest $request)
     {
-        $company_gateway = CompanyGatewayFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $company_gateway = CompanyGatewayFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($company_gateway);
     }
@@ -189,7 +189,7 @@ class CompanyGatewayController extends BaseController
      */
     public function store(StoreCompanyGatewayRequest $request)
     {
-        $company_gateway = CompanyGatewayFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $company_gateway = CompanyGatewayFactory::create($request->user()->company()->id, $request->user()->id);
         $company_gateway->fill($request->all());
         $company_gateway->save();
 
@@ -488,16 +488,16 @@ class CompanyGatewayController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $company_gateways = CompanyGateway::withTrashed()->find($this->transformKeys($ids));
 
         $company_gateways->each(function ($company_gateway, $key) use ($action) {
-            if (auth()->user()->can('edit', $company_gateway)) {
+            if ($request->user()->can('edit', $company_gateway)) {
                 $this->company_repo->{$action}($company_gateway);
             }
         });

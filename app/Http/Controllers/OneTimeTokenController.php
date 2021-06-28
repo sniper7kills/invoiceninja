@@ -68,8 +68,8 @@ class OneTimeTokenController extends BaseController
         $hash = Str::random(64);
 
         $data = [
-            'user_id' => auth()->user()->id,
-            'company_key'=> auth()->user()->company()->company_key,
+            'user_id' => $request->user()->id,
+            'company_key'=> $request->user()->company()->company_key,
             'context' => $request->input('context'),
         ];
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Utils\Traits\MakesHash;
 use Illuminate\Contracts\View\Factory;
@@ -28,7 +29,7 @@ class EntityViewController extends Controller
      * @param string $invitation_key
      * @return Factory|View
      */
-    public function index(string $entity_type, string $invitation_key)
+    public function index(Request $request, string $entity_type, string $invitation_key)
     {
         if (! in_array($entity_type, $this->entity_types)) {
             abort(404, 'Entity not found');
@@ -51,7 +52,7 @@ class EntityViewController extends Controller
         }
 
         if ((bool) $invitation->contact->client->getSetting('enable_client_portal_password') !== false) {
-            session()->flash("{$entity_type}_VIEW_{$entity->hashed_id}", true);
+            $request->session()->flash("{$entity_type}_VIEW_{$entity->hashed_id}", true);
         }
 
         if (! session("{$entity_type}_VIEW_{$entity->hashed_id}")) {
@@ -88,7 +89,7 @@ class EntityViewController extends Controller
      *
      * @return Redirector|RedirectResponse|mixed
      */
-    public function handlePassword(string $entity_type, string $invitation_key)
+    public function handlePassword(Request $request, string $entity_type, string $invitation_key)
     {
         if (! in_array($entity_type, $this->entity_types)) {
             abort(404, 'Entity not found');
@@ -102,19 +103,19 @@ class EntityViewController extends Controller
 
         $contact = $invitation->contact;
 
-        $check = Hash::check(request()->password, $contact->password);
+        $check = Hash::check($request->password, $contact->password);
 
         $entity_class = sprintf('App\\Models\\%s', ucfirst($entity_type));
 
         $entity = $entity_class::findOrFail($invitation->{$key});
 
         if ($check) {
-            session()->flash("{$entity_type}_VIEW_{$entity->hashed_id}", true);
+            $request->session()->flash("{$entity_type}_VIEW_{$entity->hashed_id}", true);
 
             return redirect()->route('client.entity_view', compact('entity_type', 'invitation_key'));
         }
 
-        session()->flash('PASSWORD_FAILED', true);
+        $request->session()->flash('PASSWORD_FAILED', true);
 
         return back();
     }

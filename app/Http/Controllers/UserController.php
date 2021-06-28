@@ -149,7 +149,7 @@ class UserController extends BaseController
      */
     public function create(CreateUserRequest $request)
     {
-        $user = UserFactory::create(auth()->user()->account->id);
+        $user = UserFactory::create($request->user()->account->id);
 
         return $this->itemResponse($user);
     }
@@ -469,7 +469,7 @@ class UserController extends BaseController
         /* If the user passes the company user we archive the company user */
         $user = $this->user_repo->delete($request->all(), $user);
 
-        event(new UserWasDeleted($user, auth()->user(), auth()->user()->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new UserWasDeleted($user, $request->user(), $request->user()->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($user->fresh());
     }
@@ -527,11 +527,11 @@ class UserController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $users = User::withTrashed()->find($this->transformKeys($ids));
 
@@ -544,7 +544,7 @@ class UserController extends BaseController
         $return_user_collection = collect();
 
         $users->each(function ($user, $key) use ($action, $return_user_collection) {
-            if (auth()->user()->can('edit', $user)) {
+            if ($request->user()->can('edit', $user)) {
                 $this->user_repo->{$action}($user);
 
                 $return_user_collection->push($user->id);
@@ -608,7 +608,7 @@ class UserController extends BaseController
         }
 
         $company_user = CompanyUser::whereUserId($user->id)
-                                    ->whereCompanyId(auth()->user()->companyId())
+                                    ->whereCompanyId($request->user()->companyId())
                                     ->withTrashed()
                                     ->first();
 

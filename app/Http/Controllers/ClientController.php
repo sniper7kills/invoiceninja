@@ -282,7 +282,7 @@ class ClientController extends BaseController
 
         $this->uploadLogo($request->file('company_logo'), $client->company, $client);
 
-        event(new ClientWasUpdated($client, $client->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new ClientWasUpdated($client, $client->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($client->fresh());
     }
@@ -328,7 +328,7 @@ class ClientController extends BaseController
      */
     public function create(CreateClientRequest $request)
     {
-        $client = ClientFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $client = ClientFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($client);
     }
@@ -500,15 +500,15 @@ class ClientController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
         $clients = Client::withTrashed()->find($this->transformKeys($ids));
 
         $clients->each(function ($client, $key) use ($action) {
-            if (auth()->user()->can('edit', $client)) {
+            if ($request->user()->can('edit', $client)) {
                 $this->client_repo->{$action}($client);
             }
         });

@@ -306,7 +306,7 @@ class DesignController extends BaseController
      */
     public function create(CreateDesignRequest $request)
     {
-        $design = DesignFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $design = DesignFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($design);
     }
@@ -352,7 +352,7 @@ class DesignController extends BaseController
      */
     public function store(StoreDesignRequest $request)
     {
-        $design = DesignFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $design = DesignFactory::create($request->user()->company()->id, $request->user()->id);
         $design->fill($request->all());
         $design->save();
 
@@ -471,16 +471,16 @@ class DesignController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $designs = Design::withTrashed()->find($this->transformKeys($ids));
 
         $designs->each(function ($design, $key) use ($action) {
-            if (auth()->user()->can('edit', $design)) {
+            if ($request->user()->can('edit', $design)) {
                 $this->design_repo->{$action}($design);
             }
         });

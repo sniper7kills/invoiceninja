@@ -308,7 +308,7 @@ class TokenController extends BaseController
      */
     public function create(CreateTokenRequest $request)
     {
-        $token = CompanyTokenFactory::create(auth()->user()->company()->id, auth()->user()->id, auth()->user()->account_id);
+        $token = CompanyTokenFactory::create($request->user()->company()->id, $request->user()->id, $request->user()->account_id);
 
         return $this->itemResponse($token);
     }
@@ -354,7 +354,7 @@ class TokenController extends BaseController
      */
     public function store(StoreTokenRequest $request)
     {
-        $company_token = CompanyTokenFactory::create(auth()->user()->company()->id, auth()->user()->id, auth()->user()->account_id);
+        $company_token = CompanyTokenFactory::create($request->user()->company()->id, $request->user()->id, $request->user()->account_id);
 
         $token = $this->token_repo->save($request->all(), $company_token);
 
@@ -470,15 +470,15 @@ class TokenController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
         $tokens = CompanyToken::withTrashed()->find($this->transformKeys($ids));
 
         $tokens->each(function ($token, $key) use ($action) {
-            if (auth()->user()->can('edit', $token)) {
+            if ($request->user()->can('edit', $token)) {
                 $this->token_repo->{$action}($token);
             }
         });

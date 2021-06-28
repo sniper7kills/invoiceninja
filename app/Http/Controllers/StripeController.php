@@ -12,15 +12,16 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Jobs\Util\ImportStripeCustomers;
 use App\Jobs\Util\StripeUpdatePaymentMethods;
 
 class StripeController extends BaseController
 {
-    public function update()
+    public function update(Request $request)
     {
-        if (auth()->user()->isAdmin()) {
-            StripeUpdatePaymentMethods::dispatch(auth()->user()->company());
+        if ($request->user()->isAdmin()) {
+            StripeUpdatePaymentMethods::dispatch($request->user()->company());
 
             return response()->json(['message' => 'Processing'], 200);
         }

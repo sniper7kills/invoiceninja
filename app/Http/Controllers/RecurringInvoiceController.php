@@ -155,7 +155,7 @@ class RecurringInvoiceController extends BaseController
      */
     public function create(CreateRecurringInvoiceRequest $request)
     {
-        $recurring_invoice = RecurringInvoiceFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $recurring_invoice = RecurringInvoiceFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($recurring_invoice);
     }
@@ -202,9 +202,9 @@ class RecurringInvoiceController extends BaseController
      */
     public function store(StoreRecurringInvoiceRequest $request)
     {
-        $recurring_invoice = $this->recurring_invoice_repo->save($request->all(), RecurringInvoiceFactory::create(auth()->user()->company()->id, auth()->user()->id));
+        $recurring_invoice = $this->recurring_invoice_repo->save($request->all(), RecurringInvoiceFactory::create($request->user()->company()->id, $request->user()->id));
 
-        event(new RecurringInvoiceWasCreated($recurring_invoice, $recurring_invoice->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new RecurringInvoiceWasCreated($recurring_invoice, $recurring_invoice->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         $offset = $recurring_invoice->client->timezone_offset();
         $recurring_invoice->next_send_date = Carbon::parse($recurring_invoice->next_send_date)->startOfDay()->addSeconds($offset);
@@ -386,7 +386,7 @@ class RecurringInvoiceController extends BaseController
 
         $recurring_invoice->service()->deletePdf()->save();
 
-        event(new RecurringInvoiceWasUpdated($recurring_invoice, $recurring_invoice->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new RecurringInvoiceWasUpdated($recurring_invoice, $recurring_invoice->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($recurring_invoice);
     }
@@ -557,16 +557,16 @@ class RecurringInvoiceController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $recurring_invoices = RecurringInvoice::withTrashed()->find($this->transformKeys($ids));
 
         $recurring_invoices->each(function ($recurring_invoice, $key) use ($action) {
-            if (auth()->user()->can('edit', $recurring_invoice)) {
+            if ($request->user()->can('edit', $recurring_invoice)) {
                 $this->performAction($recurring_invoice, $action, true);
             }
         });

@@ -87,9 +87,9 @@ class GroupSettingController extends BaseController
      *       ),
      *     )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $group_settings = GroupSetting::whereCompanyId(auth()->user()->company()->id);
+        $group_settings = GroupSetting::whereCompanyId($request->user()->company()->id);
 
         return $this->listResponse($group_settings);
     }
@@ -135,7 +135,7 @@ class GroupSettingController extends BaseController
      */
     public function create(CreateGroupSettingRequest $request)
     {
-        $group_setting = GroupSettingFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $group_setting = GroupSettingFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($group_setting);
     }
@@ -184,7 +184,7 @@ class GroupSettingController extends BaseController
         //need to be careful here as we may also receive some
         //supporting attributes such as logo which need to be handled outside of the
         //settings object
-        $group_setting = GroupSettingFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $group_setting = GroupSettingFactory::create($request->user()->company()->id, $request->user()->id);
 
         $group_setting = $this->group_setting_repo->save($request->all(), $group_setting);
 
@@ -473,11 +473,11 @@ class GroupSettingController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $group_settings = GroupSetting::withTrashed()->whereIn('id', $this->transformKeys($ids))->company()->get();
 
@@ -489,7 +489,7 @@ class GroupSettingController extends BaseController
          * Send the other actions to the switch
          */
         $group_settings->each(function ($group, $key) use ($action) {
-            if (auth()->user()->can('edit', $group)) {
+            if ($request->user()->can('edit', $group)) {
                 $this->group_setting_repo->{$action}($group);
             }
         });

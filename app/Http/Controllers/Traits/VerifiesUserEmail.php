@@ -12,6 +12,7 @@
 
 namespace App\Http\Controllers\Traits;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\Traits\ConfirmWithPasswordVerifiesUserEmailRequest;
 use App\Models\User;
 use App\Utils\Traits\MakesHash;
@@ -30,11 +31,11 @@ trait VerifiesUserEmail
     /**
      * @return RedirectResponse
      */
-    public function confirm()
+    public function confirm(Request $request)
     {
-        $user = User::where('confirmation_code', request()->confirmation_code)->first();
+        $user = User::where('confirmation_code', $request->confirmation_code)->first();
 
-        // if ($user = User::whereRaw("BINARY `confirmation_code`= ?", request()->input('confirmation_code'))->first()) {
+        // if ($user = User::whereRaw("BINARY `confirmation_code`= ?", $request->input('confirmation_code'))->first()) {
 
         if (! $user) {
             return $this->render('auth.confirmed', ['root' => 'themes', 'message' => ctrans('texts.wrong_confirmation')]);
@@ -63,11 +64,11 @@ trait VerifiesUserEmail
 
     public function confirmWithPassword(ConfirmWithPasswordVerifiesUserEmailRequest $request)
     {
-        $user = User::where('id', $this->decodePrimaryKey(request()->user_id))->firstOrFail();
+        $user = User::where('id', $this->decodePrimaryKey($request->user_id))->firstOrFail();
 
 
 
-        $user->password = Hash::make(request()->password);
+        $user->password = Hash::make($request->password);
 
         $user->email_verified_at = now();
         $user->confirmation_code = null;

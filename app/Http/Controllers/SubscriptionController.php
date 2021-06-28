@@ -12,6 +12,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Events\Subscription\SubscriptionWasCreated;
 use App\Events\Subscription\SubscriptionWasUpdated;
 use App\Factory\SubscriptionFactory;
@@ -129,7 +130,7 @@ class SubscriptionController extends BaseController
      */
     public function create(CreateSubscriptionRequest $request): \Illuminate\Http\Response
     {
-        $subscription = SubscriptionFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $subscription = SubscriptionFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($subscription);
     }
@@ -175,9 +176,9 @@ class SubscriptionController extends BaseController
      */
     public function store(StoreSubscriptionRequest $request): \Illuminate\Http\Response
     {
-        $subscription = $this->subscription_repo->save($request->all(), SubscriptionFactory::create(auth()->user()->company()->id, auth()->user()->id));
+        $subscription = $this->subscription_repo->save($request->all(), SubscriptionFactory::create($request->user()->company()->id, $request->user()->id));
 
-        event(new SubscriptionWasCreated($subscription, $subscription->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new SubscriptionWasCreated($subscription, $subscription->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($subscription);
     }
@@ -352,7 +353,7 @@ class SubscriptionController extends BaseController
 
         $subscription = $this->subscription_repo->save($request->all(), $subscription);
 
-        event(new SubscriptionWasUpdated($subscription, $subscription->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new SubscriptionWasUpdated($subscription, $subscription->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($subscription);
     }
@@ -465,15 +466,15 @@ class SubscriptionController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
         $subscriptions = Subscription::withTrashed()->find($this->transformKeys($ids));
 
         $subscriptions->each(function ($subscription, $key) use ($action) {
-            if (auth()->user()->can('edit', $subscription)) {
+            if ($request->user()->can('edit', $subscription)) {
                 $this->subscription_repo->{$action}($subscription);
             }
         });

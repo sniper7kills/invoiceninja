@@ -12,6 +12,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use \Illuminate\Support\Facades\DB;
 use App\Http\Requests\Setup\CheckDatabaseRequest;
 use App\Http\Requests\Setup\CheckMailRequest;
@@ -31,7 +32,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 

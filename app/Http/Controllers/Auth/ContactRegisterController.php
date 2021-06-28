@@ -11,6 +11,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
 use App\Factory\ClientContactFactory;
 use App\Factory\ClientFactory;
 use App\Http\Controllers\Controller;
@@ -27,9 +28,9 @@ class ContactRegisterController extends Controller
         $this->middleware(['guest']);
     }
 
-    public function showRegisterForm(string $company_key = '')
+    public function showRegisterForm(Request $request, string $company_key = '')
     {
-        $key = request()->has('key') ? request('key') : $company_key;
+        $key = $request->has('key') ? request('key') : $company_key;
 
         $company = Company::where('company_key', $key)->firstOrFail();
 

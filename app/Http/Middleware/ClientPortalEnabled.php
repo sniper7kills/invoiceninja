@@ -25,7 +25,7 @@ class ClientPortalEnabled
      */
     public function handle($request, Closure $next)
     {
-        if (auth()->user()->client->getSetting('enable_client_portal') === false) {
+        if ($request->user()->client->getSetting('enable_client_portal') === false) {
             return redirect()->route('client.error')->with(['title' => ctrans('texts.client_portal'), 'notification' => 'This section of the app has been disabled by the administrator.']);
         }
 

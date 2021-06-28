@@ -12,6 +12,7 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
+use Illuminate\Http\Request;
 use App\Events\Quote\QuoteWasApproved;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\Quotes\ProcessQuotesInBulkRequest;
@@ -79,7 +80,7 @@ class QuoteController extends Controller
     protected function downloadQuotePdf(array $ids)
     {
         $quotes = Quote::whereIn('id', $ids)
-            ->whereClientId(auth()->user()->client->id)
+            ->whereClientId($request->user()->client->id)
             ->get();
 
         if (! $quotes || $quotes->count() == 0) {

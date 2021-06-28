@@ -11,6 +11,7 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientPortal\UpdateClientRequest;
 use App\Http\Requests\ClientPortal\UpdateContactRequest;
@@ -50,7 +51,7 @@ class ProfileController extends Controller
 
         $client_contact->save();
 
-        // auth()->user()->fresh();
+        // $request->user()->fresh();
 
         return back()->withSuccess(
             ctrans('texts.profile_updated_successfully')
@@ -63,7 +64,7 @@ class ProfileController extends Controller
 
         //update avatar if needed
         if ($request->file('logo')) {
-            $path = UploadAvatar::dispatchNow($request->file('logo'), auth()->user()->client->client_hash);
+            $path = UploadAvatar::dispatchNow($request->file('logo'), $request->user()->client->client_hash);
 
             if ($path) {
                 $client->logo = $path;

@@ -207,7 +207,7 @@ class LoginController extends BaseController
             $this->setLoginCache($user);
 
             $cu = CompanyUser::query()
-                  ->where('user_id', auth()->user()->id);
+                  ->where('user_id', $request->user()->id);
 
             if (!$cu->exists()) {
                 return response()->json(['message' => 'User not linked to any companies'], 403);
@@ -234,7 +234,7 @@ class LoginController extends BaseController
                 ->batch();
 
             SystemLogger::dispatch(
-                json_encode(['ip' => request()->getClientIp()]),
+                json_encode(['ip' => $request->getClientIp()]),
                 SystemLog::CATEGORY_SECURITY,
                 SystemLog::EVENT_USER,
                 SystemLog::TYPE_LOGIN_FAILURE,
@@ -326,9 +326,9 @@ class LoginController extends BaseController
      *
      * return   User $user
      */
-    public function oauthApiLogin()
+    public function oauthApiLogin(Request $request)
     {
-        if (request()->input('provider') == 'google') {
+        if ($request->input('provider') == 'google') {
             return $this->handleGoogleOauth();
         }
 
@@ -495,7 +495,7 @@ class LoginController extends BaseController
         ->header('X-Api-Version', config('ninja.minimum_client_version'));
     }
 
-    public function redirectToProvider(string $provider)
+    public function redirectToProvider(Request $request, string $provider)
     {
         $scopes = [];
 
@@ -506,7 +506,7 @@ class LoginController extends BaseController
             $parameters = ['access_type' => 'offline', 'prompt' => 'consent select_account', 'redirect_uri' => config('ninja.app_url').'/auth/google'];
         }
 
-        if (request()->has('code')) {
+        if ($request->has('code')) {
             return $this->handleProviderCallback($provider);
         } else {
             return Socialite::driver($provider)->with($parameters)->scopes($scopes)->redirect();

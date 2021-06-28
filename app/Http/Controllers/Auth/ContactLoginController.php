@@ -80,8 +80,8 @@ class ContactLoginController extends Controller
 
         event(new ContactLoggedIn($client, $client->company, Ninja::eventVars()));
 
-        if (session()->get('url.intended')) {
-            return redirect(session()->get('url.intended'));
+        if ($request->session()->get('url.intended')) {
+            return redirect($request->session()->get('url.intended'));
         }
 
         return redirect(route('client.dashboard'));

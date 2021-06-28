@@ -331,7 +331,7 @@ class TaskController extends BaseController
      */
     public function create(CreateTaskRequest $request)
     {
-        $task = TaskFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $task = TaskFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($task);
     }
@@ -377,9 +377,9 @@ class TaskController extends BaseController
      */
     public function store(StoreTaskRequest $request)
     {
-        $task = $this->task_repo->save($request->all(), TaskFactory::create(auth()->user()->company()->id, auth()->user()->id));
+        $task = $this->task_repo->save($request->all(), TaskFactory::create($request->user()->company()->id, $request->user()->id));
 
-        event(new TaskWasCreated($task, $task->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new TaskWasCreated($task, $task->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
 
         return $this->itemResponse($task);
     }
@@ -493,15 +493,15 @@ class TaskController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
         $tasks = Task::withTrashed()->find($this->transformKeys($ids));
 
         $tasks->each(function ($task, $key) use ($action) {
-            if (auth()->user()->can('edit', $task)) {
+            if ($request->user()->can('edit', $task)) {
                 $this->task_repo->{$action}($task);
             }
         });

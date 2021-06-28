@@ -54,7 +54,7 @@ class CheckClientExistence
             Auth::guard('contact')->login($multiple_contacts[0], true);
         }
 
-        session()->put('multiple_contacts', $multiple_contacts);
+        $request->session()->put('multiple_contacts', $multiple_contacts);
 
         return $next($request);
     }

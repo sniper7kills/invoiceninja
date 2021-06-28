@@ -709,11 +709,11 @@ class BaseController extends Controller
         return $data;
     }
 
-    public function flutterRoute()
+    public function flutterRoute(Request $request)
     {
         if ((bool) $this->checkAppSetup() !== false && $account = Account::first()) {
-            if (config('ninja.require_https') && ! request()->isSecure()) {
-                return redirect()->secure(request()->getRequestUri());
+            if (config('ninja.require_https') && ! $request->isSecure()) {
+                return redirect()->secure($request->getRequestUri());
             }
 
             $data = [];
@@ -732,9 +732,9 @@ class BaseController extends Controller
         return redirect('/setup');
     }
 
-    public function checkFeature($feature)
+    public function checkFeature(Request $request, $feature)
     {
-        if (auth()->user()->account->hasFeature($feature)) {
+        if ($request->user()->account->hasFeature($feature)) {
             return true;
         }
 

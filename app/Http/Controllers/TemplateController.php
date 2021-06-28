@@ -11,6 +11,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Utils\TemplateEngine;
 use App\Utils\Traits\MakesHash;
 use App\Utils\Traits\MakesInvoiceHtml;
@@ -84,10 +85,10 @@ class TemplateController extends BaseController
      */
     public function show()
     {
-        $entity = request()->has('entity') ? request()->input('entity') : '';
-        $entity_id = request()->has('entity_id') ? request()->input('entity_id') : '';
-        $subject = request()->has('subject') ? request()->input('subject') : '';
-        $body = request()->has('body') ? request()->input('body') : '';
+        $entity = $request->has('entity') ? $request->input('entity') : '';
+        $entity_id = $request->has('entity_id') ? $request->input('entity_id') : '';
+        $subject = $request->has('subject') ? $request->input('subject') : '';
+        $body = $request->has('body') ? $request->input('body') : '';
         $template = request()->has('template') ? request()->input('template') : '';
         
         $data = (new TemplateEngine($body, $subject, $entity, $entity_id, $template))->build();

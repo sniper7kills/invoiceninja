@@ -12,6 +12,7 @@
 
 namespace App\Http\Controllers\ClientPortal;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\ClientContact;
 use App\Utils\Traits\MakesHash;
@@ -21,9 +22,9 @@ class SwitchCompanyController extends Controller
 {
     use MakesHash;
 
-    public function __invoke(string $contact)
+    public function __invoke(Request $request, string $contact)
     {
-        $client_contact = ClientContact::where('email', auth()->user()->email)
+        $client_contact = ClientContact::where('email', $request->user()->email)
             ->where('id', $this->transformKeys($contact))
             ->first();
 

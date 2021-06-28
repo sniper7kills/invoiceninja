@@ -154,7 +154,7 @@ class PaymentController extends BaseController
      */
     public function create(CreatePaymentRequest $request)
     {
-        $payment = PaymentFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $payment = PaymentFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($payment);
     }
@@ -206,7 +206,7 @@ class PaymentController extends BaseController
      */
     public function store(StorePaymentRequest $request)
     {
-        $payment = $this->payment_repo->save($request->all(), PaymentFactory::create(auth()->user()->company()->id, auth()->user()->id));
+        $payment = $this->payment_repo->save($request->all(), PaymentFactory::create($request->user()->company()->id, $request->user()->id));
 
         if ($request->has('email_receipt') && $request->input('email_receipt') == 'true' && !$payment->client->getSetting('client_manual_payment_notification')) {
             $payment->service()->sendEmail();
@@ -386,7 +386,7 @@ class PaymentController extends BaseController
 
         $payment = $this->payment_repo->save($request->all(), $payment);
 
-        event(new PaymentWasUpdated($payment, $payment->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null)));
+        event(new PaymentWasUpdated($payment, $payment->company, Ninja::eventVars($request->user() ? $request->user()->id : null)));
         return $this->itemResponse($payment);
     }
 
@@ -500,16 +500,16 @@ class PaymentController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $payments = Payment::withTrashed()->find($this->transformKeys($ids));
 
         $payments->each(function ($payment, $key) use ($action) {
-            if (auth()->user()->can('edit', $payment)) {
+            if ($request->user()->can('edit', $payment)) {
                 $this->performAction($payment, $action, true);
             }
         });

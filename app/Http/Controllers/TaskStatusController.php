@@ -74,9 +74,9 @@ class TaskStatusController extends BaseController
      *       ),
      *     )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $task_status = TaskStatus::whereCompanyId(auth()->user()->company()->id)->orWhere('company_id', null);
+        $task_status = TaskStatus::whereCompanyId($request->user()->company()->id)->orWhere('company_id', null);
 
         return $this->listResponse($task_status);
     }
@@ -123,7 +123,7 @@ class TaskStatusController extends BaseController
      */
     public function create(CreateTaskStatusRequest $request)
     {
-        $task_status = TaskStatusFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $task_status = TaskStatusFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($task_status);
     }
@@ -456,16 +456,16 @@ class TaskStatusController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $task_status = TaskStatus::withTrashed()->company()->find($this->transformKeys($ids));
 
         $task_status->each(function ($task_status, $key) use ($action) {
-            if (auth()->user()->can('edit', $task_status)) {
+            if ($request->user()->can('edit', $task_status)) {
                 $this->task_status_repo->{$action}($task_status);
             }
         });

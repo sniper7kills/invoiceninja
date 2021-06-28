@@ -11,6 +11,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Jobs\Util\PreviewPdf;
 use App\Models\Client;
 use App\Models\ClientContact;
@@ -73,18 +74,18 @@ class PreviewController extends BaseController
      */
     public function show()
     {
-        if (request()->has('entity') &&
-            request()->has('entity_id') &&
+        if ($request->has('entity') &&
+            $request->has('entity_id') &&
             ! empty(request()->input('entity')) &&
-            ! empty(request()->input('entity_id')) &&
-            request()->has('body')) {
-            $design_object = json_decode(json_encode(request()->input('design')));
+            ! empty($request->input('entity_id')) &&
+            $request->has('body')) {
+            $design_object = json_decode(json_encode($request->input('design')));
 
             if (! is_object($design_object)) {
                 return response()->json(['message' => ctrans('texts.invalid_design_object')], 400);
             }
 
-            $entity = ucfirst(request()->input('entity'));
+            $entity = ucfirst($request->input('entity'));
 
             $class = "App\\Models\\$entity";
 

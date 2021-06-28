@@ -11,6 +11,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Events\Credit\CreditWasEmailed;
 use App\Events\Quote\QuoteWasEmailed;
 use App\Http\Requests\Email\SendEmailRequest;
@@ -151,7 +152,7 @@ class EmailController extends BaseController
             $this->entity_transformer = QuoteTransformer::class;
 
             if ($entity_obj->invitations->count() >= 1) {
-                event(new QuoteWasEmailed($entity_obj->invitations->first(), $entity_obj->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null), 'quote'));
+                event(new QuoteWasEmailed($entity_obj->invitations->first(), $entity_obj->company, Ninja::eventVars($request->user() ? $request->user()->id : null), 'quote'));
             }
         }
 
@@ -160,7 +161,7 @@ class EmailController extends BaseController
             $this->entity_transformer = CreditTransformer::class;
 
             if ($entity_obj->invitations->count() >= 1) {
-                event(new CreditWasEmailed($entity_obj->invitations->first(), $entity_obj->company, Ninja::eventVars(auth()->user() ? auth()->user()->id : null), 'credit'));
+                event(new CreditWasEmailed($entity_obj->invitations->first(), $entity_obj->company, Ninja::eventVars($request->user() ? $request->user()->id : null), 'credit'));
             }
         }
 

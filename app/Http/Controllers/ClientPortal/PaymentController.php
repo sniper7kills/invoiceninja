@@ -115,7 +115,7 @@ class PaymentController extends Controller
                 ->with(['message' => 'No payable invoices selected.']);
         }
 
-        $settings = auth()->user()->client->getMergedSettings();
+        $settings = $request->user()->client->getMergedSettings();
 
         // nlog($settings);
 
@@ -134,13 +134,13 @@ class PaymentController extends Controller
              * Determine the payable amount and the max payable. ie either partial or invoice balance
              */
 
-            $payable_amount = Number::roundValue(Number::parseFloat($payable_invoice['amount']), auth()->user()->client->currency()->precision);
-            $invoice_balance = Number::roundValue(($invoice->partial > 0 ? $invoice->partial : $invoice->balance), auth()->user()->client->currency()->precision);
+            $payable_amount = Number::roundValue(Number::parseFloat($payable_invoice['amount']), $request->user()->client->currency()->precision);
+            $invoice_balance = Number::roundValue(($invoice->partial > 0 ? $invoice->partial : $invoice->balance), $request->user()->client->currency()->precision);
 
             /*If we don't allow under/over payments force the payable amount - prevents inspect element adjustments in JS*/
 
             if ($settings->client_portal_allow_under_payment == false && $settings->client_portal_allow_over_payment == false) {
-                $payable_invoice['amount'] = Number::roundValue(($invoice->partial > 0 ? $invoice->partial : $invoice->balance), auth()->user()->client->currency()->precision);
+                $payable_invoice['amount'] = Number::roundValue(($invoice->partial > 0 ? $invoice->partial : $invoice->balance), $request->user()->client->currency()->precision);
             }
 
             if (!$settings->client_portal_allow_under_payment && $payable_amount < $invoice_balance) {
@@ -190,8 +190,8 @@ class PaymentController extends Controller
                 return $payable_invoice['invoice_id'] == $inv->hashed_id;
             });
 
-            $payable_amount = Number::roundValue(Number::parseFloat($payable_invoice['amount']), auth()->user()->client->currency()->precision);
-            $invoice_balance = Number::roundValue($invoice->balance, auth()->user()->client->currency()->precision);
+            $payable_amount = Number::roundValue(Number::parseFloat($payable_invoice['amount']), $request->user()->client->currency()->precision);
+            $invoice_balance = Number::roundValue($invoice->balance, $request->user()->client->currency()->precision);
 
             $payable_invoice['due_date'] = $this->formatDate($invoice->due_date, $invoice->client->date_format());
             $payable_invoice['invoice_number'] = $invoice->number;
@@ -210,7 +210,7 @@ class PaymentController extends Controller
         }
         //});
 
-        if (request()->has('signature') && !is_null(request()->signature) && !empty(request()->signature)) {
+        if ($request->has('signature') && !is_null($request->signature) && !empty($request->signature)) {
             $invoices->each(function ($invoice) use ($request) {
                 InjectSignature::dispatch($invoice, $request->signature);
             });
@@ -236,7 +236,7 @@ class PaymentController extends Controller
         $fee_totals = $first_invoice->amount - $starting_invoice_amount;
 
         if ($gateway) {
-            $tokens = auth()->user()->client->gateway_tokens()
+            $tokens = $request->user()->client->gateway_tokens()
                 ->whereCompanyGatewayId($gateway->id)
                 ->whereGatewayTypeId($payment_method_id)
                 ->get();
@@ -278,7 +278,7 @@ class PaymentController extends Controller
 
         try {
             return $gateway
-                ->driver(auth()->user()->client)
+                ->driver($request->user()->client)
                 ->setPaymentMethod($payment_method_id)
                 ->setPaymentHash($payment_hash)
                 ->checkRequirements()
@@ -304,7 +304,7 @@ class PaymentController extends Controller
         $payment_hash = PaymentHash::whereRaw('BINARY `hash`= ?', [$request->payment_hash])->first();
 
         return $gateway
-                ->driver(auth()->user()->client)
+                ->driver($request->user()->client)
                 ->setPaymentMethod($request->input('payment_method_id'))
                 ->setPaymentHash($payment_hash)
                 ->checkRequirements()

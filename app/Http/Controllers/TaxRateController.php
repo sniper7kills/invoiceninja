@@ -126,7 +126,7 @@ class TaxRateController extends BaseController
      */
     public function create(CreateTaxRateRequest $request)
     {
-        $tax_rate = TaxRateFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $tax_rate = TaxRateFactory::create($request->user()->company()->id, $request->user()->id);
 
         return $this->itemResponse($tax_rate);
     }
@@ -139,7 +139,7 @@ class TaxRateController extends BaseController
      */
     public function store(StoreTaxRateRequest $request)
     {
-        $tax_rate = TaxRateFactory::create(auth()->user()->company()->id, auth()->user()->id);
+        $tax_rate = TaxRateFactory::create($request->user()->company()->id, $request->user()->id);
         $tax_rate->fill($request->all());
         $tax_rate->save();
 
@@ -421,16 +421,16 @@ class TaxRateController extends BaseController
      *       ),
      *     )
      */
-    public function bulk()
+    public function bulk(Request $request)
     {
-        $action = request()->input('action');
+        $action = $request->input('action');
 
-        $ids = request()->input('ids');
+        $ids = $request->input('ids');
 
         $tax_rates = TaxRate::withTrashed()->find($this->transformKeys($ids));
 
         $tax_rates->each(function ($tax_rate, $key) use ($action) {
-            if (auth()->user()->can('edit', $tax_rate)) {
+            if ($request->user()->can('edit', $tax_rate)) {
                 $this->base_repo->{$action}($tax_rate);
             }
         });

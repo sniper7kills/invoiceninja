@@ -11,6 +11,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\Account\CreateAccountRequest;
 use App\Jobs\Account\CreateAccount;
 use App\Models\Account;
@@ -148,7 +149,7 @@ class AccountController extends BaseController
             return $account;
         }
 
-        $ct = CompanyUser::whereUserId(auth()->user()->id);
+        $ct = CompanyUser::whereUserId($request->user()->id);
 
         config(['ninja.company_id' => $ct->first()->company->id]);
 

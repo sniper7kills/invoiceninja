@@ -11,6 +11,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Exceptions\ModelNotFoundException;
 use App\Http\Requests\CompanyUser\UpdateCompanyUserRequest;
 use App\Models\CompanyUser;
@@ -110,7 +111,7 @@ class CompanyUserController extends BaseController
      */
     public function update(UpdateCompanyUserRequest $request, User $user)
     {
-        $company = auth()->user()->company();
+        $company = $request->user()->company();
 
         $company_user = CompanyUser::whereUserId($user->id)->whereCompanyId($company->id)->first();
 
@@ -120,7 +121,7 @@ class CompanyUserController extends BaseController
             return;
         }
 
-        if (auth()->user()->isAdmin()) {
+        if ($request->user()->isAdmin()) {
             $company_user->fill($request->input('company_user'));
         } else {
             $company_user->settings = $request->input('company_user')['settings'];
